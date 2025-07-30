@@ -1,7 +1,7 @@
 # Synoptic Text Viewer for DSE
 
 ## This repo and it's code is under development. Meaningful documentation will shortly follow.
-
+V. 0.1
 * build with [DSE-Static-Cookiecutter](https://github.com/acdh-oeaw/dse-static-cookiecutter)
 
 
