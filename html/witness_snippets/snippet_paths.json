@@ -1,0 +1,22 @@
+{
+    "1": {
+        "filepath": "witness_snippets/probe_C.snpt",
+        "sorting": 1,
+        "title": "Driu liet von der magd, Handschrift C 1"
+    },
+    "2": {
+        "filepath": "witness_snippets/probe_D.snpt",
+        "sorting": 2,
+        "title": "Driu liet von der magd, Handschrift D 2"
+    },
+    "3": {
+        "filepath": "witness_snippets/probe_A.snpt",
+        "sorting": 3,
+        "title": "Driu liet von der magd, Handschrift A 3"
+    },
+    "4": {
+        "filepath": "witness_snippets/probe_F.snpt",
+        "sorting": 4,
+        "title": "Driu liet von der magd, Handschrift F 4"
+    }
+}
