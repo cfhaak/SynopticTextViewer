@@ -35,6 +35,9 @@ Currently, this repository contains a mix of scripts, test data, and documentati
 
 ## Test Setup
 * Run `./shellscripts/script.sh`.
+* Set up a python environment if necessary.
+* Install python dependencies:
+`python -m pip install -r pyscripts/requirements.txt`
 * Run `ant` to build HTML files, etc.
 
 ### Start Development Server
@@ -42,6 +45,7 @@ Currently, this repository contains a mix of scripts, test data, and documentati
 * `cd html/`
 * `python -m http.server`
 * Go to [http://0.0.0.0:8000/](http://0.0.0.0:8000/).
+* Click on "Fassungsvergleich" in the navbar.
 
 ### Third-Party Libraries
 
