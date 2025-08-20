@@ -6,9 +6,21 @@ async function loadConfig() {
   return new ColumnViewerConfig();
 }
 
+function sortStringsOrInts(a, b) {
+    if (typeof a === "number" && typeof b === "number") {
+        // Numerical comparison
+        return a - b;
+    } else if (typeof a === "string" && typeof b === "string") {
+        // String comparison
+        return a.localeCompare(b);
+    } else {
+        throw new Error("Inconsistent types for sorting attribute");
+    }
+}
+
 function sortWitnessIdsBySorting(metadata) {
   return Object.entries(metadata)
-    .sort((a, b) => a[1].sorting.localeCompare(b[1].sorting))
+    .sort((a, b) => sortStringsOrInts(a[1].sorting, b[1].sorting))
     .map(([key]) => key);
 }
 
