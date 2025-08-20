@@ -1,22 +1,52 @@
 {
-    "1": {
-        "filepath": "witness_snippets/probe_C.snpt",
-        "sorting": 1,
-        "title": "Driu liet von der magd, Handschrift C 1"
+    "tr_Bb": {
+        "filepath": "witness_snippets/tr_Bb.snpt",
+        "sorting": "tr_Bb",
+        "title": "Der arme Heinrich tr_Bb"
     },
-    "2": {
-        "filepath": "witness_snippets/probe_A.snpt",
-        "sorting": 2,
-        "title": "Driu liet von der magd, Handschrift A 2"
+    "F": {
+        "filepath": "witness_snippets/F.snpt",
+        "sorting": "F",
+        "title": "Der arme Heinrich F"
     },
-    "3": {
-        "filepath": "witness_snippets/probe_D.snpt",
-        "sorting": 3,
-        "title": "Driu liet von der magd, Handschrift D 3"
+    "A": {
+        "filepath": "witness_snippets/A.snpt",
+        "sorting": "A",
+        "title": "Der arme Heinrich A"
     },
-    "4": {
-        "filepath": "witness_snippets/probe_F.snpt",
-        "sorting": 4,
-        "title": "Driu liet von der magd, Handschrift F 4"
+    "Bb": {
+        "filepath": "witness_snippets/Bb.snpt",
+        "sorting": "Bb",
+        "title": "Der arme Heinrich Bb"
+    },
+    "C": {
+        "filepath": "witness_snippets/C.snpt",
+        "sorting": "C",
+        "title": "Der arme Heinrich C"
+    },
+    "Ba": {
+        "filepath": "witness_snippets/Ba.snpt",
+        "sorting": "Ba",
+        "title": "Der arme Heinrich Ba"
+    },
+    "E": {
+        "filepath": "witness_snippets/E.snpt",
+        "sorting": "E",
+        "title": "Der arme Heinrich E"
+    },
+    "D": {
+        "filepath": "witness_snippets/D.snpt",
+        "sorting": "D",
+        "title": "Der arme Heinrich D"
+    },
+    "tr_Ba": {
+        "filepath": "witness_snippets/tr_Ba.snpt",
+        "sorting": "tr_Ba",
+        "title": "Der arme Heinrich tr_Ba"
+    },
+    "tr_A": {
+        "filepath": "witness_snippets/tr_A.snpt",
+        "sorting": "tr_A",
+        "title": "Der arme Heinrich tr_A"
     }
 }
