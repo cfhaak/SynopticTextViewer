@@ -103,7 +103,7 @@
     START
     I put that here for testing, should be removed in production.
     -->
-    <exec executable="python">
+    <exec executable="python3">
         <arg value="pyscripts/make_snippets.py" />
     </exec>
     <!-- 
