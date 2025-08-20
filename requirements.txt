@@ -1,4 +1,0 @@
-acdh-tei-pyutils
-acdh-cfts-pyutils
-saxonche
-jinja2
