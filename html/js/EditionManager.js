@@ -178,9 +178,18 @@ class EditionManager {
     return witness;
   }
 
+  getVisibleLineByIdOrFirst(container, lineId) {
+    if (!container) return null;
+    let line = lineId ? container.querySelector(`#${lineId}`) : null;
+    if (line && this.elementIsVisible(line)) {
+      return line;
+    }
+    // fallback: first visible child in container
+    return this.getFirstVisibleChildInContainer(container);
+  }
+
   arrowHorizontalAction(event) {
     event.preventDefault();
-    // get current selectedWitness
     const textContentColumn = event.target.closest(
       `.${this.config.witness_class}`
     );
@@ -196,19 +205,9 @@ class EditionManager {
     );
     const currentLineId = this.getCurrentSelectedElement()
       ? this.getCurrentSelectedElement().getAttribute("id")
-      : textContentParent
-          .querySelector(`.${this.config.witness_line_class}`)
-          .getAttribute("id");
-    let currentLineInNewWitness =
-      textContentParent.querySelector(`#${currentLineId}`) ||
-      textContentParent.childNodes[0];
-    if (!this.elementIsVisible(currentLineInNewWitness)) {
-      currentLineInNewWitness = this.findNearestVisibleSibling(
-        currentLineInNewWitness,
-        true
-      );
-    }
-    this.handleDoubleClick(currentLineInNewWitness);
+      : null;
+    const targetLine = this.getVisibleLineByIdOrFirst(textContentParent, currentLineId);
+    this.handleDoubleClick(targetLine);
   }
 
   getNthtSibling(textContentParent, currentElement, n) {
@@ -259,9 +258,9 @@ class EditionManager {
           .querySelector(`.${this.config.witness_line_class}`)
       );
     }
-    console.log(this.state.getCurrentSelectedColumn());
-    console.log(this.state.getCurrentSelectedWitness());
-    console.log(this.state.getCurrentSelectedElement());
+    // console.log(this.state.getCurrentSelectedColumn());
+    // console.log(this.state.getCurrentSelectedWitness());
+    // console.log(this.state.getCurrentSelectedElement());
   }
 
   initKeyDownListeners() {
@@ -277,7 +276,7 @@ class EditionManager {
         } else if (event.key === "ArrowUp") {
           this.arrowUpAction(event);
         } else if (this.horizontalActionTrigger(event)) {
-          // this.arrowHorizontalAction(event);
+          this.arrowHorizontalAction(event);
         } else if (event.key === "PageDown" || event.key === "PageUp") {
           // this.scrollWitnessContainer(event);
         }
@@ -637,9 +636,8 @@ class EditionManager {
   }
 
   elementIsVisible(element) {
-    console.log(element);
     if (
-      !element.classList.contains(this.config.omitted_line_class) &&
+      // !element.classList.contains(this.config.omitted_line_class) &&
       !element.classList.contains(this.config.hidden_element_class) &&
       element.hasAttribute("id")
     ) {
@@ -662,7 +660,6 @@ class EditionManager {
       const horizontallyVisible =
         childRect.right > containerRect.left &&
         childRect.left < containerRect.right;
-      console.log("hello");
       if (verticallyVisible && horizontallyVisible) {
         return child;
       }
@@ -709,7 +706,6 @@ class EditionManager {
   }
 
   getTextContentParent(elementOrEvent) {
-    console.log(elementOrEvent);
     if (elementOrEvent instanceof HTMLElement) {
       return elementOrEvent.closest(`.${this.config.text_content_class}`);
     } else if (elementOrEvent instanceof Event) {
@@ -767,7 +763,6 @@ class EditionManager {
   }
 
   handleDoubleClick(element) {
-    console.log(element);
     const textContentParent = this.getTextContentParent(element);
     const spanId = this.updateFocusState(element, textContentParent, true);
     console.assert(

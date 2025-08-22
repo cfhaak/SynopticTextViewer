@@ -114,6 +114,7 @@ div.witness_view_controls.open {
     overflow-y: auto;
     height: calc(100% - 2rem);
     padding-top: 10rem;
+    padding-bottom: 20rem;
 }
 
 .text-content.global-scroll-vertical {
@@ -263,6 +264,5 @@ span.editorial_note {
 }
 
 .witness-line:focus {
-    outline: 2px solid rgb(80, 78, 78) !important;
-    background-color: grey !important;
+    outline: 2px solid grey !important;
 }
