@@ -234,7 +234,7 @@ class EditionManager {
     }
     siblingToFocus.scrollIntoView({
       behavior: "smooth", // Optional: 'auto' (default) or 'smooth' for smooth scrolling
-      block: "center", // Optional: 'start', 'center', 'end', or 'nearest' (vertical alignment)
+      block: "start", // Optional: 'start', 'center', 'end', or 'nearest' (vertical alignment)
       inline: "nearest", // Optional: 'start', 'center', 'end', or 'nearest' (horizontal alignment)
     });
     this.updateFocusState(siblingToFocus, textContentParent, false);
@@ -792,7 +792,7 @@ class EditionManager {
       if (this.elementIsVisible(span)) {
         // Highlight the span if it's visible
         span.classList.add(this.config.highlight_class);
-        span.scrollIntoView({ behavior: "smooth", block: "center" });
+        span.scrollIntoView({ behavior: "smooth", block: "start" });
         this.state.highlightedSpans.push(span);
       } else {
         // Find the nearest visible sibling if the span is hidden
@@ -802,7 +802,7 @@ class EditionManager {
           nearestVisibleSibling.classList.add(this.config.neigh_class);
           nearestVisibleSibling.scrollIntoView({
             behavior: "smooth",
-            block: "center",
+            block: "start",
           });
           this.state.highlightedSpans.push(nearestVisibleSibling);
         }
