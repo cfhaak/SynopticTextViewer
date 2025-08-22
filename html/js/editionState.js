@@ -14,6 +14,7 @@ class EditionState {
     this.lastDoubleClickedElementId = null;
     this.currentSelectedElement = null;
     this.currentSelectedColumn = null;
+    this.currentSelectedWitness = null;
     this.highlightedSpans = [];
   }
 
@@ -26,10 +27,18 @@ class EditionState {
   }
 
   getCurrentSelectedWitness() {
-    return this.currentSelectedColumn;
+    return this.currentSelectedWitness;
   }
 
   setCurrentSelectedWitness(element) {
+    this.currentSelectedWitness = element;
+  }
+
+  getCurrentSelectedColumn(){
+    return this.currentSelectedColumn;
+  }
+
+  setCurrentSelectedColumn(element) {
     this.currentSelectedColumn = element;
   }
 

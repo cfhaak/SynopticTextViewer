@@ -73,69 +73,53 @@ class EditionManager {
     // Prevent default scrolling behavior
     event.preventDefault();
     let currentElement = this.getCurrentSelectedElement();
+    const activeTextContent = this.getTextContentParent(event);
     if (!currentElement) {
       // Focus the first child if no element is currently selected
-      const textContentParent = this.getTextContentParent(event);
-      const firstChild = textContentParent.firstElementChild;
-      if (firstChild) {
-        this.updateFocusState(firstChild, textContentParent, false);
-      }
+      const firstVisibleChild =
+        this.getFirstVisibleChildInContainer(activeTextContent);
+      this.updateFocusState(firstVisibleChild, activeTextContent, false);
     } else {
-      const currentTextContent = this.getTextContentParent(event);
       // check if the focussed column has changed
-      if (currentTextContent != this.getCurrentSelectedWitness()) {
+      if (activeTextContent != this.getCurrentSelectedWitness()) {
         // column was changed
-        // get the line id of the last selected line
-        const currentLineId = this.state
-          .getCurrentSelectedElement()
-          .getAttribute("id");
-        let currentLineInNewWitness = event.target.querySelector(
-          `#${currentLineId}`
-        );
-        if (!this.elementIsVisible(currentLineInNewWitness)) {
-          currentLineInNewWitness = this.findNearestVisibleSibling(
-            currentLineInNewWitness,
-            true
-          );
-        }
-        this.handleDoubleClick(currentLineInNewWitness);
+        const firstVisibleChild =
+          this.getFirstVisibleChildInContainer(activeTextContent);
+        this.updateFocusState(firstVisibleChild, activeTextContent, false);
       } else {
         // Move focus to the next sibling
-        let nextElement = this.getCurrentSelectedElement().nextElementSibling;
-        if (!nextElement) {
-          return null;
-        }
-        if (!this.elementIsVisible(nextElement)) {
-          nextElement = this.findNearestVisibleSibling(nextElement, true);
-        }
-        if (nextElement) {
-          this.updateFocusState(nextElement, null, false);
-        }
+        const nextElement = this.findNearestVisibleFollowingSibling(
+          this.getCurrentSelectedElement()
+        );
+        this.updateFocusState(nextElement, null, false);
       }
     }
   }
 
   arrowUpAction(event) {
-    event.preventDefault(); // Prevent default scrolling behavior
-    let selectedTextContentParent = this.getCurrentSelectedWitness();
-    let newElement = null;
-    if (!selectedTextContentParent) {
+    event.preventDefault();
+    let currentElement = this.getCurrentSelectedElement();
+    const activeTextContent = this.getTextContentParent(event);
+    if (!currentElement) {
       // Focus the first child if no element is currently selected
-      selectedTextContentParent = this.getTextContentParent(event);
-      newElement = selectedTextContentParent.querySelector(
-        `.${this.config.witness_line_class}`
-      );
+      const firstVisibleChild =
+        this.getFirstVisibleChildInContainer(activeTextContent);
+      this.updateFocusState(firstVisibleChild, activeTextContent, false);
     } else {
-      // Move focus to the previous sibling
-      newElement = this.getCurrentSelectedElement().previousElementSibling;
-      if (!newElement) {
-        return null;
+      // check if the focussed column has changed
+      if (activeTextContent != this.getCurrentSelectedWitness()) {
+        // column was changed
+        const firstVisibleChild =
+          this.getFirstVisibleChildInContainer(activeTextContent);
+        this.updateFocusState(firstVisibleChild, activeTextContent, false);
+      } else {
+        // Move focus to the next sibling
+        const prevElement = this.findNearestVisiblePreviousSibling(
+          this.getCurrentSelectedElement()
+        );
+        this.updateFocusState(prevElement, null, false);
       }
     }
-    if (!this.elementIsVisible(newElement)) {
-      newElement = this.findNearestVisibleSibling(newElement);
-    }
-    this.updateFocusState(newElement, selectedTextContentParent, false);
   }
 
   horizontalActionTrigger(event) {
@@ -257,6 +241,29 @@ class EditionManager {
     this.updateFocusState(siblingToFocus, textContentParent, false);
   }
 
+  assureContextSet(event) {
+    if (!this.state.getCurrentSelectedColumn()) {
+      this.state.setCurrentSelectedColumn(
+        this.getTextContentParent(event).closest(
+          `.${this.config.witness_class}`
+        )
+      );
+    }
+    if (!this.state.getCurrentSelectedWitness()) {
+      this.state.setCurrentSelectedWitness(this.getTextContentParent(event));
+    }
+    if (!this.state.getCurrentSelectedElement()) {
+      this.state.setCurrentSelectedElement(
+        this.state
+          .getCurrentSelectedWitness()
+          .querySelector(`.${this.config.witness_line_class}`)
+      );
+    }
+    console.log(this.state.getCurrentSelectedColumn());
+    console.log(this.state.getCurrentSelectedWitness());
+    console.log(this.state.getCurrentSelectedElement());
+  }
+
   initKeyDownListeners() {
     this.witnessContainer.addEventListener("keydown", (event) => {
       // Enter key triggers the synoptic scroll event
@@ -270,9 +277,9 @@ class EditionManager {
         } else if (event.key === "ArrowUp") {
           this.arrowUpAction(event);
         } else if (this.horizontalActionTrigger(event)) {
-          this.arrowHorizontalAction(event);
+          // this.arrowHorizontalAction(event);
         } else if (event.key === "PageDown" || event.key === "PageUp") {
-          this.scrollWitnessContainer(event);
+          // this.scrollWitnessContainer(event);
         }
       }
     });
@@ -642,6 +649,27 @@ class EditionManager {
     }
   }
 
+  getFirstVisibleChildInContainer(container) {
+    if (!container || !container.children) return null;
+    const containerRect = container.getBoundingClientRect();
+    for (const child of container.children) {
+      if (!this.elementIsVisible(child)) continue;
+      const childRect = child.getBoundingClientRect();
+      // Check if child is at least partially within the container's viewport
+      const verticallyVisible =
+        childRect.bottom > containerRect.top &&
+        childRect.top < containerRect.bottom;
+      const horizontallyVisible =
+        childRect.right > containerRect.left &&
+        childRect.left < containerRect.right;
+      console.log("hello");
+      if (verticallyVisible && horizontallyVisible) {
+        return child;
+      }
+    }
+    return null;
+  }
+
   findNearestVisiblePreviousSibling(element) {
     let sibling = element.previousElementSibling;
     while (sibling) {
@@ -681,6 +709,7 @@ class EditionManager {
   }
 
   getTextContentParent(elementOrEvent) {
+    console.log(elementOrEvent);
     if (elementOrEvent instanceof HTMLElement) {
       return elementOrEvent.closest(`.${this.config.text_content_class}`);
     } else if (elementOrEvent instanceof Event) {
@@ -820,6 +849,5 @@ class EditionManager {
     });
   }
 }
-
 
 export default EditionManager;
