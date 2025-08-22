@@ -91,7 +91,7 @@ class EditionManager {
         const nextElement = this.findNearestVisibleFollowingSibling(
           this.getCurrentSelectedElement()
         );
-        this.updateFocusState(nextElement, null, false);
+        this.updateFocusState(nextElement, activeTextContent, false, "bottom");
       }
     }
   }
@@ -117,7 +117,7 @@ class EditionManager {
         const prevElement = this.findNearestVisiblePreviousSibling(
           this.getCurrentSelectedElement()
         );
-        this.updateFocusState(prevElement, null, false);
+        this.updateFocusState(prevElement, activeTextContent, false, "top");
       }
     }
   }
@@ -203,11 +203,32 @@ class EditionManager {
     const textContentParent = targetColumn.querySelector(
       `.${this.config.text_content_class}`
     );
-    const currentLineId = this.getCurrentSelectedElement()
-      ? this.getCurrentSelectedElement().getAttribute("id")
-      : null;
-    const targetLine = this.getVisibleLineByIdOrFirst(textContentParent, currentLineId);
-    this.handleDoubleClick(targetLine);
+    if (!textContentParent) {
+      return null;
+    }
+    // if empty lines are hidden, focus the first visible line
+    if (!this.state.displayEmptyLines) {
+      const firstVisibleLine =
+        this.getFirstVisibleChildInContainer(textContentParent);
+      if (firstVisibleLine) {
+        this.updateFocusState(
+          firstVisibleLine,
+          textContentParent,
+          false,
+          "top"
+        );
+      }
+    } else {
+      // if empty lines are visible, try to focus the line with the same id as the current line
+      const currentLineId = this.getCurrentSelectedElement()
+        ? this.getCurrentSelectedElement().getAttribute("id")
+        : null;
+      const targetLine = this.getVisibleLineByIdOrFirst(
+        textContentParent,
+        currentLineId
+      );
+      this.handleDoubleClick(targetLine);
+    }
   }
 
   getNthtSibling(textContentParent, currentElement, n) {
@@ -724,21 +745,48 @@ class EditionManager {
     }
   }
 
+  isElementInView(element, container) {
+    if (!element || !container) return false;
+    if (!this.elementIsVisible(element)) return false;
+    const elemRect = element.getBoundingClientRect();
+    const contRect = container.getBoundingClientRect();
+    // Only return true if the entire element is within the container's visible area (vertically)
+    return elemRect.top >= contRect.top && elemRect.bottom <= contRect.bottom;
+  }
+
   updateFocusState(
     selectedElement,
     textContentParent,
-    fromDoubleClick = false
+    fromDoubleClick = false,
+    scrollMode = "none" // "none", "top", "bottom", "center"
   ) {
     if (!selectedElement) {
       return null;
     }
-    selectedElement.focus();
+
     if (!textContentParent) {
       this.state.setCurrentSelectedWitness(
         this.getTextContentParent(selectedElement)
       );
     } else {
       this.state.setCurrentSelectedWitness(textContentParent);
+    }
+    // Always prevent browser's default scroll on focus
+    selectedElement.focus({ preventScroll: true });
+    // Custom scroll handling
+    if (
+      !this.isElementInView(
+        selectedElement,
+        this.state.getCurrentSelectedWitness(textContentParent)
+      )
+    ) {
+      if (scrollMode === "top") {
+        selectedElement.scrollIntoView({ behavior: "auto", block: "start" });
+      } else if (scrollMode === "bottom") {
+        selectedElement.scrollIntoView({ behavior: "auto", block: "end" });
+      } else if (scrollMode === "center") {
+        selectedElement.scrollIntoView({ behavior: "auto", block: "center" });
+      }
     }
     this.state.setCurrentSelectedElement(selectedElement);
     const elementId = selectedElement.getAttribute("id");
@@ -792,7 +840,7 @@ class EditionManager {
       if (this.elementIsVisible(span)) {
         // Highlight the span if it's visible
         span.classList.add(this.config.highlight_class);
-        span.scrollIntoView({ behavior: "smooth", block: "start" });
+        span.scrollIntoView({ behavior: "smooth", block: "center" });
         this.state.highlightedSpans.push(span);
       } else {
         // Find the nearest visible sibling if the span is hidden
