@@ -69,53 +69,59 @@ class EditionManager {
     );
   }
 
-  arrowDownAction(event) {
+  getNthtSibling(textContentParent, currentElement, n) {
+  const siblings = Array.from(
+    textContentParent.querySelectorAll(`.${this.config.witness_line_class}`)
+  ).filter(
+    el => this.elementIsVisible(el)
+  );
+    const rawIndex = Array.prototype.indexOf.call(siblings, currentElement) + n;
+    const newIndex = Math.max(0, Math.min(rawIndex, siblings.length - 1));
+    const sibling = siblings ? siblings[newIndex] : null;
+    return sibling;
+  }
+
+  arrowDownAction(event, step = 1) {
     // Prevent default scrolling behavior
     event.preventDefault();
     let currentElement = this.getCurrentSelectedElement();
     const activeTextContent = this.getTextContentParent(event);
     if (!currentElement) {
-      // Focus the first child if no element is currently selected
-      const firstVisibleChild =
-        this.getFirstVisibleChildInContainer(activeTextContent);
+      const firstVisibleChild = this.getFirstVisibleChildInContainer(activeTextContent);
       this.updateFocusState(firstVisibleChild, activeTextContent, false);
     } else {
-      // check if the focussed column has changed
       if (activeTextContent != this.getCurrentSelectedWitness()) {
-        // column was changed
-        const firstVisibleChild =
-          this.getFirstVisibleChildInContainer(activeTextContent);
+        const firstVisibleChild = this.getFirstVisibleChildInContainer(activeTextContent);
         this.updateFocusState(firstVisibleChild, activeTextContent, false);
       } else {
-        // Move focus to the next sibling
-        const nextElement = this.findNearestVisibleFollowingSibling(
-          this.getCurrentSelectedElement()
+        // Move focus to the Nth next visible sibling
+        const nextElement = this.getNthtSibling(
+          activeTextContent,
+          this.getCurrentSelectedElement(),
+          step
         );
         this.updateFocusState(nextElement, activeTextContent, false, "bottom");
       }
     }
   }
 
-  arrowUpAction(event) {
+  arrowUpAction(event, step = 1) {
     event.preventDefault();
     let currentElement = this.getCurrentSelectedElement();
     const activeTextContent = this.getTextContentParent(event);
     if (!currentElement) {
-      // Focus the first child if no element is currently selected
-      const firstVisibleChild =
-        this.getFirstVisibleChildInContainer(activeTextContent);
+      const firstVisibleChild = this.getFirstVisibleChildInContainer(activeTextContent);
       this.updateFocusState(firstVisibleChild, activeTextContent, false);
     } else {
-      // check if the focussed column has changed
       if (activeTextContent != this.getCurrentSelectedWitness()) {
-        // column was changed
-        const firstVisibleChild =
-          this.getFirstVisibleChildInContainer(activeTextContent);
+        const firstVisibleChild = this.getFirstVisibleChildInContainer(activeTextContent);
         this.updateFocusState(firstVisibleChild, activeTextContent, false);
       } else {
-        // Move focus to the next sibling
-        const prevElement = this.findNearestVisiblePreviousSibling(
-          this.getCurrentSelectedElement()
+        // Move focus to the Nth previous visible sibling
+        const prevElement = this.getNthtSibling(
+          activeTextContent,
+          this.getCurrentSelectedElement(),
+          -step
         );
         this.updateFocusState(prevElement, activeTextContent, false, "top");
       }
@@ -249,65 +255,21 @@ class EditionManager {
     }
   }
 
-  scrollWitnessContainer(event) {
-    event.preventDefault();
-    const textContentParent = this.getTextContentParent(event);
-    const currentElement = this.getCurrentSelectedElement();
-    const siblingToFocus = this.getNthtSibling(
-      textContentParent,
-      currentElement,
-      event.key === "PageDown" ? 20 : -20
-    );
-    if (!siblingToFocus) {
-      return null;
-    }
-    siblingToFocus.scrollIntoView({
-      behavior: "smooth", // Optional: 'auto' (default) or 'smooth' for smooth scrolling
-      block: "start", // Optional: 'start', 'center', 'end', or 'nearest' (vertical alignment)
-      inline: "nearest", // Optional: 'start', 'center', 'end', or 'nearest' (horizontal alignment)
-    });
-    this.updateFocusState(siblingToFocus, textContentParent, false);
-  }
-
-  assureContextSet(event) {
-    if (!this.state.getCurrentSelectedColumn()) {
-      this.state.setCurrentSelectedColumn(
-        this.getTextContentParent(event).closest(
-          `.${this.config.witness_class}`
-        )
-      );
-    }
-    if (!this.state.getCurrentSelectedWitness()) {
-      this.state.setCurrentSelectedWitness(this.getTextContentParent(event));
-    }
-    if (!this.state.getCurrentSelectedElement()) {
-      this.state.setCurrentSelectedElement(
-        this.state
-          .getCurrentSelectedWitness()
-          .querySelector(`.${this.config.witness_line_class}`)
-      );
-    }
-    // console.log(this.state.getCurrentSelectedColumn());
-    // console.log(this.state.getCurrentSelectedWitness());
-    // console.log(this.state.getCurrentSelectedElement());
-  }
-
   initKeyDownListeners() {
     this.witnessContainer.addEventListener("keydown", (event) => {
-      // Enter key triggers the synoptic scroll event
       if (this.enterTargetsTextContent(event)) {
         this.handleDoubleClick(event.target);
-      }
-      // Keydown targets contents of text column
-      else if (this.eventTargetsWitnessContent(event)) {
+      } else if (this.eventTargetsWitnessContent(event)) {
         if (event.key === "ArrowDown") {
-          this.arrowDownAction(event);
+          this.arrowDownAction(event, 1);
         } else if (event.key === "ArrowUp") {
-          this.arrowUpAction(event);
+          this.arrowUpAction(event, 1);
+        } else if (event.key === "PageDown") {
+          this.arrowDownAction(event, 20);
+        } else if (event.key === "PageUp") {
+          this.arrowUpAction(event, 20);
         } else if (this.horizontalActionTrigger(event)) {
           this.arrowHorizontalAction(event);
-        } else if (event.key === "PageDown" || event.key === "PageUp") {
-          // this.scrollWitnessContainer(event);
         }
       }
     });
@@ -666,7 +628,6 @@ class EditionManager {
 
   elementIsVisible(element) {
     if (
-      // !element.classList.contains(this.config.omitted_line_class) &&
       !element.classList.contains(this.config.hidden_element_class) &&
       element.hasAttribute("id")
     ) {
