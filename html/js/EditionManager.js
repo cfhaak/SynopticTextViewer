@@ -17,11 +17,12 @@ class EditionManager {
       .getAllColumns()
       .map((col) => col.witnessId);
     params.set("witnessIds", loadedWitnessIds.join(","));
+    const selectedElement = this.getCurrentSelectedElement();
     const currentLineId = this.state.lastDoubleClickedElementId
       ? this.state.lastDoubleClickedElementId
-      : this.getCurrentSelectedElement().getAttribute("id");
+      : (selectedElement ? selectedElement.getAttribute("id") : null);
     if (currentLineId) {
-      params.set("currentLine", currentSelectedElementId);
+      params.set("currentLine", currentLineId);
     }
     const newUrl = `${window.location.pathname}?${params.toString()}`;
     window.history.replaceState(null, "", newUrl);
@@ -138,34 +139,35 @@ class EditionManager {
   }
 
   getDefaultElement() {
-    if (this.state.getCurrentSelectedWitness()) {
-      const element = this.state
-        .getCurrentSelectedWitness()
-        .querySelector(`.${this.config.witness_line_class}`);
+    const currentWitness = this.state.getCurrentSelectedWitness();
+    if (currentWitness) {
+      const element = currentWitness.querySelector(`.${this.config.witness_line_class}`);
       this.state.setCurrentSelectedElement(element);
       return element;
     } else {
-      const element = this.getDefaultWitness().querySelector(
-        `.${this.config.witness_line_class}`
-      );
-      this.state.setCurrentSelectedElement(element);
-      return element;
+      const defaultWitness = this.getDefaultWitness();
+      if (defaultWitness) {
+        const element = defaultWitness.querySelector(`.${this.config.witness_line_class}`);
+        this.state.setCurrentSelectedElement(element);
+        return element;
+      }
     }
+    return null;
   }
 
   getDefaultWitness() {
-    const witness = this.columnElements
-      ? this.columnElements[0].querySelector(
-          `.${this.config.text_content_class}`
-        )
-      : null;
-    if (witness) {
-      this.state.setCurrentSelectedWitness(witness);
-      return witness;
-    } else {
-      console.log("cant find content, reloading page");
-      window.location.reload();
+    if (this.columnElements && this.columnElements.length > 0) {
+      const witness = this.columnElements[0].querySelector(
+        `.${this.config.text_content_class}`
+      );
+      if (witness) {
+        this.state.setCurrentSelectedWitness(witness);
+        return witness;
+      }
     }
+    console.log("cant find content, reloading page");
+    window.location.reload();
+    return null;
   }
 
   getCurrentSelectedElement() {
@@ -533,6 +535,7 @@ class EditionManager {
   }
 
   setEmptyLinesVisibility(textContentElement) {
+    if (!textContentElement) return;
     textContentElement
       .querySelectorAll(
         `.${this.config.witness_line_class}.${this.config.omitted_line_class}`
@@ -546,6 +549,7 @@ class EditionManager {
   }
 
   setGlobalLinecounterVisibility(textContentElement) {
+    if (!textContentElement) return;
     textContentElement
       .querySelectorAll(`.${this.config.global_line_counter_class}`)
       .forEach((line) => {
@@ -557,6 +561,7 @@ class EditionManager {
   }
 
   setLocalLinecounterVisibility(textContentElement) {
+    if (!textContentElement) return;
     textContentElement
       .querySelectorAll(`.${this.config.local_line_counter_class}`)
       .forEach((line) => {
@@ -780,6 +785,7 @@ class EditionManager {
   }
 
   handleDoubleClick(element) {
+    if (!element) return null;
     const textContentParent = this.getTextContentParent(element);
     const spanId = this.updateFocusState(element, textContentParent, true);
     console.assert(
