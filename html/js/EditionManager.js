@@ -222,7 +222,7 @@ class EditionManager {
       `.${this.config.text_content_class}`
     );
     if (!textContentParent) return null;
-
+    // maybe make this behavior unconditional
     if (!this.state.displayEmptyLines) {
       // if empty lines are invisible, try to focus the line closest to the current line
       const currentElement = this.getCurrentSelectedElement();
