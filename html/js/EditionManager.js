@@ -8,6 +8,7 @@ class EditionManager {
       this.config.witnessContainerId
     );
     this.columnElements = [];
+    this._boundRemoveHighlights = null;
     this.initListeners();
   }
 
@@ -770,20 +771,6 @@ class EditionManager {
     return elementId;
   }
 
-  removeHighlights(event, spanId) {
-    if (
-      !event.target.closest(
-        `.${this.config.text_content_class} span[id="${spanId}"]`
-      )
-    ) {
-      this.state.highlightedSpans.forEach((span) => {
-        span.classList.remove(this.config.highlight_class);
-        span.classList.remove(this.config.neigh_class);
-      });
-      this.witnessContainer.removeEventListener("click", this.removeHighlights);
-    }
-  }
-
   handleDoubleClick(element) {
     if (!element) return null;
     const textContentParent = this.getTextContentParent(element);
@@ -832,10 +819,31 @@ class EditionManager {
       }
     });
 
-    // Attach the listener to the container instead of the document
-    this.witnessContainer.addEventListener("click", (event, spanId) =>
-      this.removeHighlights(event, spanId)
-    );
+    // Remove previous handler if present
+    if (this._boundRemoveHighlights) {
+      this.witnessContainer.removeEventListener("click", this._boundRemoveHighlights);
+    }
+    // Create and store the new handler
+    this._boundRemoveHighlights = (event) => this.removeHighlights(event, spanId);
+    this.witnessContainer.addEventListener("click", this._boundRemoveHighlights);
+  }
+
+  removeHighlights(event, spanId) {
+    if (
+      !event.target.closest(
+        `.${this.config.text_content_class} span[id="${spanId}"]`
+      )
+    ) {
+      this.state.highlightedSpans.forEach((span) => {
+        span.classList.remove(this.config.highlight_class);
+        span.classList.remove(this.config.neigh_class);
+      });
+      // Remove the event listener after it runs
+      if (this._boundRemoveHighlights) {
+        this.witnessContainer.removeEventListener("click", this._boundRemoveHighlights);
+        this._boundRemoveHighlights = null;
+      }
+    }
   }
 
   async initColumns() {
