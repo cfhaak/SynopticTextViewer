@@ -188,6 +188,25 @@ class EditionManager {
     return this.getFirstVisibleChildInContainer(container);
   }
 
+  findClosestLineByScreenTop(container, referenceTop) {
+    let closestLine = null;
+    let minDiff = Infinity;
+    for (const child of container.children) {
+      if (!this.elementIsVisible(child)) continue;
+      const childTop = child.getBoundingClientRect().top;
+      const diff = Math.abs(childTop - referenceTop);
+      if (diff < minDiff) {
+        minDiff = diff;
+        closestLine = child;
+      }
+    }
+    return closestLine;
+  }
+
+  getElementScreenTop(element) {
+    return element ? element.getBoundingClientRect().top : 0;
+  }
+
   arrowHorizontalAction(event) {
     event.preventDefault();
     const textContentColumn = event.target.closest(
@@ -197,26 +216,25 @@ class EditionManager {
       event.key === "ArrowRight"
         ? textContentColumn.nextElementSibling || null
         : textContentColumn.previousElementSibling;
-    if (!targetColumn) {
-      return null;
-    }
+    if (!targetColumn) return null;
+
     const textContentParent = targetColumn.querySelector(
       `.${this.config.text_content_class}`
     );
-    if (!textContentParent) {
-      return null;
-    }
-    // if empty lines are hidden, focus the first visible line
+    if (!textContentParent) return null;
+
     if (!this.state.displayEmptyLines) {
-      const firstVisibleLine =
-        this.getFirstVisibleChildInContainer(textContentParent);
-      if (firstVisibleLine) {
-        this.updateFocusState(
-          firstVisibleLine,
-          textContentParent,
-          false,
-          "top"
-        );
+      // if empty lines are invisible, try to focus the line closest to the current line
+      const currentElement = this.getCurrentSelectedElement();
+      const referenceTop = this.getElementScreenTop(currentElement);
+
+      const closestLine = this.findClosestLineByScreenTop(
+        textContentParent,
+        referenceTop
+      );
+
+      if (closestLine) {
+        this.updateFocusState(closestLine, textContentParent, false, "none");
       }
     } else {
       // if empty lines are visible, try to focus the line with the same id as the current line
@@ -229,16 +247,6 @@ class EditionManager {
       );
       this.handleDoubleClick(targetLine);
     }
-  }
-
-  getNthtSibling(textContentParent, currentElement, n) {
-    const siblings = textContentParent.querySelectorAll(
-      `.${this.config.witness_line_class}`
-    );
-    const rawIndex = Array.prototype.indexOf.call(siblings, currentElement) + n;
-    const newIndex = Math.max(0, Math.min(rawIndex, siblings.length - 1));
-    const sibling = siblings ? siblings[newIndex] : null;
-    return sibling;
   }
 
   scrollWitnessContainer(event) {
