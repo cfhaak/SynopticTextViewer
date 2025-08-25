@@ -69,7 +69,7 @@ class EditionManager {
     );
   }
 
-  getNthtSibling(textContentParent, currentElement, n) {
+  getNthSibling(textContentParent, currentElement, n) {
   const siblings = Array.from(
     textContentParent.querySelectorAll(`.${this.config.witness_line_class}`)
   ).filter(
@@ -95,7 +95,7 @@ class EditionManager {
         this.updateFocusState(firstVisibleChild, activeTextContent, false);
       } else {
         // Move focus to the Nth next visible sibling
-        const nextElement = this.getNthtSibling(
+        const nextElement = this.getNthSibling(
           activeTextContent,
           this.getCurrentSelectedElement(),
           step
@@ -118,7 +118,7 @@ class EditionManager {
         this.updateFocusState(firstVisibleChild, activeTextContent, false);
       } else {
         // Move focus to the Nth previous visible sibling
-        const prevElement = this.getNthtSibling(
+        const prevElement = this.getNthSibling(
           activeTextContent,
           this.getCurrentSelectedElement(),
           -step
