@@ -1,21 +1,21 @@
 import ColumnViewerConfig from "./column_viewer_config.js";
 import EditionState from "./editionState.js";
-import EditionManager from "./editionManager.js"
+import EditionManager from "./editionManager.js";
 
 async function loadConfig() {
   return new ColumnViewerConfig();
 }
 
 function sortStringsOrInts(a, b) {
-    if (typeof a === "number" && typeof b === "number") {
-        // Numerical comparison
-        return a - b;
-    } else if (typeof a === "string" && typeof b === "string") {
-        // String comparison
-        return a.localeCompare(b);
-    } else {
-        throw new Error("Inconsistent types for sorting attribute");
-    }
+  if (typeof a === "number" && typeof b === "number") {
+    // Numerical comparison
+    return a - b;
+  } else if (typeof a === "string" && typeof b === "string") {
+    // String comparison
+    return a.localeCompare(b);
+  } else {
+    throw new Error("Inconsistent types for sorting attribute");
+  }
 }
 
 function sortWitnessIdsBySorting(metadata) {
@@ -50,6 +50,32 @@ function addButton(containerId, text, onClick, ariaLabel) {
     }
     container.appendChild(button);
   }
+}
+
+function setupControlsMenuEvents(toggle, controls) {
+  toggle.setAttribute("aria-expanded", "false");
+  toggle.setAttribute("aria-controls", "controls-container");
+
+  toggle.addEventListener("click", (e) => {
+    const isOpen = controls.classList.toggle("open");
+    toggle.setAttribute("aria-expanded", isOpen.toString());
+    e.stopPropagation();
+  });
+
+  document.addEventListener("click", (e) => {
+    if (!controls.contains(e.target) && !toggle.contains(e.target)) {
+      controls.classList.remove("open");
+      toggle.setAttribute("aria-expanded", "false");
+    }
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && controls.classList.contains("open")) {
+      controls.classList.remove("open");
+      toggle.setAttribute("aria-expanded", "false");
+      toggle.focus();
+    }
+  });
 }
 
 function createControls(config, manager) {
@@ -96,19 +122,7 @@ function createControls(config, manager) {
   const controls = document.querySelector(
     `.${config.class_of_controls_container}`
   );
-  toggle.setAttribute("aria-expanded", "false");
-  toggle.setAttribute("aria-controls", "controls-container");
-  toggle.addEventListener("click", (e) => {
-    const isOpen = controls.classList.toggle("open");
-    toggle.setAttribute("aria-expanded", isOpen.toString());
-    e.stopPropagation();
-  });
-  document.addEventListener("click", (e) => {
-    if (!controls.contains(e.target) && !toggle.contains(e.target)) {
-      controls.classList.remove("open");
-      toggle.setAttribute("aria-expanded", "false");
-    }
-  });
+  setupControlsMenuEvents(toggle, controls);
 }
 // --- MAIN ---
 
