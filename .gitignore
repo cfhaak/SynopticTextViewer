@@ -4,3 +4,4 @@ html/*.xml
 html/test.json
 .venv
 pyscripts/__pycache__/*
+*.code-workspace
