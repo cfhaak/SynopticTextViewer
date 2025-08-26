@@ -39,17 +39,37 @@ async function loadSnippetMetadata(config) {
   }
 }
 
-function addButton(containerId, text, onClick, ariaLabel) {
-  const container = document.getElementById(containerId);
-  if (container) {
-    const button = document.createElement("button");
-    button.textContent = text;
-    button.onclick = onClick;
-    if (ariaLabel) {
-      button.setAttribute("aria-label", ariaLabel);
-    }
-    container.appendChild(button);
+function createButtonContainer(containerId, config) {
+  const controls = document.querySelector(`.${config.class_of_controls_container}`);
+  if (!controls) {
+    console.error(`Controls container not found`);
+    return null;
   }
+  const container = document.createElement("div");
+  container.id = containerId
+  controls.appendChild(container);
+  console.log("created  button container with id " + containerId)
+  return container;
+};
+
+function getButtonContainer(containerId, config) {
+  const existingContainer = document.getElementById(containerId);
+  return existingContainer ? existingContainer : createButtonContainer(containerId, config);
+}
+
+function addButton(containerId, text, onClick, ariaLabel, config) {
+  const container = getButtonContainer(containerId, config);
+  if (!container) {
+    console.error(`Button container not found: ${containerId}`);
+    return;
+  }
+  const button = document.createElement("button");
+  button.textContent = text;
+  button.onclick = onClick;
+  if (ariaLabel) {
+    button.setAttribute("aria-label", ariaLabel);
+  }
+  container.appendChild(button);
 }
 
 function setupControlsMenuEvents(toggle, controls) {
@@ -80,40 +100,46 @@ function setupControlsMenuEvents(toggle, controls) {
 
 function createControls(config, manager) {
   addButton(
+    config.generateCitationUrlId,
+    config.label_generate_citation_link,
+    () => manager.updateUrlWithState(),
+    "Generate a citation URL",
+    config
+  );
+  addButton(
     config.columnAdderId,
     config.label_column_adder,
     () => manager.addNewColumn(),
-    "Add a new column"
+    "Add a new column",
+    config
   );
-  addButton(
-    config.scrollTogglerId,
-    config.label_scroll_toggler,
-    () => manager.toggleScrollingBehaviour(),
-    "Toggle global scrolling behavior"
-  );
+  // addButton(
+  //   config.scrollTogglerId,
+  //   config.label_scroll_toggler,
+  //   () => manager.toggleScrollingBehaviour(),
+  //   "Toggle global scrolling behavior",
+  //   config
+  // );
   addButton(
     config.emptyLineTogglerId,
     config.label_empty_line_toggler,
     () => manager.toggleEmptyLinesVisibility(),
-    "Toggle visibility of empty lines"
+    "Toggle visibility of empty lines",
+    config
   );
   addButton(
     config.globalLinenrTogglerId,
     config.label_global_linenr_toggler,
     () => manager.toggleGlobalLinecounterVisibility(),
-    "Toggle visibility of global line numbers"
+    "Toggle visibility of global line numbers",
+    config
   );
   addButton(
     config.localLinenrTogglerId,
     config.label_local_linenr_toggler,
     () => manager.toggleLocalLinecounterVisibility(),
-    "Toggle visibility of local line numbers"
-  );
-  addButton(
-    config.saveStateToUrlId,
-    config.generateCitationUrlId,
-    () => manager.updateUrlWithState(),
-    "Save the current state to the URL"
+    "Toggle visibility of local line numbers",
+    config
   );
 
   const toggle = document.querySelector(

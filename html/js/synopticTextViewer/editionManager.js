@@ -13,15 +13,36 @@ class EditionManager {
   }
 
   updateUrlWithState() {
+    // this writes the current state to the URL
+    // 0. empty lines visibility
+    // 1. global line numbers visibility
+    // 2. local line numbers visibility
+    // 3. witnessIds in order of appearance
+    // 4. currentLineId (if any line was double-clicked)
     const params = new URLSearchParams();
+
+    // 0. empty lines visibility
+    params.set("emptyLines", this.state.displayEmptyLines ? "yes" : "no");
+
+    // 1. global line numbers visibility
+    params.set("globalLinenr", this.state.displayLinenrGlobal ? "yes" : "no");
+
+    // 2. local line numbers visibility
+    params.set("localLinenr", this.state.displayLinenrLocal ? "yes" : "no");
+
+    // 3. witnessIds in order of appearance
     const loadedWitnessIds = this.state
       .getAllColumns()
       .map((col) => col.witnessId);
     params.set("witnessIds", loadedWitnessIds.join(","));
+
+    // 4. currentLineId (if any line was double-clicked)
     const selectedElement = this.getCurrentSelectedElement();
     const currentLineId = this.state.lastDoubleClickedElementId
       ? this.state.lastDoubleClickedElementId
-      : (selectedElement ? selectedElement.getAttribute("id") : null);
+      : selectedElement
+      ? selectedElement.getAttribute("id")
+      : null;
     if (currentLineId) {
       params.set("currentLine", currentLineId);
     }
@@ -72,11 +93,9 @@ class EditionManager {
   }
 
   getNthSibling(textContentParent, currentElement, n) {
-  const siblings = Array.from(
-    textContentParent.querySelectorAll(`.${this.config.witness_line_class}`)
-  ).filter(
-    el => this.elementIsVisible(el)
-  );
+    const siblings = Array.from(
+      textContentParent.querySelectorAll(`.${this.config.witness_line_class}`)
+    ).filter((el) => this.elementIsVisible(el));
     const rawIndex = Array.prototype.indexOf.call(siblings, currentElement) + n;
     const newIndex = Math.max(0, Math.min(rawIndex, siblings.length - 1));
     const sibling = siblings ? siblings[newIndex] : null;
@@ -89,11 +108,13 @@ class EditionManager {
     let currentElement = this.getCurrentSelectedElement();
     const activeTextContent = this.getTextContentParent(event);
     if (!currentElement) {
-      const firstVisibleChild = this.getFirstVisibleChildInContainer(activeTextContent);
+      const firstVisibleChild =
+        this.getFirstVisibleChildInContainer(activeTextContent);
       this.updateFocusState(firstVisibleChild, activeTextContent, false);
     } else {
       if (activeTextContent != this.getCurrentSelectedWitness()) {
-        const firstVisibleChild = this.getFirstVisibleChildInContainer(activeTextContent);
+        const firstVisibleChild =
+          this.getFirstVisibleChildInContainer(activeTextContent);
         this.updateFocusState(firstVisibleChild, activeTextContent, false);
       } else {
         // Move focus to the Nth next visible sibling
@@ -112,11 +133,13 @@ class EditionManager {
     let currentElement = this.getCurrentSelectedElement();
     const activeTextContent = this.getTextContentParent(event);
     if (!currentElement) {
-      const firstVisibleChild = this.getFirstVisibleChildInContainer(activeTextContent);
+      const firstVisibleChild =
+        this.getFirstVisibleChildInContainer(activeTextContent);
       this.updateFocusState(firstVisibleChild, activeTextContent, false);
     } else {
       if (activeTextContent != this.getCurrentSelectedWitness()) {
-        const firstVisibleChild = this.getFirstVisibleChildInContainer(activeTextContent);
+        const firstVisibleChild =
+          this.getFirstVisibleChildInContainer(activeTextContent);
         this.updateFocusState(firstVisibleChild, activeTextContent, false);
       } else {
         // Move focus to the Nth previous visible sibling
@@ -142,13 +165,17 @@ class EditionManager {
   getDefaultElement() {
     const currentWitness = this.state.getCurrentSelectedWitness();
     if (currentWitness) {
-      const element = currentWitness.querySelector(`.${this.config.witness_line_class}`);
+      const element = currentWitness.querySelector(
+        `.${this.config.witness_line_class}`
+      );
       this.state.setCurrentSelectedElement(element);
       return element;
     } else {
       const defaultWitness = this.getDefaultWitness();
       if (defaultWitness) {
-        const element = defaultWitness.querySelector(`.${this.config.witness_line_class}`);
+        const element = defaultWitness.querySelector(
+          `.${this.config.witness_line_class}`
+        );
         this.state.setCurrentSelectedElement(element);
         return element;
       }
@@ -304,6 +331,7 @@ class EditionManager {
       if (event.target.matches(`.${this.config.dropdown_class}`)) {
         const columnId = event.target.getAttribute("data-column-id");
         this.updateColumnWitness(columnId, event.target.value);
+        this.updateUrlWithState();
       }
     });
   }
@@ -488,6 +516,7 @@ class EditionManager {
         this.state.globalScroll ? "enabled" : "disabled"
       }.`
     );
+    this.updateUrlWithState();
   }
 
   toggleEmptyLinesVisibility() {
@@ -498,6 +527,7 @@ class EditionManager {
         this.state.displayEmptyLines ? "visible" : "hidden"
       }.`
     );
+    this.updateUrlWithState();
   }
 
   toggleGlobalLinecounterVisibility() {
@@ -508,6 +538,7 @@ class EditionManager {
         this.state.displayLinenrGlobal ? "visible" : "hidden"
       }.`
     );
+    this.updateUrlWithState();
   }
 
   toggleLocalLinecounterVisibility() {
@@ -518,6 +549,7 @@ class EditionManager {
         this.state.displayLinenrLocal ? "visible" : "hidden"
       }.`
     );
+    this.updateUrlWithState();
   }
 
   updateColumnContent(columnId, snippetBody) {
@@ -821,11 +853,20 @@ class EditionManager {
 
     // Remove previous handler if present
     if (this._boundRemoveHighlights) {
-      this.witnessContainer.removeEventListener("click", this._boundRemoveHighlights);
+      this.witnessContainer.removeEventListener(
+        "click",
+        this._boundRemoveHighlights
+      );
     }
     // Create and store the new handler
-    this._boundRemoveHighlights = (event) => this.removeHighlights(event, spanId);
-    this.witnessContainer.addEventListener("click", this._boundRemoveHighlights);
+    this._boundRemoveHighlights = (event) =>
+      this.removeHighlights(event, spanId);
+    this.witnessContainer.addEventListener(
+      "click",
+      this._boundRemoveHighlights
+    );
+    this.updateUrlWithState();
+
   }
 
   removeHighlights(event, spanId) {
@@ -840,7 +881,10 @@ class EditionManager {
       });
       // Remove the event listener after it runs
       if (this._boundRemoveHighlights) {
-        this.witnessContainer.removeEventListener("click", this._boundRemoveHighlights);
+        this.witnessContainer.removeEventListener(
+          "click",
+          this._boundRemoveHighlights
+        );
         this._boundRemoveHighlights = null;
       }
     }
@@ -873,6 +917,7 @@ class EditionManager {
         } initialized.`
       );
     });
+    this.updateUrlWithState();
   }
 }
 
