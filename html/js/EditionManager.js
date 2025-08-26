@@ -8,6 +8,7 @@ class EditionManager {
       this.config.witnessContainerId
     );
     this.columnElements = [];
+    this._boundRemoveHighlights = null;
     this.initListeners();
   }
 
@@ -17,11 +18,12 @@ class EditionManager {
       .getAllColumns()
       .map((col) => col.witnessId);
     params.set("witnessIds", loadedWitnessIds.join(","));
+    const selectedElement = this.getCurrentSelectedElement();
     const currentLineId = this.state.lastDoubleClickedElementId
       ? this.state.lastDoubleClickedElementId
-      : this.getCurrentSelectedElement().getAttribute("id");
+      : (selectedElement ? selectedElement.getAttribute("id") : null);
     if (currentLineId) {
-      params.set("currentLine", currentSelectedElementId);
+      params.set("currentLine", currentLineId);
     }
     const newUrl = `${window.location.pathname}?${params.toString()}`;
     window.history.replaceState(null, "", newUrl);
@@ -69,73 +71,63 @@ class EditionManager {
     );
   }
 
-  arrowDownAction(event) {
+  getNthSibling(textContentParent, currentElement, n) {
+  const siblings = Array.from(
+    textContentParent.querySelectorAll(`.${this.config.witness_line_class}`)
+  ).filter(
+    el => this.elementIsVisible(el)
+  );
+    const rawIndex = Array.prototype.indexOf.call(siblings, currentElement) + n;
+    const newIndex = Math.max(0, Math.min(rawIndex, siblings.length - 1));
+    const sibling = siblings ? siblings[newIndex] : null;
+    return sibling;
+  }
+
+  arrowDownAction(event, step = 1) {
     // Prevent default scrolling behavior
     event.preventDefault();
     let currentElement = this.getCurrentSelectedElement();
+    const activeTextContent = this.getTextContentParent(event);
     if (!currentElement) {
-      // Focus the first child if no element is currently selected
-      const textContentParent = this.getTextContentParent(event);
-      const firstChild = textContentParent.firstElementChild;
-      if (firstChild) {
-        this.updateFocusState(firstChild, textContentParent, false);
-      }
+      const firstVisibleChild = this.getFirstVisibleChildInContainer(activeTextContent);
+      this.updateFocusState(firstVisibleChild, activeTextContent, false);
     } else {
-      const currentTextContent = this.getTextContentParent(event);
-      // check if the focussed column has changed
-      if (currentTextContent != this.getCurrentSelectedWitness()) {
-        // column was changed
-        // get the line id of the last selected line
-        const currentLineId = this.state
-          .getCurrentSelectedElement()
-          .getAttribute("id");
-        let currentLineInNewWitness = event.target.querySelector(
-          `#${currentLineId}`
-        );
-        if (!this.elementIsVisible(currentLineInNewWitness)) {
-          currentLineInNewWitness = this.findNearestVisibleSibling(
-            currentLineInNewWitness,
-            true
-          );
-        }
-        this.handleDoubleClick(currentLineInNewWitness);
+      if (activeTextContent != this.getCurrentSelectedWitness()) {
+        const firstVisibleChild = this.getFirstVisibleChildInContainer(activeTextContent);
+        this.updateFocusState(firstVisibleChild, activeTextContent, false);
       } else {
-        // Move focus to the next sibling
-        let nextElement = this.getCurrentSelectedElement().nextElementSibling;
-        if (!nextElement) {
-          return null;
-        }
-        if (!this.elementIsVisible(nextElement)) {
-          nextElement = this.findNearestVisibleSibling(nextElement, true);
-        }
-        if (nextElement) {
-          this.updateFocusState(nextElement, null, false);
-        }
+        // Move focus to the Nth next visible sibling
+        const nextElement = this.getNthSibling(
+          activeTextContent,
+          this.getCurrentSelectedElement(),
+          step
+        );
+        this.updateFocusState(nextElement, activeTextContent, false, "bottom");
       }
     }
   }
 
-  arrowUpAction(event) {
-    event.preventDefault(); // Prevent default scrolling behavior
-    let selectedTextContentParent = this.getCurrentSelectedWitness();
-    let newElement = null;
-    if (!selectedTextContentParent) {
-      // Focus the first child if no element is currently selected
-      selectedTextContentParent = this.getTextContentParent(event);
-      newElement = selectedTextContentParent.querySelector(
-        `.${this.config.witness_line_class}`
-      );
+  arrowUpAction(event, step = 1) {
+    event.preventDefault();
+    let currentElement = this.getCurrentSelectedElement();
+    const activeTextContent = this.getTextContentParent(event);
+    if (!currentElement) {
+      const firstVisibleChild = this.getFirstVisibleChildInContainer(activeTextContent);
+      this.updateFocusState(firstVisibleChild, activeTextContent, false);
     } else {
-      // Move focus to the previous sibling
-      newElement = this.getCurrentSelectedElement().previousElementSibling;
-      if (!newElement) {
-        return null;
+      if (activeTextContent != this.getCurrentSelectedWitness()) {
+        const firstVisibleChild = this.getFirstVisibleChildInContainer(activeTextContent);
+        this.updateFocusState(firstVisibleChild, activeTextContent, false);
+      } else {
+        // Move focus to the Nth previous visible sibling
+        const prevElement = this.getNthSibling(
+          activeTextContent,
+          this.getCurrentSelectedElement(),
+          -step
+        );
+        this.updateFocusState(prevElement, activeTextContent, false, "top");
       }
     }
-    if (!this.elementIsVisible(newElement)) {
-      newElement = this.findNearestVisibleSibling(newElement);
-    }
-    this.updateFocusState(newElement, selectedTextContentParent, false);
   }
 
   horizontalActionTrigger(event) {
@@ -148,34 +140,35 @@ class EditionManager {
   }
 
   getDefaultElement() {
-    if (this.state.getCurrentSelectedWitness()) {
-      const element = this.state
-        .getCurrentSelectedWitness()
-        .querySelector(`.${this.config.witness_line_class}`);
+    const currentWitness = this.state.getCurrentSelectedWitness();
+    if (currentWitness) {
+      const element = currentWitness.querySelector(`.${this.config.witness_line_class}`);
       this.state.setCurrentSelectedElement(element);
       return element;
     } else {
-      const element = this.getDefaultWitness().querySelector(
-        `.${this.config.witness_line_class}`
-      );
-      this.state.setCurrentSelectedElement(element);
-      return element;
+      const defaultWitness = this.getDefaultWitness();
+      if (defaultWitness) {
+        const element = defaultWitness.querySelector(`.${this.config.witness_line_class}`);
+        this.state.setCurrentSelectedElement(element);
+        return element;
+      }
     }
+    return null;
   }
 
   getDefaultWitness() {
-    const witness = this.columnElements
-      ? this.columnElements[0].querySelector(
-          `.${this.config.text_content_class}`
-        )
-      : null;
-    if (witness) {
-      this.state.setCurrentSelectedWitness(witness);
-      return witness;
-    } else {
-      console.log("cant find content, reloading page");
-      window.location.reload();
+    if (this.columnElements && this.columnElements.length > 0) {
+      const witness = this.columnElements[0].querySelector(
+        `.${this.config.text_content_class}`
+      );
+      if (witness) {
+        this.state.setCurrentSelectedWitness(witness);
+        return witness;
+      }
     }
+    console.log("cant find content, reloading page");
+    window.location.reload();
+    return null;
   }
 
   getCurrentSelectedElement() {
@@ -194,9 +187,37 @@ class EditionManager {
     return witness;
   }
 
+  getVisibleLineByIdOrFirst(container, lineId) {
+    if (!container) return null;
+    let line = lineId ? container.querySelector(`#${lineId}`) : null;
+    if (line && this.elementIsVisible(line)) {
+      return line;
+    }
+    // fallback: first visible child in container
+    return this.getFirstVisibleChildInContainer(container);
+  }
+
+  findClosestLineByScreenTop(container, referenceTop) {
+    let closestLine = null;
+    let minDiff = Infinity;
+    for (const child of container.children) {
+      if (!this.elementIsVisible(child)) continue;
+      const childTop = child.getBoundingClientRect().top;
+      const diff = Math.abs(childTop - referenceTop);
+      if (diff < minDiff) {
+        minDiff = diff;
+        closestLine = child;
+      }
+    }
+    return closestLine;
+  }
+
+  getElementScreenTop(element) {
+    return element ? element.getBoundingClientRect().top : 0;
+  }
+
   arrowHorizontalAction(event) {
     event.preventDefault();
-    // get current selectedWitness
     const textContentColumn = event.target.closest(
       `.${this.config.witness_class}`
     );
@@ -204,75 +225,54 @@ class EditionManager {
       event.key === "ArrowRight"
         ? textContentColumn.nextElementSibling || null
         : textContentColumn.previousElementSibling;
-    if (!targetColumn) {
-      return null;
-    }
+    if (!targetColumn) return null;
+
     const textContentParent = targetColumn.querySelector(
       `.${this.config.text_content_class}`
     );
-    const currentLineId = this.getCurrentSelectedElement()
-      ? this.getCurrentSelectedElement().getAttribute("id")
-      : textContentParent
-          .querySelector(`.${this.config.witness_line_class}`)
-          .getAttribute("id");
-    let currentLineInNewWitness =
-      textContentParent.querySelector(`#${currentLineId}`) ||
-      textContentParent.childNodes[0];
-    if (!this.elementIsVisible(currentLineInNewWitness)) {
-      currentLineInNewWitness = this.findNearestVisibleSibling(
-        currentLineInNewWitness,
-        true
+    if (!textContentParent) return null;
+    // maybe make this behavior unconditional
+    if (!this.state.displayEmptyLines) {
+      // if empty lines are invisible, try to focus the line closest to the current line
+      const currentElement = this.getCurrentSelectedElement();
+      const referenceTop = this.getElementScreenTop(currentElement);
+
+      const closestLine = this.findClosestLineByScreenTop(
+        textContentParent,
+        referenceTop
       );
-    }
-    this.handleDoubleClick(currentLineInNewWitness);
-  }
 
-  getNthtSibling(textContentParent, currentElement, n) {
-    const siblings = textContentParent.querySelectorAll(
-      `.${this.config.witness_line_class}`
-    );
-    const rawIndex = Array.prototype.indexOf.call(siblings, currentElement) + n;
-    const newIndex = Math.max(0, Math.min(rawIndex, siblings.length - 1));
-    const sibling = siblings ? siblings[newIndex] : null;
-    return sibling;
-  }
-
-  scrollWitnessContainer(event) {
-    event.preventDefault();
-    const textContentParent = this.getTextContentParent(event);
-    const currentElement = this.getCurrentSelectedElement();
-    const siblingToFocus = this.getNthtSibling(
-      textContentParent,
-      currentElement,
-      event.key === "PageDown" ? 20 : -20
-    );
-    if (!siblingToFocus) {
-      return null;
+      if (closestLine) {
+        this.updateFocusState(closestLine, textContentParent, false, "none");
+      }
+    } else {
+      // if empty lines are visible, try to focus the line with the same id as the current line
+      const currentLineId = this.getCurrentSelectedElement()
+        ? this.getCurrentSelectedElement().getAttribute("id")
+        : null;
+      const targetLine = this.getVisibleLineByIdOrFirst(
+        textContentParent,
+        currentLineId
+      );
+      this.handleDoubleClick(targetLine);
     }
-    siblingToFocus.scrollIntoView({
-      behavior: "smooth", // Optional: 'auto' (default) or 'smooth' for smooth scrolling
-      block: "center", // Optional: 'start', 'center', 'end', or 'nearest' (vertical alignment)
-      inline: "nearest", // Optional: 'start', 'center', 'end', or 'nearest' (horizontal alignment)
-    });
-    this.updateFocusState(siblingToFocus, textContentParent, false);
   }
 
   initKeyDownListeners() {
     this.witnessContainer.addEventListener("keydown", (event) => {
-      // Enter key triggers the synoptic scroll event
       if (this.enterTargetsTextContent(event)) {
         this.handleDoubleClick(event.target);
-      }
-      // Keydown targets contents of text column
-      else if (this.eventTargetsWitnessContent(event)) {
+      } else if (this.eventTargetsWitnessContent(event)) {
         if (event.key === "ArrowDown") {
-          this.arrowDownAction(event);
+          this.arrowDownAction(event, 1);
         } else if (event.key === "ArrowUp") {
-          this.arrowUpAction(event);
+          this.arrowUpAction(event, 1);
+        } else if (event.key === "PageDown") {
+          this.arrowDownAction(event, 20);
+        } else if (event.key === "PageUp") {
+          this.arrowUpAction(event, 20);
         } else if (this.horizontalActionTrigger(event)) {
           this.arrowHorizontalAction(event);
-        } else if (event.key === "PageDown" || event.key === "PageUp") {
-          this.scrollWitnessContainer(event);
         }
       }
     });
@@ -536,6 +536,7 @@ class EditionManager {
   }
 
   setEmptyLinesVisibility(textContentElement) {
+    if (!textContentElement) return;
     textContentElement
       .querySelectorAll(
         `.${this.config.witness_line_class}.${this.config.omitted_line_class}`
@@ -549,6 +550,7 @@ class EditionManager {
   }
 
   setGlobalLinecounterVisibility(textContentElement) {
+    if (!textContentElement) return;
     textContentElement
       .querySelectorAll(`.${this.config.global_line_counter_class}`)
       .forEach((line) => {
@@ -560,6 +562,7 @@ class EditionManager {
   }
 
   setLocalLinecounterVisibility(textContentElement) {
+    if (!textContentElement) return;
     textContentElement
       .querySelectorAll(`.${this.config.local_line_counter_class}`)
       .forEach((line) => {
@@ -630,9 +633,7 @@ class EditionManager {
   }
 
   elementIsVisible(element) {
-    console.log(element);
     if (
-      !element.classList.contains(this.config.omitted_line_class) &&
       !element.classList.contains(this.config.hidden_element_class) &&
       element.hasAttribute("id")
     ) {
@@ -640,6 +641,26 @@ class EditionManager {
     } else {
       return false;
     }
+  }
+
+  getFirstVisibleChildInContainer(container) {
+    if (!container || !container.children) return null;
+    const containerRect = container.getBoundingClientRect();
+    for (const child of container.children) {
+      if (!this.elementIsVisible(child)) continue;
+      const childRect = child.getBoundingClientRect();
+      // Check if child is at least partially within the container's viewport
+      const verticallyVisible =
+        childRect.bottom > containerRect.top &&
+        childRect.top < containerRect.bottom;
+      const horizontallyVisible =
+        childRect.right > containerRect.left &&
+        childRect.left < containerRect.right;
+      if (verticallyVisible && horizontallyVisible) {
+        return child;
+      }
+    }
+    return null;
   }
 
   findNearestVisiblePreviousSibling(element) {
@@ -699,21 +720,48 @@ class EditionManager {
     }
   }
 
+  isElementInView(element, container) {
+    if (!element || !container) return false;
+    if (!this.elementIsVisible(element)) return false;
+    const elemRect = element.getBoundingClientRect();
+    const contRect = container.getBoundingClientRect();
+    // Only return true if the entire element is within the container's visible area (vertically)
+    return elemRect.top >= contRect.top && elemRect.bottom <= contRect.bottom;
+  }
+
   updateFocusState(
     selectedElement,
     textContentParent,
-    fromDoubleClick = false
+    fromDoubleClick = false,
+    scrollMode = "none" // "none", "top", "bottom", "center"
   ) {
     if (!selectedElement) {
       return null;
     }
-    selectedElement.focus();
+
     if (!textContentParent) {
       this.state.setCurrentSelectedWitness(
         this.getTextContentParent(selectedElement)
       );
     } else {
       this.state.setCurrentSelectedWitness(textContentParent);
+    }
+    // Always prevent browser's default scroll on focus
+    selectedElement.focus({ preventScroll: true });
+    // Custom scroll handling
+    if (
+      !this.isElementInView(
+        selectedElement,
+        this.state.getCurrentSelectedWitness(textContentParent)
+      )
+    ) {
+      if (scrollMode === "top") {
+        selectedElement.scrollIntoView({ behavior: "auto", block: "start" });
+      } else if (scrollMode === "bottom") {
+        selectedElement.scrollIntoView({ behavior: "auto", block: "end" });
+      } else if (scrollMode === "center") {
+        selectedElement.scrollIntoView({ behavior: "auto", block: "center" });
+      }
     }
     this.state.setCurrentSelectedElement(selectedElement);
     const elementId = selectedElement.getAttribute("id");
@@ -723,22 +771,8 @@ class EditionManager {
     return elementId;
   }
 
-  removeHighlights(event, spanId) {
-    if (
-      !event.target.closest(
-        `.${this.config.text_content_class} span[id="${spanId}"]`
-      )
-    ) {
-      this.state.highlightedSpans.forEach((span) => {
-        span.classList.remove(this.config.highlight_class);
-        span.classList.remove(this.config.neigh_class);
-      });
-      this.witnessContainer.removeEventListener("click", this.removeHighlights);
-    }
-  }
-
   handleDoubleClick(element) {
-    console.log(element);
+    if (!element) return null;
     const textContentParent = this.getTextContentParent(element);
     const spanId = this.updateFocusState(element, textContentParent, true);
     console.assert(
@@ -778,17 +812,38 @@ class EditionManager {
           nearestVisibleSibling.classList.add(this.config.neigh_class);
           nearestVisibleSibling.scrollIntoView({
             behavior: "smooth",
-            block: "center",
+            block: "start",
           });
           this.state.highlightedSpans.push(nearestVisibleSibling);
         }
       }
     });
 
-    // Attach the listener to the container instead of the document
-    this.witnessContainer.addEventListener("click", (event, spanId) =>
-      this.removeHighlights(event, spanId)
-    );
+    // Remove previous handler if present
+    if (this._boundRemoveHighlights) {
+      this.witnessContainer.removeEventListener("click", this._boundRemoveHighlights);
+    }
+    // Create and store the new handler
+    this._boundRemoveHighlights = (event) => this.removeHighlights(event, spanId);
+    this.witnessContainer.addEventListener("click", this._boundRemoveHighlights);
+  }
+
+  removeHighlights(event, spanId) {
+    if (
+      !event.target.closest(
+        `.${this.config.text_content_class} span[id="${spanId}"]`
+      )
+    ) {
+      this.state.highlightedSpans.forEach((span) => {
+        span.classList.remove(this.config.highlight_class);
+        span.classList.remove(this.config.neigh_class);
+      });
+      // Remove the event listener after it runs
+      if (this._boundRemoveHighlights) {
+        this.witnessContainer.removeEventListener("click", this._boundRemoveHighlights);
+        this._boundRemoveHighlights = null;
+      }
+    }
   }
 
   async initColumns() {
@@ -820,6 +875,5 @@ class EditionManager {
     });
   }
 }
-
 
 export default EditionManager;
