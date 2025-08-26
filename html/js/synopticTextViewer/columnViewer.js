@@ -40,21 +40,25 @@ async function loadSnippetMetadata(config) {
 }
 
 function createButtonContainer(containerId, config) {
-  const controls = document.querySelector(`.${config.class_of_controls_container}`);
+  const controls = document.querySelector(
+    `.${config.class_of_controls_container}`
+  );
   if (!controls) {
     console.error(`Controls container not found`);
     return null;
   }
   const container = document.createElement("div");
-  container.id = containerId
+  container.id = containerId;
   controls.appendChild(container);
-  console.log("created  button container with id " + containerId)
+  console.log("created  button container with id " + containerId);
   return container;
-};
+}
 
 function getButtonContainer(containerId, config) {
   const existingContainer = document.getElementById(containerId);
-  return existingContainer ? existingContainer : createButtonContainer(containerId, config);
+  return existingContainer
+    ? existingContainer
+    : createButtonContainer(containerId, config);
 }
 
 function addButton(containerId, text, onClick, ariaLabel, config) {
@@ -150,13 +154,32 @@ function createControls(config, manager) {
   );
   setupControlsMenuEvents(toggle, controls);
 }
+
+function getStateFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  return {
+    displayEmptyLines:
+      params.get("emptyLines") === "yes" || params.get("emptyLines") === "1",
+    displayLinenrGlobal:
+      params.get("globalLinenr") === "yes" ||
+      params.get("globalLinenr") === "1",
+    displayLinenrLocal:
+      params.get("localLinenr") === "yes" || params.get("localLinenr") === "1",
+    witnessIds: params.get("witnessIds")
+      ? params.get("witnessIds").split(",")
+      : null,
+    currentLine: params.get("currentLine") || null,
+  };
+}
+
 // --- MAIN ---
 
 document.addEventListener("DOMContentLoaded", async () => {
   const config = await loadConfig();
   const witness_metadata = await loadSnippetMetadata(config);
   const sortedWitnessIds = sortWitnessIdsBySorting(witness_metadata);
-  const state = new EditionState(witness_metadata, sortedWitnessIds);
+  const stateFromUrl = getStateFromUrl();
+  const state = new EditionState(witness_metadata, sortedWitnessIds, stateFromUrl);
   const manager = new EditionManager(state, config);
   await manager.initColumns();
   createControls(config, manager);
