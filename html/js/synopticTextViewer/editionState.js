@@ -1,6 +1,6 @@
 // this class only hold the data representing the current state of the synoptic view
 class EditionState {
-  constructor(witness_metadata, sortedWitnessIds) {
+  constructor(witness_metadata, sortedWitnessIds, stateFromUrl) {
     this.witness_metadata = witness_metadata;
     this.sortedWitnessIds = sortedWitnessIds;
     this.snippetsByLabels = {};
@@ -16,6 +16,21 @@ class EditionState {
     this.currentSelectedColumn = null;
     this.currentSelectedWitness = null;
     this.highlightedSpans = [];
+    this.updateFromUrlState(stateFromUrl);
+  }
+
+  updateFromUrlState(urlState) {
+    if (urlState.displayEmptyLines !== undefined)
+      this.displayEmptyLines = urlState.displayEmptyLines;
+    if (urlState.displayLinenrGlobal !== undefined)
+      this.displayLinenrGlobal = urlState.displayLinenrGlobal;
+    if (urlState.displayLinenrLocal !== undefined)
+      this.displayLinenrLocal = urlState.displayLinenrLocal;
+    if (urlState.currentLine)
+      this.lastDoubleClickedElementId = urlState.currentLine;
+    if (urlState.witnessIds){
+      urlState.witnessIds.forEach((witnessId) => this.addColumn(witnessId));
+    }
   }
 
   getCurrentSelectedElement() {
@@ -34,7 +49,7 @@ class EditionState {
     this.currentSelectedWitness = element;
   }
 
-  getCurrentSelectedColumn(){
+  getCurrentSelectedColumn() {
     return this.currentSelectedColumn;
   }
 
@@ -86,6 +101,5 @@ class EditionState {
     this.columnCount = 0;
   }
 }
-
 
 export default EditionState;
