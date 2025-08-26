@@ -506,6 +506,7 @@ class EditionManager {
       this.state.sortedWitnessIds[this.state.columnCount] ||
       this.state.sortedWitnessIds[0];
     await this.addColumn(witnessId);
+    this.updateUrlWithState();
   }
 
   toggleScrollingBehaviour() {
@@ -866,7 +867,6 @@ class EditionManager {
       this._boundRemoveHighlights
     );
     this.updateUrlWithState();
-
   }
 
   removeHighlights(event, spanId) {
