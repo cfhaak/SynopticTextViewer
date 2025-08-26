@@ -10,10 +10,10 @@ Currently, this repository contains a mix of scripts, test data, and documentati
 * `data`: Contains some TEI files to test the tool.
 * `html`: Directory containing the HTML files of the static test site.
     * `js`: Contains some of the main scripts for this tool.
-        * `Column.js`: A class representing a single column containing a witness or other text.
+        * `column.js`: A class representing a single column containing a witness or other text.
         * `column_viewer_config.js`: A configuration class mainly defining how the JavaScript and CSS interact and specifying some default behaviors of the page.
         * `columnViewer.js`: The main script handling the loading of all components.
-        * `EditionManager.js`: This class handles the overall behavior and rendering of the interface.
+        * `editionManager.js`: This class handles the overall behavior and rendering of the interface.
         * `editionState.js`: This class keeps track of the current state of the interface.
         * `textContainer.js`: A simple class representing the container of a displayed text loaded into a column.
         * Other files originate from DSE-Static-Cookiecutter.

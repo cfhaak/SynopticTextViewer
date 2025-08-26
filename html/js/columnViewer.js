@@ -1,6 +1,6 @@
 import ColumnViewerConfig from "./column_viewer_config.js";
 import EditionState from "./editionState.js";
-import EditionManager from "./EditionManager.js"
+import EditionManager from "./editionManager.js"
 
 async function loadConfig() {
   return new ColumnViewerConfig();
