@@ -9,7 +9,7 @@ Currently, this repository contains a mix of scripts, test data, and documentati
 * `build.xml`: Build file from DSE-Static-Cookiecutter defining the build routine.
 * `data`: Contains some TEI files to test the tool.
 * `html`: Directory containing the HTML files of the static test site.
-    * `js`: Contains some of the main scripts for this tool.
+    * `js/synopticTextViewer`: Contains some of the main scripts for this tool.
         * `column.js`: A class representing a single column containing a witness or other text.
         * `column_viewer_config.js`: A configuration class mainly defining how the JavaScript and CSS interact and specifying some default behaviors of the page.
         * `columnViewer.js`: The main script handling the loading of all components.
