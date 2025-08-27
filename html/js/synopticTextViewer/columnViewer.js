@@ -1,6 +1,7 @@
 import ColumnViewerConfig from "./column_viewer_config.js";
 import EditionState from "./editionState.js";
 import EditionManager from "./editionManager.js";
+import StateFromUrl from "./stateFromUrl.js";
 
 async function loadConfig() {
   return new ColumnViewerConfig();
@@ -155,31 +156,18 @@ function createControls(config, manager) {
   setupControlsMenuEvents(toggle, controls);
 }
 
-function getStateFromUrl() {
-  const params = new URLSearchParams(window.location.search);
-  return {
-    displayEmptyLines:
-      params.get("emptyLines") === "yes" || params.get("emptyLines") === "1",
-    displayLinenrGlobal:
-      params.get("globalLinenr") === "yes" ||
-      params.get("globalLinenr") === "1",
-    displayLinenrLocal:
-      params.get("localLinenr") === "yes" || params.get("localLinenr") === "1",
-    witnessIds: params.get("witnessIds")
-      ? params.get("witnessIds").split(",")
-      : null,
-    currentLine: params.get("currentLine") || null,
-  };
-}
-
 // --- MAIN ---
 
 document.addEventListener("DOMContentLoaded", async () => {
   const config = await loadConfig();
   const witness_metadata = await loadSnippetMetadata(config);
   const sortedWitnessIds = sortWitnessIdsBySorting(witness_metadata);
-  const stateFromUrl = getStateFromUrl();
-  const state = new EditionState(witness_metadata, sortedWitnessIds, stateFromUrl);
+  const stateFromUrl = new StateFromUrl();
+  const state = new EditionState(
+    witness_metadata,
+    sortedWitnessIds,
+    stateFromUrl
+  );
   const manager = new EditionManager(state, config);
   await manager.initColumns(stateFromUrl.witnessIds);
   createControls(config, manager);

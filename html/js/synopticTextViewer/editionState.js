@@ -1,14 +1,15 @@
 // this class only hold the data representing the current state of the synoptic view
 class EditionState {
   constructor(witness_metadata, sortedWitnessIds, stateFromUrl) {
+    this.displayEmptyLines = true;
+    this.displayLinenrGlobal = true;
+    this.displayLinenrLocal = false;
+    // the following line is for the global scrolling behavior switch
+    this.globalScroll = false;
     this.witness_metadata = witness_metadata;
     this.sortedWitnessIds = sortedWitnessIds;
     this.snippetsByLabels = {};
     this.columns = []; // [{id, witnessId}]
-    this.globalScroll = false;
-    this.displayEmptyLines = true;
-    this.displayLinenrGlobal = true;
-    this.displayLinenrLocal = false;
     this.columnIdToColumnIndex = {};
     this.columnCount = 0;
     this.lastDoubleClickedElementId = null;
@@ -20,11 +21,20 @@ class EditionState {
   }
 
   updateFromUrlState(urlState) {
-    if (urlState.displayEmptyLines !== undefined)
+    if (
+      urlState.displayEmptyLines !== undefined &&
+      urlState.displayEmptyLines !== null
+    )
       this.displayEmptyLines = urlState.displayEmptyLines;
-    if (urlState.displayLinenrGlobal !== undefined)
+    if (
+      urlState.displayLinenrGlobal !== undefined &&
+      urlState.displayLinenrGlobal !== null
+    )
       this.displayLinenrGlobal = urlState.displayLinenrGlobal;
-    if (urlState.displayLinenrLocal !== undefined)
+    if (
+      urlState.displayLinenrLocal !== undefined &&
+      urlState.displayLinenrLocal !== null
+    )
       this.displayLinenrLocal = urlState.displayLinenrLocal;
     if (urlState.currentLine)
       this.lastDoubleClickedElementId = urlState.currentLine;
