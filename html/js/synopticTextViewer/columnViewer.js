@@ -181,6 +181,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   const stateFromUrl = getStateFromUrl();
   const state = new EditionState(witness_metadata, sortedWitnessIds, stateFromUrl);
   const manager = new EditionManager(state, config);
-  await manager.initColumns();
+  await manager.initColumns(stateFromUrl.witnessIds);
   createControls(config, manager);
 });

@@ -28,9 +28,7 @@ class EditionState {
       this.displayLinenrLocal = urlState.displayLinenrLocal;
     if (urlState.currentLine)
       this.lastDoubleClickedElementId = urlState.currentLine;
-    if (urlState.witnessIds){
-      urlState.witnessIds.forEach((witnessId) => this.addColumn(witnessId));
-    }
+    // urlState.witnessIds gets ignored and handled by initColumns in editionManager
   }
 
   getCurrentSelectedElement() {

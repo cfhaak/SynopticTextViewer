@@ -890,9 +890,20 @@ class EditionManager {
     }
   }
 
-  async initColumns() {
+  async initColumns(witnessIdsFromUrl) {
     let columnIds = [];
-    if (this.config.fetch_all_witnesses) {
+    if (witnessIdsFromUrl) {
+      // the witness ids and the column ids are already defined by the url
+      // we need to load them
+      for (const witnessId of witnessIdsFromUrl) {
+        if (this.state.witness_metadata[witnessId]) {
+          const columnId = this.addColumnContainer(witnessId);
+          columnIds.push(columnId);
+        } else {
+          console.warn(`Witness ID from URL not found in metadata: ${witnessId}`);
+        }
+      }
+    } else if (this.config.fetch_all_witnesses) {
       for (const witnessId of this.state.sortedWitnessIds) {
         const columnId = this.addColumnContainer(witnessId);
         columnIds.push(columnId);
@@ -917,6 +928,14 @@ class EditionManager {
         } initialized.`
       );
     });
+    if (this.state.lastDoubleClickedElementId){
+      const lastDoubleClickedSpan = document.getElementById(this.state.lastDoubleClickedElementId);
+      if (lastDoubleClickedSpan) {
+        this.handleDoubleClick(lastDoubleClickedSpan);
+      } else {
+        console.warn(`Last double-clicked element defined in URL not found: ${this.state.lastDoubleClickedElementId}`);
+      }
+    }
     this.updateUrlWithState();
   }
 }
