@@ -161,6 +161,23 @@ function createControls(config, manager) {
 document.addEventListener("DOMContentLoaded", async () => {
   const config = await loadConfig();
   const witness_metadata = await loadSnippetMetadata(config);
+
+  if (!witness_metadata || Object.keys(witness_metadata).length === 0) {
+    // failed to load the witness metadata
+    const errorDiv = document.createElement("div");
+    errorDiv.textContent = "Error: Could not load edition metadata. Please check your connection or try again later. If this issue persists, please contact the responsible team.";
+    errorDiv.style.color = "red";
+    errorDiv.style.fontWeight = "bold";
+    errorDiv.style.margin = "1rem";
+    document.body.prepend(errorDiv);
+    const retryBtn = document.createElement("button");
+    retryBtn.textContent = "Retry";
+    retryBtn.onclick = () => window.location.reload();
+    retryBtn.style.marginLeft = "1rem";
+    errorDiv.appendChild(retryBtn);
+    return; // Stop further initialization
+  }
+
   const sortedWitnessIds = sortWitnessIdsBySorting(witness_metadata);
   const stateFromUrl = new StateFromUrl();
   const state = new EditionState(
