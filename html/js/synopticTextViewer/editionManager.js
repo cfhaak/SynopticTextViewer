@@ -318,6 +318,7 @@ class EditionManager {
           `.${this.config.witness_class}`
         ).id;
         this.removeColumn(columnId);
+        this.updateUrlWithState();
       } else if (event.target.matches(`.${this.config.witness_line_class}`)) {
         const line = event.target.closest(`.${this.config.witness_line_class}`);
         const textContentParent = this.getTextContentParent(line);
