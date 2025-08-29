@@ -74,7 +74,7 @@ class EditionManager {
     this.witnessContainer.innerHTML = "";
     this.renderAllColumns();
     if (this.state.lastDoubleClickedElementId) {
-      this.handleDoubleClick("", this.state.lastDoubleClickedElementId);
+      this.syncHorizontalScrolling("", this.state.lastDoubleClickedElementId);
     }
   }
 
@@ -281,14 +281,14 @@ class EditionManager {
         textContentParent,
         currentLineId
       );
-      this.handleDoubleClick(targetLine);
+      this.syncHorizontalScrolling(targetLine);
     }
   }
 
   initKeyDownListeners() {
     this.witnessContainer.addEventListener("keydown", (event) => {
       if (this.enterTargetsTextContent(event)) {
-        this.handleDoubleClick(event.target);
+        this.syncHorizontalScrolling(event.target);
       } else if (this.eventTargetsWitnessContent(event)) {
         if (event.key === "ArrowDown") {
           this.arrowDownAction(event, 1);
@@ -309,7 +309,7 @@ class EditionManager {
     // doubleclick triggers scroll
     this.witnessContainer.addEventListener("dblclick", (event) => {
       const line = event.target.closest(`.${this.config.witness_line_class}`);
-      this.handleDoubleClick(line);
+      this.syncHorizontalScrolling(line);
     });
     // click closes column
     this.witnessContainer.addEventListener("click", (event) => {
@@ -805,7 +805,7 @@ class EditionManager {
     return elementId;
   }
 
-  handleDoubleClick(element) {
+  syncHorizontalScrolling(element) {
     if (!element) return null;
     const textContentParent = this.getTextContentParent(element);
     const spanId = this.updateFocusState(element, textContentParent, true);
@@ -932,7 +932,7 @@ class EditionManager {
     if (this.state.lastDoubleClickedElementId){
       const lastDoubleClickedSpan = document.getElementById(this.state.lastDoubleClickedElementId);
       if (lastDoubleClickedSpan) {
-        this.handleDoubleClick(lastDoubleClickedSpan);
+        this.syncHorizontalScrolling(lastDoubleClickedSpan);
       } else {
         console.warn(`Last double-clicked element defined in URL not found: ${this.state.lastDoubleClickedElementId}`);
       }
