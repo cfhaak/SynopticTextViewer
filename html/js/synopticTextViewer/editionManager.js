@@ -282,6 +282,7 @@ class EditionManager {
         currentLineId
       );
       this.syncVerticalScrolling(targetLine);
+      this.scrollColumnIntoView(targetColumn);
     }
   }
 
@@ -805,15 +806,7 @@ class EditionManager {
     return elementId;
   }
 
-  syncVerticalScrolling(element, scrollHorizontal = false) {
-    if (!element) return null;
-    const textContentParent = this.getTextContentParent(element);
-    const spanId = this.updateFocusState(element, textContentParent, true);
-    console.assert(
-      spanId,
-      `Couldn't get id-Attribute from doubleclicked element ${element}. Better check your markup.`
-    );
-    // Remove existing highlights
+  removeAllHighlights() {
     this.witnessContainer
       .querySelectorAll(
         `.${this.config.text_content_class} span.${this.config.highlight_class}, .${this.config.text_content_class} span.${this.config.neigh_class}`
@@ -822,54 +815,25 @@ class EditionManager {
         span.classList.remove(this.config.highlight_class);
         span.classList.remove(this.config.neigh_class);
       });
-    if (!spanId) {
-      return null;
-    }
-    // Find all matching spans with the same ID
-    const matchingSpans = this.witnessContainer.querySelectorAll(
-      `.${this.config.text_content_class} span[id="${spanId}"]`
-    );
-
-    // Highlight matching spans or their nearest visible siblings
     this.state.highlightedSpans = [];
-    matchingSpans.forEach((span) => {
-      if (this.elementIsVisible(span)) {
-        span.classList.add(this.config.highlight_class);
-        if (scrollHorizontal) {
-          span.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
-        } else {
-          // Only scroll vertically
-          const container = span.closest(`.${this.config.text_content_class}`);
-          if (container) {
-            const spanTop = span.offsetTop;
-            const spanHeight = span.offsetHeight;
-            const containerHeight = container.clientHeight;
-            // Center the span vertically in the container
-            container.scrollTop = spanTop - (containerHeight / 2) + (spanHeight / 2);
-          }
-        }
-        this.state.highlightedSpans.push(span);
-      } else {
-        const nearestVisibleSibling = this.findNearestVisibleSibling(span);
-        if (nearestVisibleSibling) {
-          nearestVisibleSibling.classList.add(this.config.highlight_class);
-          nearestVisibleSibling.classList.add(this.config.neigh_class);
-          if (scrollHorizontal) {
-            nearestVisibleSibling.scrollIntoView({ behavior: "smooth", block: "start", inline: "center" });
-          } else {
-            const container = nearestVisibleSibling.closest(`.${this.config.text_content_class}`);
-            if (container) {
-              const sibTop = nearestVisibleSibling.offsetTop;
-              const sibHeight = nearestVisibleSibling.offsetHeight;
-              const containerHeight = container.clientHeight;
-              container.scrollTop = sibTop - (containerHeight / 2) + (sibHeight / 2);
-            }
-          }
-          this.state.highlightedSpans.push(nearestVisibleSibling);
-        }
-      }
-    });
+  }
 
+  highlightAndCenterSpan(span, isNeighbour = false) {
+    span.classList.add(this.config.highlight_class);
+    if (isNeighbour) {
+      span.classList.add(this.config.neigh_class);
+    }
+    const container = span.closest(`.${this.config.text_content_class}`);
+    if (container) {
+      const spanTop = span.offsetTop;
+      const spanHeight = span.offsetHeight;
+      const containerHeight = container.clientHeight;
+      // Center the span vertically in the container
+      container.scrollTop = spanTop - containerHeight / 2 + spanHeight / 2;
+    }
+  }
+
+  setupRemoveHighlightsHandler(spanId) {
     // Remove previous handler if present
     if (this._boundRemoveHighlights) {
       this.witnessContainer.removeEventListener(
@@ -883,7 +847,42 @@ class EditionManager {
       "click",
       this._boundRemoveHighlights
     );
+  }
+
+  syncVerticalScrolling(element) {
+    if (!element) return null;
+    const textContentParent = this.getTextContentParent(element);
+    const spanId = this.updateFocusState(element, textContentParent, true);
+    console.assert(
+      spanId,
+      `Couldn't get id-Attribute from doubleclicked element ${element}. Better check your markup.`
+    );
+    if (!spanId) return null;
+    this.removeAllHighlights();
+    this.addNewHighlights(spanId);
+    this.setupRemoveHighlightsHandler(spanId);
     this.updateUrlWithState();
+  }
+
+  addNewHighlights(spanId) {
+    // Find all matching spans with the same ID
+    const matchingSpans = this.witnessContainer.querySelectorAll(
+      `.${this.config.text_content_class} span[id="${spanId}"]`
+    );
+    // Highlight matching spans or their nearest visible siblings
+    this.state.highlightedSpans = [];
+    matchingSpans.forEach((span) => {
+      if (this.elementIsVisible(span)) {
+        this.highlightAndCenterSpan(span, false);
+        this.state.highlightedSpans.push(span);
+      } else {
+        const nearestVisibleSibling = this.findNearestVisibleSibling(span);
+        if (nearestVisibleSibling) {
+          this.highlightAndCenterSpan(nearestVisibleSibling, true);
+          this.state.highlightedSpans.push(nearestVisibleSibling);
+        }
+      }
+    });
   }
 
   removeHighlights(event, spanId) {
@@ -917,7 +916,9 @@ class EditionManager {
           const columnId = this.addColumnContainer(witnessId);
           columnIds.push(columnId);
         } else {
-          console.warn(`Witness ID from URL not found in metadata: ${witnessId}`);
+          console.warn(
+            `Witness ID from URL not found in metadata: ${witnessId}`
+          );
         }
       }
     } else if (this.config.fetch_all_witnesses) {
@@ -945,15 +946,34 @@ class EditionManager {
         } initialized.`
       );
     });
-    if (this.state.lastDoubleClickedElementId){
-      const lastDoubleClickedSpan = document.getElementById(this.state.lastDoubleClickedElementId);
+    if (this.state.lastDoubleClickedElementId) {
+      const lastDoubleClickedSpan = document.getElementById(
+        this.state.lastDoubleClickedElementId
+      );
       if (lastDoubleClickedSpan) {
         this.syncVerticalScrolling(lastDoubleClickedSpan);
       } else {
-        console.warn(`Last double-clicked element defined in URL not found: ${this.state.lastDoubleClickedElementId}`);
+        console.warn(
+          `Last double-clicked element defined in URL not found: ${this.state.lastDoubleClickedElementId}`
+        );
       }
     }
     this.updateUrlWithState();
+  }
+
+  scrollColumnIntoView(columnElement) {
+    if (!columnElement || !this.witnessContainer) return;
+    const colRect = columnElement.getBoundingClientRect();
+    const containerRect = this.witnessContainer.getBoundingClientRect();
+
+    // Check if the column is fully visible horizontally
+    if (colRect.left < containerRect.left) {
+      // Scroll left to bring the column into view
+      this.witnessContainer.scrollLeft -= containerRect.left - colRect.left;
+    } else if (colRect.right > containerRect.right) {
+      // Scroll right to bring the column into view
+      this.witnessContainer.scrollLeft += colRect.right - containerRect.right;
+    }
   }
 }
 
