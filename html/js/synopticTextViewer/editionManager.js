@@ -805,7 +805,7 @@ class EditionManager {
     return elementId;
   }
 
-  syncVerticalScrolling(element) {
+  syncVerticalScrolling(element, scrollHorizontal = false) {
     if (!element) return null;
     const textContentParent = this.getTextContentParent(element);
     const spanId = this.updateFocusState(element, textContentParent, true);
@@ -834,20 +834,37 @@ class EditionManager {
     this.state.highlightedSpans = [];
     matchingSpans.forEach((span) => {
       if (this.elementIsVisible(span)) {
-        // Highlight the span if it's visible
         span.classList.add(this.config.highlight_class);
-        span.scrollIntoView({ behavior: "smooth", block: "center" });
+        if (scrollHorizontal) {
+          span.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
+        } else {
+          // Only scroll vertically
+          const container = span.closest(`.${this.config.text_content_class}`);
+          if (container) {
+            const spanTop = span.offsetTop;
+            const spanHeight = span.offsetHeight;
+            const containerHeight = container.clientHeight;
+            // Center the span vertically in the container
+            container.scrollTop = spanTop - (containerHeight / 2) + (spanHeight / 2);
+          }
+        }
         this.state.highlightedSpans.push(span);
       } else {
-        // Find the nearest visible sibling if the span is hidden
         const nearestVisibleSibling = this.findNearestVisibleSibling(span);
         if (nearestVisibleSibling) {
           nearestVisibleSibling.classList.add(this.config.highlight_class);
           nearestVisibleSibling.classList.add(this.config.neigh_class);
-          nearestVisibleSibling.scrollIntoView({
-            behavior: "smooth",
-            block: "start",
-          });
+          if (scrollHorizontal) {
+            nearestVisibleSibling.scrollIntoView({ behavior: "smooth", block: "start", inline: "center" });
+          } else {
+            const container = nearestVisibleSibling.closest(`.${this.config.text_content_class}`);
+            if (container) {
+              const sibTop = nearestVisibleSibling.offsetTop;
+              const sibHeight = nearestVisibleSibling.offsetHeight;
+              const containerHeight = container.clientHeight;
+              container.scrollTop = sibTop - (containerHeight / 2) + (sibHeight / 2);
+            }
+          }
           this.state.highlightedSpans.push(nearestVisibleSibling);
         }
       }
@@ -860,7 +877,6 @@ class EditionManager {
         this._boundRemoveHighlights
       );
     }
-    // Create and store the new handler
     this._boundRemoveHighlights = (event) =>
       this.removeHighlights(event, spanId);
     this.witnessContainer.addEventListener(
