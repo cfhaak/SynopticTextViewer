@@ -271,6 +271,7 @@ class EditionManager {
 
       if (closestLine) {
         this.updateFocusState(closestLine, textContentParent, false, "none");
+        this.scrollColumnIntoView(targetColumn);
       }
     } else {
       // if empty lines are visible, try to focus the line with the same id as the current line
