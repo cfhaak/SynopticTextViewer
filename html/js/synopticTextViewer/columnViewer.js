@@ -72,7 +72,7 @@ function addButton(containerId, text, onClick, ariaLabel, config) {
   button.textContent = text;
   button.onclick = onClick;
   if (ariaLabel) {
-    button.setAttribute("aria-label", ariaLabel);
+    button.setAttribute(config.ariaLabelAttr, ariaLabel);
   }
   container.appendChild(button);
 }
@@ -102,7 +102,7 @@ function setupControlsMenuEvents(toggle, controls, config) {
 
   document.addEventListener("keydown", (e) => {
     if (
-      e.key === config.escapeKey &&
+      e.key === "Escape" &&
       controls.classList.contains(config.controlsContainerOpenClass)
     ) {
       controls.classList.remove(config.controlsContainerOpenClass);

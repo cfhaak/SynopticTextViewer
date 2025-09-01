@@ -73,8 +73,7 @@ class ColumnViewerConfig {
   controlsContainerAriaControlsAttr = "aria-controls";
   controlsContainerAriaControlsValue = "controls-container";
   controlsContainerOpenClass = "open";
-  escapeKey = "Escape";
-
+  ariaLabelAttr = "aria-label";
   ariaLiveRegionId = "aria-live-region";
   ariaLiveRegionPolite = "polite";
   ariaSelectWitnessLabel = (columnId) =>

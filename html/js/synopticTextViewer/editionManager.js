@@ -377,7 +377,7 @@ class EditionManager {
     dropdown.className = this.config.witnessSelectClass;
     dropdown.setAttribute("data-column-id", columnId);
     dropdown.setAttribute(
-      "aria-label",
+      this.config.ariaLabelAttr,
       this.config.ariaSelectWitnessLabel(columnId)
     );
     dropdown.id = `dropdown-${columnId}`;
@@ -399,7 +399,7 @@ class EditionManager {
     textContentDiv.setAttribute("role", "document");
     textContentDiv.setAttribute("tabindex", "0");
     textContentDiv.setAttribute(
-      "aria-label",
+      this.config.ariaLabelAttr,
       this.config.ariaTextContentLabel(this.state.witness_metadata[witnessId].title)
     );
     textContentDiv.textContent =
@@ -416,7 +416,7 @@ class EditionManager {
     removeColButton.className = this.config.removeColumnButtonClass;
     removeColButton.title = this.config.removeColumnLabel;
     removeColButton.setAttribute(
-      "aria-label",
+      this.config.ariaLabelAttr,
       this.config.ariaRemoveColumnLabel(this.state.witness_metadata[witnessId].title)
     );
     removeColButton.innerHTML = "&times;";
@@ -432,7 +432,7 @@ class EditionManager {
     columnDiv.className = `${this.config.witnessColumnClass} ${cssClass}`;
     columnDiv.setAttribute("role", "region");
     columnDiv.setAttribute(
-      "aria-label",
+      this.config.ariaLabelAttr,
       this.config.ariaColumnLabel(this.state.witness_metadata[witnessId].title)
     );
     columnDiv.appendChild(this.createControlsContainer(columnId, witnessId));
