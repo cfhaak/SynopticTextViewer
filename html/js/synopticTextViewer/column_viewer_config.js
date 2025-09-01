@@ -26,7 +26,7 @@ class ColumnViewerConfig {
   highlightClass = "highlight";
   neighborHighlightClass = "neigh";
   textContentClass = "text-content";
-  witness_class = "witness";
+  witnessColumnClass = "witness";
   controls_container_class = "controls-container";
   removeColumnButtonClass = "remove-column-button";
   dropdown_class = "text-select";

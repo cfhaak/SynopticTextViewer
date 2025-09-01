@@ -246,7 +246,7 @@ class EditionManager {
   arrowHorizontalAction(event) {
     event.preventDefault();
     const textContentColumn = event.target.closest(
-      `.${this.config.witness_class}`
+      `.${this.config.witnessColumnClass}`
     );
     const targetColumn =
       event.key === "ArrowRight"
@@ -317,7 +317,7 @@ class EditionManager {
     this.witnessContainer.addEventListener("click", (event) => {
       if (event.target.matches(`.${this.config.removeColumnButtonClass}`)) {
         const columnId = event.target.closest(
-          `.${this.config.witness_class}`
+          `.${this.config.witnessColumnClass}`
         ).id;
         this.removeColumn(columnId);
         this.updateUrlWithState();
@@ -429,7 +429,7 @@ class EditionManager {
       : this.config.individualScrollClass;
     const columnDiv = document.createElement("div");
     columnDiv.id = columnId;
-    columnDiv.className = `${this.config.witness_class} ${cssClass}`;
+    columnDiv.className = `${this.config.witnessColumnClass} ${cssClass}`;
     columnDiv.setAttribute("role", "region");
     columnDiv.setAttribute(
       "aria-label",
@@ -624,7 +624,7 @@ class EditionManager {
         this.config.textContentClass
       );
       const witnesses = this.witnessContainer.getElementsByClassName(
-        this.config.witness_class
+        this.config.witnessColumnClass
       );
       for (const text_content of text_contents) {
         this.toggleScrollClass(text_content, this.state.globalScroll);
