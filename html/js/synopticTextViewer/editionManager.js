@@ -409,7 +409,7 @@ class EditionManager {
 
   createControlsContainer(columnId, witnessId) {
     const controlsContainer = document.createElement("div");
-    controlsContainer.className = this.config.controls_container_class;
+    controlsContainer.className = this.config.witnessDropdownContainerClass;
     controlsContainer.appendChild(this.generateDropdown(columnId, witnessId));
     const removeColButton = document.createElement("button");
     controlsContainer.appendChild(removeColButton);
