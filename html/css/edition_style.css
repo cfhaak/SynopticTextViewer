@@ -86,9 +86,9 @@ div.witness_view_controls.open {
 .witness {
     position: relative;
     flex: 1 1 auto;
-    /* min-width: fit-content; */
-    width: fit-content;
-    max-width: 33%;
+    min-width: 30rem;
+    max-width: 50%;
+    width: auto;
     font-size: 1em;
     text-align: left;
     font-family: Garamond, serif;
@@ -96,6 +96,12 @@ div.witness_view_controls.open {
     background-color: #fff;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     padding: 0.5rem 1rem;
+}
+
+.witness h4 {
+    white-space: normal;
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 .witness.individual-scroll-vertical {
@@ -115,6 +121,7 @@ div.witness_view_controls.open {
     height: calc(100% - 2rem);
     padding-top: 10rem;
     padding-bottom: 20rem;
+    box-sizing: border-box;
 }
 
 .text-content.global-scroll-vertical {
@@ -265,4 +272,11 @@ span.editorial_note {
 
 .witness-line:focus {
     outline: 2px solid grey !important;
+}
+
+@media (max-width: 800px) {
+    .text-content.individual-scroll-vertical {
+        padding-top: 2rem;
+        padding-bottom: 2rem;
+    }
 }
