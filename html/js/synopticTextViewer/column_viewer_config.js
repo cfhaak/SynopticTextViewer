@@ -28,7 +28,6 @@ class ColumnViewerConfig {
   text_content_class = "text-content";
   witness_class = "witness";
   controls_container_class = "controls-container";
-  dropdown_class = "witness-dropdown";
   remove_column_button_class = "remove-column-button";
   dropdown_class = "text-select";
   label_column_adder = "Add Column";
