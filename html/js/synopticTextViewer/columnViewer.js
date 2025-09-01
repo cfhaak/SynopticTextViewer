@@ -27,7 +27,7 @@ function sortWitnessIdsBySorting(metadata) {
 
 async function loadSnippetMetadata(config) {
   try {
-    const response = await fetch(config.snippetLogPath);
+    const response = await fetch(config.snippetMetadataPath);
     if (!response.ok) {
       console.error(`Error loading snippet metadata: ${response.statusText}`);
       return {};
@@ -42,7 +42,7 @@ async function loadSnippetMetadata(config) {
 
 function createButtonContainer(containerId, config) {
   const controls = document.querySelector(
-    `.${config.class_of_controls_container}`
+    `.${config.controlsContainerClass}`
   );
   if (!controls) {
     console.error(`Controls container not found`);
@@ -105,53 +105,53 @@ function setupControlsMenuEvents(toggle, controls) {
 
 function createControls(config, manager) {
   addButton(
-    config.generateCitationUrlId,
-    config.label_generate_citation_link,
+    config.generateCitationUrlButtonId,
+    config.generateCitationUrlLabel,
     () => manager.updateUrlWithState(),
     "Generate a citation URL",
     config
   );
   addButton(
-    config.columnAdderId,
-    config.label_column_adder,
+    config.addColumnButtonId,
+    config.addColumnLabel,
     () => manager.addNewColumn(),
     "Add a new column",
     config
   );
   // addButton(
-  //   config.scrollTogglerId,
-  //   config.label_scroll_toggler,
+  //   config.toggleScrollButtonId,
+  //   config.toggleScrollLabel,
   //   () => manager.toggleScrollingBehaviour(),
   //   "Toggle global scrolling behavior",
   //   config
   // );
   addButton(
-    config.emptyLineTogglerId,
-    config.label_empty_line_toggler,
+    config.toggleEmptyLinesButtonId,
+    config.toggleEmptyLinesLabel,
     () => manager.toggleEmptyLinesVisibility(),
     "Toggle visibility of empty lines",
     config
   );
   addButton(
-    config.globalLinenrTogglerId,
-    config.label_global_linenr_toggler,
+    config.toggleGlobalLineNumbersButtonId,
+    config.toggleGlobalLineNumbersLabel,
     () => manager.toggleGlobalLinecounterVisibility(),
     "Toggle visibility of global line numbers",
     config
   );
   addButton(
-    config.localLinenrTogglerId,
-    config.label_local_linenr_toggler,
+    config.toggleLocalLineNumbersButtonId,
+    config.toggleLocalLineNumbersLabel,
     () => manager.toggleLocalLinecounterVisibility(),
     "Toggle visibility of local line numbers",
     config
   );
 
   const toggle = document.querySelector(
-    `.${config.class_of_controls_container_toggler}`
+    `.${config.controlsContainerTogglerClass}`
   );
   const controls = document.querySelector(
-    `.${config.class_of_controls_container}`
+    `.${config.controlsContainerClass}`
   );
   setupControlsMenuEvents(toggle, controls);
 }

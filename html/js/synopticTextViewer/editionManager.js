@@ -5,7 +5,7 @@ class EditionManager {
     this.config = config;
     this.ariaElement = this.makeAriaElement();
     this.witnessContainer = document.getElementById(
-      this.config.witnessContainerId
+      this.config.witnessColumnsContainerId
     );
     this.columnElements = [];
     this._boundRemoveHighlights = null;
@@ -80,21 +80,21 @@ class EditionManager {
 
   enterTargetsTextContent(event) {
     return (
-      event.target.matches(`.${this.config.witness_line_class}`) &&
+      event.target.matches(`.${this.config.witnessLineClass}`) &&
       event.key === "Enter"
     );
   }
 
   eventTargetsWitnessContent(event) {
     return (
-      event.target.matches(`.${this.config.text_content_class}`) ||
-      event.target.matches(`.${this.config.text_content_class} > *`)
+      event.target.matches(`.${this.config.textContentClass}`) ||
+      event.target.matches(`.${this.config.textContentClass} > *`)
     );
   }
 
   getNthSibling(textContentParent, currentElement, n) {
     const siblings = Array.from(
-      textContentParent.querySelectorAll(`.${this.config.witness_line_class}`)
+      textContentParent.querySelectorAll(`.${this.config.witnessLineClass}`)
     ).filter((el) => this.elementIsVisible(el));
     const rawIndex = Array.prototype.indexOf.call(siblings, currentElement) + n;
     const newIndex = Math.max(0, Math.min(rawIndex, siblings.length - 1));
@@ -157,7 +157,7 @@ class EditionManager {
     return (
       (event.key === "ArrowRight" || event.key === "ArrowLeft") &&
       event.target.matches(
-        `.${this.config.text_content_class}, .${this.config.text_content_class} > *`
+        `.${this.config.textContentClass}, .${this.config.textContentClass} > *`
       )
     );
   }
@@ -166,7 +166,7 @@ class EditionManager {
     const currentWitness = this.state.getCurrentSelectedWitness();
     if (currentWitness) {
       const element = currentWitness.querySelector(
-        `.${this.config.witness_line_class}`
+        `.${this.config.witnessLineClass}`
       );
       this.state.setCurrentSelectedElement(element);
       return element;
@@ -174,7 +174,7 @@ class EditionManager {
       const defaultWitness = this.getDefaultWitness();
       if (defaultWitness) {
         const element = defaultWitness.querySelector(
-          `.${this.config.witness_line_class}`
+          `.${this.config.witnessLineClass}`
         );
         this.state.setCurrentSelectedElement(element);
         return element;
@@ -186,7 +186,7 @@ class EditionManager {
   getDefaultWitness() {
     if (this.columnElements && this.columnElements.length > 0) {
       const witness = this.columnElements[0].querySelector(
-        `.${this.config.text_content_class}`
+        `.${this.config.textContentClass}`
       );
       if (witness) {
         this.state.setCurrentSelectedWitness(witness);
@@ -255,7 +255,7 @@ class EditionManager {
     if (!targetColumn) return null;
 
     const textContentParent = targetColumn.querySelector(
-      `.${this.config.text_content_class}`
+      `.${this.config.textContentClass}`
     );
     if (!textContentParent) return null;
     // maybe make this behavior unconditional
@@ -310,19 +310,19 @@ class EditionManager {
   initClickListeners() {
     // doubleclick triggers scroll
     this.witnessContainer.addEventListener("dblclick", (event) => {
-      const line = event.target.closest(`.${this.config.witness_line_class}`);
+      const line = event.target.closest(`.${this.config.witnessLineClass}`);
       this.syncVerticalScrolling(line);
     });
     // click closes column
     this.witnessContainer.addEventListener("click", (event) => {
-      if (event.target.matches(`.${this.config.remove_column_button_class}`)) {
+      if (event.target.matches(`.${this.config.removeColumnButtonClass}`)) {
         const columnId = event.target.closest(
           `.${this.config.witness_class}`
         ).id;
         this.removeColumn(columnId);
         this.updateUrlWithState();
-      } else if (event.target.matches(`.${this.config.witness_line_class}`)) {
-        const line = event.target.closest(`.${this.config.witness_line_class}`);
+      } else if (event.target.matches(`.${this.config.witnessLineClass}`)) {
+        const line = event.target.closest(`.${this.config.witnessLineClass}`);
         const textContentParent = this.getTextContentParent(line);
         this.updateFocusState(line, textContentParent);
       }
@@ -395,7 +395,7 @@ class EditionManager {
 
   createTextContentDiv(cssClass, witnessId) {
     const textContentDiv = document.createElement("div");
-    textContentDiv.className = `${this.config.text_content_class} ${cssClass}`;
+    textContentDiv.className = `${this.config.textContentClass} ${cssClass}`;
     textContentDiv.setAttribute("role", "document");
     textContentDiv.setAttribute("tabindex", "0");
     textContentDiv.setAttribute(
@@ -413,8 +413,8 @@ class EditionManager {
     controlsContainer.appendChild(this.generateDropdown(columnId, witnessId));
     const removeColButton = document.createElement("button");
     controlsContainer.appendChild(removeColButton);
-    removeColButton.className = this.config.remove_column_button_class;
-    removeColButton.title = this.config.label_remove_column;
+    removeColButton.className = this.config.removeColumnButtonClass;
+    removeColButton.title = this.config.removeColumnLabel;
     removeColButton.setAttribute(
       "aria-label",
       `Remove column for ${this.state.witness_metadata[witnessId].title}`
@@ -425,8 +425,8 @@ class EditionManager {
 
   createColumnHTML(columnId, witnessId) {
     const cssClass = this.state.globalScroll
-      ? this.config.GLOBAL_SCROLL_CLASS
-      : this.config.INDIVIDUAL_SCROLL_CLASS;
+      ? this.config.globalScrollClass
+      : this.config.individualScrollClass;
     const columnDiv = document.createElement("div");
     columnDiv.id = columnId;
     columnDiv.className = `${this.config.witness_class} ${cssClass}`;
@@ -560,7 +560,7 @@ class EditionManager {
     const columnElement = document.getElementById(columnId);
     if (!columnElement) return;
     const textContentElement = columnElement.querySelector(
-      `.${this.config.text_content_class}`
+      `.${this.config.textContentClass}`
     );
     if (textContentElement) {
       if (snippetBody instanceof HTMLElement) {
@@ -575,11 +575,11 @@ class EditionManager {
     if (!textContentElement) return;
     textContentElement
       .querySelectorAll(
-        `.${this.config.witness_line_class}.${this.config.omitted_line_class}`
+        `.${this.config.witnessLineClass}.${this.config.omittedLineClass}`
       )
       .forEach((line) => {
         line.classList.toggle(
-          this.config.hidden_element_class,
+          this.config.hiddenElementClass,
           !this.state.displayEmptyLines
         );
       });
@@ -588,10 +588,10 @@ class EditionManager {
   setGlobalLinecounterVisibility(textContentElement) {
     if (!textContentElement) return;
     textContentElement
-      .querySelectorAll(`.${this.config.global_line_counter_class}`)
+      .querySelectorAll(`.${this.config.globalLineNumberClass}`)
       .forEach((line) => {
         line.classList.toggle(
-          this.config.hidden_element_class,
+          this.config.hiddenElementClass,
           !this.state.displayLinenrGlobal
         );
       });
@@ -600,10 +600,10 @@ class EditionManager {
   setLocalLinecounterVisibility(textContentElement) {
     if (!textContentElement) return;
     textContentElement
-      .querySelectorAll(`.${this.config.local_line_counter_class}`)
+      .querySelectorAll(`.${this.config.localLineNumberClass}`)
       .forEach((line) => {
         line.classList.toggle(
-          this.config.hidden_element_class,
+          this.config.hiddenElementClass,
           !this.state.displayLinenrLocal
         );
       });
@@ -614,14 +614,14 @@ class EditionManager {
       const columnElement = document.getElementById(columnId);
       if (columnElement) {
         const textContent = columnElement.querySelector(
-          `.${this.config.text_content_class}`
+          `.${this.config.textContentClass}`
         );
         this.toggleScrollClass(textContent, this.state.globalScroll);
         this.toggleScrollClass(columnElement, this.state.globalScroll);
       }
     } else {
       const text_contents = this.witnessContainer.getElementsByClassName(
-        this.config.text_content_class
+        this.config.textContentClass
       );
       const witnesses = this.witnessContainer.getElementsByClassName(
         this.config.witness_class
@@ -640,7 +640,7 @@ class EditionManager {
       const columnElement = document.getElementById(columnId);
       if (columnElement) {
         const textContent = columnElement.querySelector(
-          `.${this.config.text_content_class}`
+          `.${this.config.textContentClass}`
         );
         this.setEmptyLinesVisibility(textContent);
         this.setGlobalLinecounterVisibility(textContent);
@@ -648,7 +648,7 @@ class EditionManager {
       }
     } else {
       const text_contents = this.witnessContainer.getElementsByClassName(
-        this.config.text_content_class
+        this.config.textContentClass
       );
       for (const text_content of text_contents) {
         this.setEmptyLinesVisibility(text_content);
@@ -661,16 +661,16 @@ class EditionManager {
   toggleScrollClass(element, globalScroll) {
     if (element) {
       element.classList.toggle(
-        this.config.INDIVIDUAL_SCROLL_CLASS,
+        this.config.individualScrollClass,
         !globalScroll
       );
-      element.classList.toggle(this.config.GLOBAL_SCROLL_CLASS, globalScroll);
+      element.classList.toggle(this.config.globalScrollClass, globalScroll);
     }
   }
 
   elementIsVisible(element) {
     if (
-      !element.classList.contains(this.config.hidden_element_class) &&
+      !element.classList.contains(this.config.hiddenElementClass) &&
       element.hasAttribute("id")
     ) {
       return true;
@@ -739,14 +739,14 @@ class EditionManager {
 
   getTextContentParent(elementOrEvent) {
     if (elementOrEvent instanceof HTMLElement) {
-      return elementOrEvent.closest(`.${this.config.text_content_class}`);
+      return elementOrEvent.closest(`.${this.config.textContentClass}`);
     } else if (elementOrEvent instanceof Event) {
       return elementOrEvent.target.classList.contains(
-        this.config.text_content_class
+        this.config.textContentClass
       )
         ? elementOrEvent.target
         : elementOrEvent.target.closest(
-            `div.${this.config.text_content_class}`
+            `div.${this.config.textContentClass}`
           );
     } else {
       console.error(
@@ -810,21 +810,21 @@ class EditionManager {
   removeAllHighlights() {
     this.witnessContainer
       .querySelectorAll(
-        `.${this.config.text_content_class} span.${this.config.highlight_class}, .${this.config.text_content_class} span.${this.config.neigh_class}`
+        `.${this.config.textContentClass} span.${this.config.highlightClass}, .${this.config.textContentClass} span.${this.config.neighborHighlightClass}`
       )
       .forEach((span) => {
-        span.classList.remove(this.config.highlight_class);
-        span.classList.remove(this.config.neigh_class);
+        span.classList.remove(this.config.highlightClass);
+        span.classList.remove(this.config.neighborHighlightClass);
       });
     this.state.highlightedSpans = [];
   }
 
   highlightAndCenterSpan(span, isNeighbour = false) {
-    span.classList.add(this.config.highlight_class);
+    span.classList.add(this.config.highlightClass);
     if (isNeighbour) {
-      span.classList.add(this.config.neigh_class);
+      span.classList.add(this.config.neighborHighlightClass);
     }
-    const container = span.closest(`.${this.config.text_content_class}`);
+    const container = span.closest(`.${this.config.textContentClass}`);
     if (container) {
       const spanTop = span.offsetTop;
       const spanHeight = span.offsetHeight;
@@ -868,7 +868,7 @@ class EditionManager {
   addNewHighlights(spanId) {
     // Find all matching spans with the same ID
     const matchingSpans = this.witnessContainer.querySelectorAll(
-      `.${this.config.text_content_class} span[id="${spanId}"]`
+      `.${this.config.textContentClass} span[id="${spanId}"]`
     );
     // Highlight matching spans or their nearest visible siblings
     this.state.highlightedSpans = [];
@@ -889,12 +889,12 @@ class EditionManager {
   removeHighlights(event, spanId) {
     if (
       !event.target.closest(
-        `.${this.config.text_content_class} span[id="${spanId}"]`
+        `.${this.config.textContentClass} span[id="${spanId}"]`
       )
     ) {
       this.state.highlightedSpans.forEach((span) => {
-        span.classList.remove(this.config.highlight_class);
-        span.classList.remove(this.config.neigh_class);
+        span.classList.remove(this.config.highlightClass);
+        span.classList.remove(this.config.neighborHighlightClass);
       });
       // Remove the event listener after it runs
       if (this._boundRemoveHighlights) {
@@ -922,13 +922,13 @@ class EditionManager {
           );
         }
       }
-    } else if (this.config.fetch_all_witnesses) {
+    } else if (this.config.fetchAllWitnesses) {
       for (const witnessId of this.state.sortedWitnessIds) {
         const columnId = this.addColumnContainer(witnessId);
         columnIds.push(columnId);
       }
     } else {
-      for (let i = 1; i <= this.config.defaultColumnNumber; i++) {
+      for (let i = 1; i <= this.config.defaultNumberOfColumns; i++) {
         const witnessId = this.state.sortedWitnessIds[i - 1];
         if (witnessId) {
           const columnId = this.addColumnContainer(witnessId);
