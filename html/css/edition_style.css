@@ -87,7 +87,7 @@ div.witness_view_controls.open {
     position: relative;
     flex: 1 1 auto;
     min-width: 30rem;
-    max-width: 50%;
+    max-width: fit-content;
     width: auto;
     font-size: 1em;
     text-align: left;
