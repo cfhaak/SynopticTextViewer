@@ -66,7 +66,7 @@ class ColumnViewerConfig {
   toggleGlobalLineNumbersAriaLabel = "Toggle visibility of global line numbers";
   toggleLocalLineNumbersAriaLabel = "Toggle visibility of local line numbers";
 
-    // ===========================================================================
+  // ===========================================================================
   // ARIA & ACCESSIBILITY ATTRIBUTES
   // ===========================================================================
   controlsContainerAriaExpandedAttr = "aria-expanded";
@@ -74,6 +74,14 @@ class ColumnViewerConfig {
   controlsContainerAriaControlsValue = "controls-container";
   controlsContainerOpenClass = "open";
   escapeKey = "Escape";
+
+  ariaLiveRegionId = "aria-live-region";
+  ariaLiveRegionPolite = "polite";
+  ariaSelectWitnessLabel = (columnId) =>
+    `Select witness for column ${columnId}`;
+  ariaTextContentLabel = (witnessTitle) => `Text content for ${witnessTitle}`;
+  ariaRemoveColumnLabel = (witnessTitle) => `Remove column for ${witnessTitle}`;
+  ariaColumnLabel = (witnessTitle) => `Column for ${witnessTitle}`;
 }
 
 export default ColumnViewerConfig;

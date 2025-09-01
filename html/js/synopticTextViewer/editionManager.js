@@ -56,8 +56,8 @@ class EditionManager {
 
   makeAriaElement() {
     const liveRegion = document.createElement("div");
-    liveRegion.id = "aria-live-region";
-    liveRegion.setAttribute("aria-live", "polite");
+    liveRegion.id = this.config.ariaLiveRegionId;
+    liveRegion.setAttribute("aria-live", this.config.ariaLiveRegionPolite);
     liveRegion.style.position = "absolute";
     liveRegion.style.left = "-9999px"; // Hide it visually but keep it accessible
     document.body.appendChild(liveRegion);
@@ -378,7 +378,7 @@ class EditionManager {
     dropdown.setAttribute("data-column-id", columnId);
     dropdown.setAttribute(
       "aria-label",
-      `Select witness for column ${columnId}`
+      this.config.ariaSelectWitnessLabel(columnId)
     );
     dropdown.id = `dropdown-${columnId}`;
     this.state.sortedWitnessIds.forEach((witnessId) => {
@@ -400,7 +400,7 @@ class EditionManager {
     textContentDiv.setAttribute("tabindex", "0");
     textContentDiv.setAttribute(
       "aria-label",
-      `Text content for ${this.state.witness_metadata[witnessId].title}`
+      this.config.ariaTextContentLabel(this.state.witness_metadata[witnessId].title)
     );
     textContentDiv.textContent =
       this.state.witness_metadata[witnessId].title || "Error while loading.";
@@ -417,7 +417,7 @@ class EditionManager {
     removeColButton.title = this.config.removeColumnLabel;
     removeColButton.setAttribute(
       "aria-label",
-      `Remove column for ${this.state.witness_metadata[witnessId].title}`
+      this.config.ariaRemoveColumnLabel(this.state.witness_metadata[witnessId].title)
     );
     removeColButton.innerHTML = "&times;";
     return controlsContainer;
@@ -433,7 +433,7 @@ class EditionManager {
     columnDiv.setAttribute("role", "region");
     columnDiv.setAttribute(
       "aria-label",
-      `Column for ${this.state.witness_metadata[witnessId].title}`
+      this.config.ariaColumnLabel(this.state.witness_metadata[witnessId].title)
     );
     columnDiv.appendChild(this.createControlsContainer(columnId, witnessId));
     columnDiv.appendChild(this.createTextContentDiv(cssClass, witnessId));
