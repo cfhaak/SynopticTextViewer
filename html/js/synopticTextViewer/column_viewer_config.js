@@ -28,13 +28,14 @@ class ColumnViewerConfig {
   // ===========================================================================
   // BUTTON & CONTROL LABELS
   // ===========================================================================
-  addColumnLabel = "Add Column";
-  toggleScrollLabel = "Toggle Global Scroll";
-  toggleEmptyLinesLabel = "Toggle Empty Lines";
-  toggleGlobalLineNumbersLabel = "Toggle Global Line Numbers";
-  toggleLocalLineNumbersLabel = "Toggle Local Line Numbers";
-  generateCitationUrlLabel = "Generate Citation URL";
-  removeColumnLabel = "Remove Column";
+  addColumnLabel = "Add column";
+  toggleScrollLabel = "Toggle global scroll";
+  toggleEmptyLinesLabel = "Toggle empty lines";
+  toggleGlobalLineNumbersLabel = "Toggle global line numbers";
+  toggleLocalLineNumbersLabel = "Toggle local line numbers";
+  generateCitationUrlLabel = "Copy citation URL to clipboard";
+  removeColumnLabel = "Remove column";
+  copyUrlNotificationLabel = "URL copied to clipboard!";
 
   // ===========================================================================
   // CSS CLASS NAMES
@@ -55,6 +56,7 @@ class ColumnViewerConfig {
   witnessSelectClass = "text-select";
   controlsContainerTogglerClass = "witness_view_controls_toggle";
   controlsContainerClass = "witness_view_controls";
+  copyUrlNotificationClass = "url-copy-notification";
 
   // ===========================================================================
   // ARIA LABELS

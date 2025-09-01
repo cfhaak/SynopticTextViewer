@@ -65,6 +65,10 @@ class EditionManager {
   }
 
   sendAriaMessage(message) {
+    if (!this.ariaElement){
+      console.error("Aria element not found");
+      return;
+    }
     this.ariaElement.textContent = message;
     // console.log(`Aria message sent: ${message}`);
   }
@@ -400,7 +404,9 @@ class EditionManager {
     textContentDiv.setAttribute("tabindex", "0");
     textContentDiv.setAttribute(
       this.config.ariaLabelAttr,
-      this.config.ariaTextContentLabel(this.state.witness_metadata[witnessId].title)
+      this.config.ariaTextContentLabel(
+        this.state.witness_metadata[witnessId].title
+      )
     );
     textContentDiv.textContent =
       this.state.witness_metadata[witnessId].title || "Error while loading.";
@@ -417,7 +423,9 @@ class EditionManager {
     removeColButton.title = this.config.removeColumnLabel;
     removeColButton.setAttribute(
       this.config.ariaLabelAttr,
-      this.config.ariaRemoveColumnLabel(this.state.witness_metadata[witnessId].title)
+      this.config.ariaRemoveColumnLabel(
+        this.state.witness_metadata[witnessId].title
+      )
     );
     removeColButton.innerHTML = "&times;";
     return controlsContainer;
@@ -745,9 +753,7 @@ class EditionManager {
         this.config.textContentClass
       )
         ? elementOrEvent.target
-        : elementOrEvent.target.closest(
-            `div.${this.config.textContentClass}`
-          );
+        : elementOrEvent.target.closest(`div.${this.config.textContentClass}`);
     } else {
       console.error(
         `Provided input ${elementOrEvent} is neither a valid HTML element nor an event.`
@@ -974,6 +980,25 @@ class EditionManager {
     } else if (colRect.right > containerRect.right) {
       // Scroll right to bring the column into view
       this.witnessContainer.scrollLeft += colRect.right - containerRect.right;
+    }
+  }
+
+  async copyUrlToClipboardAndNotify() {
+    this.updateUrlWithState();
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      // Create notification div
+      const notification = document.createElement("div");
+      notification.textContent = this.config.copyUrlNotificationLabel;
+      notification.className = this.config.copyUrlNotificationClass;
+      document.body.appendChild(notification);
+      this.sendAriaMessage(this.config.copyUrlNotificationLabel);
+      setTimeout(() => {
+        notification.style.opacity = "4";
+        setTimeout(() => notification.remove(), 200);
+      }, 1500);
+    } catch (err) {
+      alert("Failed to copy URL: " + err);
     }
   }
 }

@@ -116,7 +116,7 @@ function createControls(config, manager) {
   addButton(
     config.generateCitationUrlButtonId,
     config.generateCitationUrlLabel,
-    () => manager.updateUrlWithState(),
+    () => manager.copyUrlToClipboardAndNotify(),
     config.generateCitationUrlAriaLabel,
     config
   );
