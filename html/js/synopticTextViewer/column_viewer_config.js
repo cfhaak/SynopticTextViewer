@@ -55,6 +55,16 @@ class ColumnViewerConfig {
   witnessSelectClass = "text-select";
   controlsContainerTogglerClass = "witness_view_controls_toggle";
   controlsContainerClass = "witness_view_controls";
+
+  // ===========================================================================
+  // ARIA LABELS
+  // ===========================================================================
+  generateCitationUrlAriaLabel = "Generate a citation URL";
+  addColumnAriaLabel = "Add a new column";
+  toggleScrollAriaLabel = "Toggle global scrolling behavior";
+  toggleEmptyLinesAriaLabel = "Toggle visibility of empty lines";
+  toggleGlobalLineNumbersAriaLabel = "Toggle visibility of global line numbers";
+  toggleLocalLineNumbersAriaLabel = "Toggle visibility of local line numbers";
 }
 
 export default ColumnViewerConfig;

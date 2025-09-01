@@ -108,42 +108,42 @@ function createControls(config, manager) {
     config.generateCitationUrlButtonId,
     config.generateCitationUrlLabel,
     () => manager.updateUrlWithState(),
-    "Generate a citation URL",
+    config.generateCitationUrlAriaLabel,
     config
   );
   addButton(
     config.addColumnButtonId,
     config.addColumnLabel,
     () => manager.addNewColumn(),
-    "Add a new column",
+    config.addColumnAriaLabel,
     config
   );
   // addButton(
   //   config.toggleScrollButtonId,
   //   config.toggleScrollLabel,
   //   () => manager.toggleScrollingBehaviour(),
-  //   "Toggle global scrolling behavior",
+  //   config.toggleScrollAriaLabel,
   //   config
   // );
   addButton(
     config.toggleEmptyLinesButtonId,
     config.toggleEmptyLinesLabel,
     () => manager.toggleEmptyLinesVisibility(),
-    "Toggle visibility of empty lines",
+    config.toggleEmptyLinesAriaLabel,
     config
   );
   addButton(
     config.toggleGlobalLineNumbersButtonId,
     config.toggleGlobalLineNumbersLabel,
     () => manager.toggleGlobalLinecounterVisibility(),
-    "Toggle visibility of global line numbers",
+    config.toggleGlobalLineNumbersAriaLabel,
     config
   );
   addButton(
     config.toggleLocalLineNumbersButtonId,
     config.toggleLocalLineNumbersLabel,
     () => manager.toggleLocalLinecounterVisibility(),
-    "Toggle visibility of local line numbers",
+    config.toggleLocalLineNumbersAriaLabel,
     config
   );
 
