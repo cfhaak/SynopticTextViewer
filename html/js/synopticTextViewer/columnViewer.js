@@ -77,27 +77,36 @@ function addButton(containerId, text, onClick, ariaLabel, config) {
   container.appendChild(button);
 }
 
-function setupControlsMenuEvents(toggle, controls) {
-  toggle.setAttribute("aria-expanded", "false");
-  toggle.setAttribute("aria-controls", "controls-container");
+function setupControlsMenuEvents(toggle, controls, config) {
+  toggle.setAttribute(config.controlsContainerAriaExpandedAttr, "false");
+  toggle.setAttribute(
+    config.controlsContainerAriaControlsAttr,
+    config.controlsContainerAriaControlsValue
+  );
 
   toggle.addEventListener("click", (e) => {
-    const isOpen = controls.classList.toggle("open");
-    toggle.setAttribute("aria-expanded", isOpen.toString());
+    const isOpen = controls.classList.toggle(config.controlsContainerOpenClass);
+    toggle.setAttribute(
+      config.controlsContainerAriaExpandedAttr,
+      isOpen.toString()
+    );
     e.stopPropagation();
   });
 
   document.addEventListener("click", (e) => {
     if (!controls.contains(e.target) && !toggle.contains(e.target)) {
-      controls.classList.remove("open");
-      toggle.setAttribute("aria-expanded", "false");
+      controls.classList.remove(config.controlsContainerOpenClass);
+      toggle.setAttribute(config.controlsContainerAriaExpandedAttr, "false");
     }
   });
 
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && controls.classList.contains("open")) {
-      controls.classList.remove("open");
-      toggle.setAttribute("aria-expanded", "false");
+    if (
+      e.key === config.escapeKey &&
+      controls.classList.contains(config.controlsContainerOpenClass)
+    ) {
+      controls.classList.remove(config.controlsContainerOpenClass);
+      toggle.setAttribute(config.controlsContainerAriaExpandedAttr, "false");
       toggle.focus();
     }
   });
@@ -153,7 +162,7 @@ function createControls(config, manager) {
   const controls = document.querySelector(
     `.${config.controlsContainerClass}`
   );
-  setupControlsMenuEvents(toggle, controls);
+  setupControlsMenuEvents(toggle, controls, config);
 }
 
 // --- MAIN ---

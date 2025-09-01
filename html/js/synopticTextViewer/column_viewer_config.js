@@ -65,6 +65,15 @@ class ColumnViewerConfig {
   toggleEmptyLinesAriaLabel = "Toggle visibility of empty lines";
   toggleGlobalLineNumbersAriaLabel = "Toggle visibility of global line numbers";
   toggleLocalLineNumbersAriaLabel = "Toggle visibility of local line numbers";
+
+    // ===========================================================================
+  // ARIA & ACCESSIBILITY ATTRIBUTES
+  // ===========================================================================
+  controlsContainerAriaExpandedAttr = "aria-expanded";
+  controlsContainerAriaControlsAttr = "aria-controls";
+  controlsContainerAriaControlsValue = "controls-container";
+  controlsContainerOpenClass = "open";
+  escapeKey = "Escape";
 }
 
 export default ColumnViewerConfig;
