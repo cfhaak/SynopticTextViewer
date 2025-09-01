@@ -29,7 +29,7 @@ class ColumnViewerConfig {
   witnessColumnClass = "witness";
   controls_container_class = "controls-container";
   removeColumnButtonClass = "remove-column-button";
-  dropdown_class = "text-select";
+  witnessSelectClass = "text-select";
   addColumnLabel = "Add Column";
   toggleScrollLabel = "Toggle Global Scroll";
   toggleEmptyLinesLabel = "Toggle Empty Lines";

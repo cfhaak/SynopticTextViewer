@@ -331,7 +331,7 @@ class EditionManager {
 
   initDropDownListener() {
     this.witnessContainer.addEventListener("change", (event) => {
-      if (event.target.matches(`.${this.config.dropdown_class}`)) {
+      if (event.target.matches(`.${this.config.witnessSelectClass}`)) {
         const columnId = event.target.getAttribute("data-column-id");
         this.updateColumnWitness(columnId, event.target.value);
         this.updateUrlWithState();
@@ -374,7 +374,7 @@ class EditionManager {
 
   generateDropdown(columnId, currentWitnessId) {
     const dropdown = document.createElement("select");
-    dropdown.className = this.config.dropdown_class;
+    dropdown.className = this.config.witnessSelectClass;
     dropdown.setAttribute("data-column-id", columnId);
     dropdown.setAttribute(
       "aria-label",
