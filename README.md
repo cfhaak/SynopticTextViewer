@@ -44,8 +44,9 @@ Currently, this repository contains a mix of scripts, test data, and documentati
 
 * `cd html/`
 * `python -m http.server`
-* Go to [http://0.0.0.0:8000/](http://0.0.0.0:8000/).
+* Go to [http://0.0.0.0:8000/](http://0.0.0.0:8000/) or [http://localhost:8000/](http://localhost:8000/)
 * Click on "Fassungsvergleich" in the navbar.
+* Some features (eg. copying the URL to RAM via the menu) may not work if the url isn't http://localhost:8000/column_viewer.html)
 
 ### Third-Party Libraries
 
