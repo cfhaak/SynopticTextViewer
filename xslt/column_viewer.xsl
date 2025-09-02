@@ -28,12 +28,10 @@
                 <main>
                     <div class="container">
                         <xsl:call-template name="one_time_alert" />
-                        <h1>
-                            <xsl:value-of select="$project_short_title" />
-                        </h1>
                         <h2>
                             <xsl:value-of select="$project_title" />
                         </h2>
+                        <p>The (non random) data of this test implementation stem from the great digital edition »<a href="https://doi.org/10.11588/edition.ahd">Der arme Heinrich – digital</a>« by Dr. Gustavo Fernández Riva (Universität Heidelberg), Prof. Dr. Victor Millet (Universität Santiago de Compostela) and Dr. Jakub Šimek (Universität Heidelberg).</p>
                     </div>
                     <div class="witness_view_controls_wrapper">
                         <button class="witness_view_controls_toggle">Menu</button>
