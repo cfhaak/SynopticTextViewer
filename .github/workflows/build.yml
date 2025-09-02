@@ -1,0 +1,40 @@
+name: Build and publish
+
+on: 
+  push:
+  workflow_dispatch:
+  repository_dispatch:
+
+jobs:
+  build_pages:
+    name: Publish Edition as GitHub Pages Website
+    runs-on: ubuntu-latest
+    env:
+      ANT_OPTS: -Xmx5g
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+    steps:
+    - name: Perform Checkout
+      uses: actions/checkout@v4
+    - name: Install Saxon, Ant, Python
+      run: |
+        sudo apt-get update && sudo apt-get install -y --no-install-recommends texlive-xetex texlive-humanities texlive-lang-german fonts-freefont-ttf texlive-fonts-recommended openjdk-11-jre-headless ant
+        ./shellscripts/script.sh
+        python -m pip config set global.break-system-packages true
+        pip install -r ./pyscripts/requirements.txt
+    - name: Build
+      run: |
+        ant
+    - name: Upload Pages Artifact
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: "./html"
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v4
+      with:
+        token: ${{secrets.GITHUB_TOKEN}}
