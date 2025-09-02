@@ -3,6 +3,7 @@
 ## This repository and its code are under development. Meaningful documentation will follow shortly.
 Version 0.1
 * Built with [DSE-Static-Cookiecutter](https://github.com/acdh-oeaw/dse-static-cookiecutter)
+* Have a look at [the test implemenentation here]( https://cfhaak.github.io/SynopticTextViewer/column_viewer.html?emptyLines=yes&globalLinenr=yes&localLinenr=no&witnessIds=A%2CBa%2CBb&currentLine=v_100)
 
 ## Contents of this repository
 Currently, this repository contains a mix of scripts, test data, and documentation. This will likely change in the future. Many files originate from [DSE-Static-Cookiecutter](https://github.com/acdh-oeaw/dse-static-cookiecutter).
