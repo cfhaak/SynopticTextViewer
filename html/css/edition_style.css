@@ -182,6 +182,8 @@ div.witness_view_controls.open {
 span.witness-line {
     display: block;
     width: 100%;
+    white-space: normal !important;
+
 }
 
 span.witness-line:hover {
