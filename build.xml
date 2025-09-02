@@ -15,7 +15,8 @@
     </delete>
     <!-- 
     START
-    I put that here for testing, should be removed in production.
+    The following script calls a simple script that uses saxon and a xsl stylesheet to produces single witnesses from classic TEI apparatuses. 
+         I used a shellscript to make tests easier in case you don't want to use ant.
     -->
     <!-- <exec executable="bash">
         <arg value="./shellscripts/split_witness.sh" />
@@ -26,7 +27,6 @@
         </fileset>
     </copy> -->
     <!-- 
-    I put that here for testing, should be removed in production. 
     END
     -->
     <xslt in="${index}" out="${target}/index.html" style="./xslt/index.xsl">
@@ -99,15 +99,7 @@
             <include name="**/*.xml" />
         </fileset>
     </copy>
-    <!-- 
-    START
-    I put that here for testing, should be removed in production.
-    -->
     <exec executable="python3">
         <arg value="pyscripts/make_snippets.py" />
     </exec>
-    <!-- 
-    I put that here for testing, should be removed in production.
-    END
-    -->
 </project>

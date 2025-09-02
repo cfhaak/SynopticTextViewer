@@ -39,7 +39,7 @@
                         <button class="witness_view_controls_toggle">Menu</button>
                         <div class="witness_view_controls">
                             <div id="column-adder"></div>
-                            <div id="scroll-toggler"></div>
+                            <!-- <div id="scroll-toggler"></div> -->
                             <div id="empty-line-toggler"></div>
                             <div id="global-linenr-toggler"></div>
                             <div id="local-linenr-toggler"></div>

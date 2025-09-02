@@ -159,7 +159,7 @@
         </span>
     </xsl:template>
 
-    <xsl:template match="tei:l">
+    <xsl:template match="tei:l|tei:p">
         <xsl:variable name="class" select="
             if (@ana = 'om') then 'om'
             else if (not(normalize-space(.))) then 'om'

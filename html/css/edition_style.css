@@ -60,10 +60,37 @@ div.witness_view_controls.open {
     min-width: 200px;
 }
 
+div.witness_view_controls.open div {
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start; /* Align buttons to the left */
+    align-items: center;
+}
+
+div.witness_view_controls.open div button {
+    background: #eee;
+    color: #333;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 0.5rem;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background 0.2s, border 0.2s;
+    display: inline-block;
+    user-select: none;
+    position: relative;
+}
+
+div.witness_view_controls.open div button:hover,
+div.witness_view_controls.open div button:focus {
+    background-color: #bbb;
+    outline: none;
+}
+
 #witness-container {
     margin: .3rem;
     display: inline-flex;
-    /* Use inline-flex to fit the width of children */
     flex-direction: row;
     /* Arrange children in a row */
     flex-wrap: nowrap;
@@ -77,7 +104,6 @@ div.witness_view_controls.open {
     width: auto;
     /* Ensure the width adjusts to fit children */
     height: 100%;
-    /* width: 100%; */
     overflow-x: auto;
     overflow-y: auto;
     height: 100% !
