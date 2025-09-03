@@ -123,7 +123,7 @@ div.synTexView_controls.open div button:focus {
     outline: none;
 }
 
-#witness-container {
+#synTexView-witness-container {
     margin: .3rem;
     display: inline-flex;
     flex-direction: row;
@@ -144,7 +144,7 @@ div.synTexView_controls.open div button:focus {
     height: 100% !
 }
 
-.witness {
+.synTexView-witness {
     position: relative;
     flex: 1 1 auto;
     min-width: 30rem;
@@ -159,17 +159,17 @@ div.synTexView_controls.open div button:focus {
     padding: 0.5rem 1rem;
 }
 
-.witness h4 {
+.synTexView-witness h4 {
     white-space: normal;
     word-break: break-word;
     overflow-wrap: break-word;
 }
 
-.witness.synTexView-scroll-individual {
+.synTexView-witness.synTexView-scroll-individual {
     height: 100%;
 }
 
-.witness.synTexView-scroll-global {
+.synTexView-witness.synTexView-scroll-global {
     height: fit-content;
 }
 

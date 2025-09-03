@@ -9,7 +9,7 @@ class ColumnViewerConfig {
   // CONTAINER & COLUMN SETTINGS
   // ===========================================================================
   /** ID of the top-level container for the witness columns */
-  witnessColumnsContainerId = "witness-container";
+  witnessColumnsContainerId = "synTexView-witness-container";
   /** Default number of columns to display */
   defaultNumberOfColumns = 3;
   /** Whether to fetch all witnesses (boolean) */
@@ -50,7 +50,7 @@ class ColumnViewerConfig {
   highlightClass = "synTexView-highlight";
   neighborHighlightClass = "synTexView-neighbor";
   textContentClass = "synTexView-text-content";
-  witnessColumnClass = "witness";
+  witnessColumnClass = "synTexView-witness";
   witnessDropdownContainerClass = "synTexView-controls-container";
   removeColumnButtonClass = "synTexView-remove-column";
   witnessSelectClass = "text-select";

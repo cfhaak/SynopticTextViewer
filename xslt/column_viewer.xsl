@@ -44,7 +44,7 @@
                             <div id="generate-citation-url"></div>
                         </div>
                     </div>
-                    <div id="witness-container"></div>
+                    <div id="synTexView-witness-container"></div>
                 </main>
                 <xsl:call-template name="html_footer" />
             </body>
