@@ -213,29 +213,28 @@ div.synTexView_controls.open div button:focus {
     padding-top: .5rem;
 }
 
-.controlls-container .remove-column-button {
+.controlls-container .synTexView-remove-column {
     margin-left: auto;
     /* Push the button to the right */
 }
 
-.col_sw {
+/* .synTexView-col-switch {
     padding: 5px 20px 5px 10px;
     font-size: 14px;
-}
+} */
 
-.column-button {
+/* .synTexView-column-button {
     padding: 5px 20px 5px 10px;
     font-size: 14px;
     cursor: pointer;
     border: 1px solid #999;
     border-radius: 3px;
     margin: 0;
-    /*flex: 1;*/
     text-align: center;
     width: 10px;
-}
+} */
 
-.init {
+.synTexView-init {
     color: red;
     font-size: 120%;
 }
@@ -251,22 +250,22 @@ span.synTexView-line:hover {
     background-color: lightblue;
 }
 
-.linenr-global {
+.synTexView-linenr-global {
     font-size: 0.8em;
     color: gray;
 }
 
-.linenr_own {
+.synTexView-linenr-local {
     font-size: 0.8em;
     color: gray;
 }
 
-span.highlight {
+span.synTexView-highlight {
     background-color: rgb(206, 206, 206);
     transition: background-color 0.3s ease;
 }
 
-span.highlight.neigh {
+span.synTexView-highlight.synTexView-neighbor {
     background-color: inherit;
     border-bottom: rgb(206, 206, 206) solid 4px;
     margin-bottom: 1rem;
@@ -275,15 +274,15 @@ span.highlight.neigh {
     display: inline-block;
 }
 
-.last .linenr-global {
+.synTexView-last .synTexView-linenr-global {
     color: orange;
 }
 
-.line-highlight {
+/* .line-synTexView-highlight {
     background-color: rgba(255, 204, 153, 0.4);
-}
+} */
 
-button.remove-column-button {
+button.synTexView-remove-column {
     position: sticky;
     background-color: white;
     color: grey;
@@ -297,7 +296,7 @@ button.remove-column-button {
     text-align: center;
 }
 
-.hidden {
+.synTexView-hidden {
     display: none !important;
 }
 
@@ -307,6 +306,24 @@ button.remove-column-button {
 
 .synTexView-line:focus {
     outline: 2px solid grey !important;
+}
+
+.synTexView-url-copy-notification {
+    position: fixed;
+    top: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(60,60,60,0.95);
+    color: #fff;
+    padding: 0.75em 2em;
+    /* border-radius: 0 0 8px 8px; */
+    border-radius: 8px;
+    font-size: 1.1em;
+    z-index: 9999;
+    pointer-events: none; /* Prevent interaction */
+    user-select: none;    /* Prevent selection */
+    opacity: 1;
+    transition: opacity 2s;
 }
 
 @media (max-width: 800px) {

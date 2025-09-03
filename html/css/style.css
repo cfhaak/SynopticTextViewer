@@ -9,24 +9,6 @@ div#map {
     box-shadow: 0 0 0 .25rem rgba(13,110,253,.25);
 }
 
-.url-copy-notification {
-    position: fixed;
-    top: 10%;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(60,60,60,0.95);
-    color: #fff;
-    padding: 0.75em 2em;
-    /* border-radius: 0 0 8px 8px; */
-    border-radius: 8px;
-    font-size: 1.1em;
-    z-index: 9999;
-    pointer-events: none; /* Prevent interaction */
-    user-select: none;    /* Prevent selection */
-    opacity: 1;
-    transition: opacity 2s;
-}
-
 .hidden {
     display: none;
 }

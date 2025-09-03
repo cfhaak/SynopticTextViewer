@@ -44,19 +44,19 @@ class ColumnViewerConfig {
   individualScrollClass = "synTexView-scroll-individual";
   witnessLineClass = "synTexView-line";
   omittedLineClass = "synTexView-omitted";
-  hiddenElementClass = "hidden";
-  globalLineNumberClass = "linenr-global";
-  localLineNumberClass = "linenr_own";
-  highlightClass = "highlight";
-  neighborHighlightClass = "neigh";
+  hiddenElementClass = "synTexView-hidden";
+  globalLineNumberClass = "synTexView-linenr-global";
+  localLineNumberClass = "synTexView-linenr-local";
+  highlightClass = "synTexView-highlight";
+  neighborHighlightClass = "synTexView-neighbor";
   textContentClass = "synTexView-text-content";
   witnessColumnClass = "witness";
   witnessDropdownContainerClass = "synTexView-controls-container";
-  removeColumnButtonClass = "remove-column-button";
+  removeColumnButtonClass = "synTexView-remove-column";
   witnessSelectClass = "text-select";
   controlsContainerTogglerClass = "synTexView_controls_toggle";
   controlsContainerClass = "synTexView_controls";
-  copyUrlNotificationClass = "url-copy-notification";
+  copyUrlNotificationClass = "synTexView-url-copy-notification";
 
   // ===========================================================================
   // ARIA LABELS

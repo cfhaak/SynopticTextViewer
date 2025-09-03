@@ -101,7 +101,7 @@
                 </xsl:when>
                 <xsl:when test="@rend = 'init'">
                     <xsl:attribute name="class">
-                        <xsl:text>init</xsl:text>
+                        <xsl:text>synTexView-init</xsl:text>
                     </xsl:attribute>
                 </xsl:when>
             </xsl:choose>
@@ -142,13 +142,13 @@
         <xsl:param name="linenr-global" />
         <xsl:param name="linenr-own" />
         <span class="synTexView-line {$class}" data-n="{$linenr-global}" id="{$linenr-global}" tabindex="-1">
-            <span class="linenr-global">
+            <span class="synTexView-linenr-global">
                 <a href="./{$witness}.html#{$linenr-global}">
                     <xsl:value-of select="$linenr-global" />
                     &#160;&#160;
                 </a>
             </span>
-            <span class="linenr_own">
+            <span class="synTexView-linenr-local">
                 <xsl:value-of select="$linenr-own" />
                     &#160;&#160;
             </span>
@@ -160,7 +160,7 @@
         <xsl:variable name="class" select="
             if (@ana = 'om') then 'synTexView-omitted'
             else if (not(normalize-space(.))) then 'synTexView-omitted'
-            else if (@ana = 'last') then 'last'
+            else if (@ana = 'last') then 'synTexView-last'
             else 'normal'" />
         <xsl:variable name="linenr-global" select="@n" />
         <xsl:variable name="linenr-own" select="@xml:id" />
