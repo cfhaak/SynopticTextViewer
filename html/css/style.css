@@ -26,3 +26,7 @@ div#map {
     opacity: 1;
     transition: opacity 2s;
 }
+
+.hidden {
+    display: none;
+}
