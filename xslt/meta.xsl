@@ -34,6 +34,9 @@
         </html>
     </xsl:template>
 
+    <xsl:template match="tei:ref">
+        <a href="{@target}"><xsl:apply-templates/></a>
+    </xsl:template>
     <xsl:template match="tei:p">
         <p id="{generate-id()}"><xsl:apply-templates/></p>
     </xsl:template>

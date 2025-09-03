@@ -61,7 +61,7 @@
         <factory name="net.sf.saxon.TransformerFactoryImpl" />
         <classpath location="${basedir}/saxon/saxon9he.jar" />
     </xslt>
-    <xslt in="./data/indices/listperson.xml" out="${target}/listperson.html" style="./xslt/listperson.xsl">
+    <!-- <xslt in="./data/indices/listperson.xml" out="${target}/listperson.html" style="./xslt/listperson.xsl">
         <factory name="net.sf.saxon.TransformerFactoryImpl" />
         <classpath location="${basedir}/saxon/saxon9he.jar" />
     </xslt>
@@ -80,7 +80,7 @@
     <xslt in="./data/indices/listperson.xml" out="${target}/beacon.txt" style="./xslt/beacon.xsl">
         <factory name="net.sf.saxon.TransformerFactoryImpl" />
         <classpath location="${basedir}/saxon/saxon9he.jar" />
-    </xslt>
+    </xslt> -->
     <replace dir="${target}" value="">
         <include name="*.html" />
         <replacetoken> xmlns=""</replacetoken>
@@ -95,8 +95,8 @@
         <replacetoken>xmlns="http://www.w3.org/1999/xhtml"</replacetoken>
     </replace>
     <copy todir="${target}" flatten="true">
-        <fileset dir="./data/">
-            <include name="**/*.xml" />
+        <fileset dir="./data/editions">
+            <include name="*.xml" />
         </fileset>
     </copy>
     <exec executable="python3">

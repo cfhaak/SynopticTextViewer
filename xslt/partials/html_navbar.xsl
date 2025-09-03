@@ -34,7 +34,7 @@
                                 <a class="nav-link" href="column_viewer.html">Fassungsvergleich</a>
                             </li>
 
-                            <li class="nav-item dropdown disabled">
+                            <!-- <li class="nav-item dropdown disabled">
                                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Register</a>
                                 <ul class="dropdown-menu">
                                     <li>
@@ -51,11 +51,11 @@
                                     </li>
                           
                                 </ul>
-                            </li>
+                            </li> -->
 
-                            <li class="nav-item">
+                            <!-- <li class="nav-item">
                                 <a title="Suche" class="nav-link" href="search.html">Suche</a>
-                            </li>
+                            </li> -->
                         </ul>
                     </div>
                 </div>

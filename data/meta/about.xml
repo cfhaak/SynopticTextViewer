@@ -16,7 +16,7 @@
     <text>
         <body>
            <p>
-               See <a href="https://github.com/cfhaak/SynopticTextViewer">Synoptic Text Viewer</a> for more info.
+               See <ref target="https://github.com/cfhaak/SynopticTextViewer">Synoptic Text Viewer</ref> for more info.
            </p>
         </body>
     </text>
