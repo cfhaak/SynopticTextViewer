@@ -40,22 +40,22 @@ class ColumnViewerConfig {
   // ===========================================================================
   // CSS CLASS NAMES
   // ===========================================================================
-  globalScrollClass = "global-scroll-vertical";
-  individualScrollClass = "individual-scroll-vertical";
-  witnessLineClass = "witness-line";
-  omittedLineClass = "om";
+  globalScrollClass = "synTexView-scroll-global";
+  individualScrollClass = "synTexView-scroll-individual";
+  witnessLineClass = "synTexView-line";
+  omittedLineClass = "synTexView-omitted";
   hiddenElementClass = "hidden";
   globalLineNumberClass = "linenr-global";
   localLineNumberClass = "linenr_own";
   highlightClass = "highlight";
   neighborHighlightClass = "neigh";
-  textContentClass = "text-content";
+  textContentClass = "synTexView-text-content";
   witnessColumnClass = "witness";
-  witnessDropdownContainerClass = "controls-container";
+  witnessDropdownContainerClass = "synTexView-controls-container";
   removeColumnButtonClass = "remove-column-button";
   witnessSelectClass = "text-select";
-  controlsContainerTogglerClass = "witness_view_controls_toggle";
-  controlsContainerClass = "witness_view_controls";
+  controlsContainerTogglerClass = "synTexView_controls_toggle";
+  controlsContainerClass = "synTexView_controls";
   copyUrlNotificationClass = "url-copy-notification";
 
   // ===========================================================================
@@ -73,7 +73,7 @@ class ColumnViewerConfig {
   // ===========================================================================
   controlsContainerAriaExpandedAttr = "aria-expanded";
   controlsContainerAriaControlsAttr = "aria-controls";
-  controlsContainerAriaControlsValue = "controls-container";
+  controlsContainerAriaControlsValue = "synTexView-controls-container";
   controlsContainerOpenClass = "open";
   ariaLabelAttr = "aria-label";
   ariaLiveRegionId = "aria-live-region";

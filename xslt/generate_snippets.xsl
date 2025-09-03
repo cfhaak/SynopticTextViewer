@@ -141,7 +141,7 @@
         <xsl:param name="class" />
         <xsl:param name="linenr-global" />
         <xsl:param name="linenr-own" />
-        <span class="witness-line {$class}" data-n="{$linenr-global}" id="{$linenr-global}" tabindex="-1">
+        <span class="synTexView-line {$class}" data-n="{$linenr-global}" id="{$linenr-global}" tabindex="-1">
             <span class="linenr-global">
                 <a href="./{$witness}.html#{$linenr-global}">
                     <xsl:value-of select="$linenr-global" />
@@ -158,8 +158,8 @@
     </xsl:template>
     <xsl:template match="tei:l|tei:p">
         <xsl:variable name="class" select="
-            if (@ana = 'om') then 'om'
-            else if (not(normalize-space(.))) then 'om'
+            if (@ana = 'om') then 'synTexView-omitted'
+            else if (not(normalize-space(.))) then 'synTexView-omitted'
             else if (@ana = 'last') then 'last'
             else 'normal'" />
         <xsl:variable name="linenr-global" select="@n" />

@@ -49,7 +49,7 @@ div {
     box-sizing: border-box;
 }
 
-div.witness_view_controls_wrapper {
+div.synTexView_controls_wrapper {
     position: relative;
     display: inline-block;
     /* Ensure it fits the width of its content */
@@ -58,7 +58,7 @@ div.witness_view_controls_wrapper {
     margin-left: 0.3rem;
 }
 
-button.witness_view_controls_toggle {
+button.synTexView_controls_toggle {
     padding: 10px 20px;
     background: #eee;
     border: 1px solid #ccc;
@@ -70,7 +70,7 @@ button.witness_view_controls_toggle {
     z-index: 101;
 }
 
-div.witness_view_controls {
+div.synTexView_controls {
     display: none;
     /* Hidden by default */
     position: absolute;
@@ -83,7 +83,7 @@ div.witness_view_controls {
     min-width: 200px;
 }
 
-div.witness_view_controls.open {
+div.synTexView_controls.open {
     display: block;
     position: absolute;
     top: 100%;
@@ -95,7 +95,7 @@ div.witness_view_controls.open {
     min-width: 200px;
 }
 
-div.witness_view_controls.open div {
+div.synTexView_controls.open div {
     padding: 0.5rem;
     display: flex;
     flex-direction: row;
@@ -103,7 +103,7 @@ div.witness_view_controls.open div {
     align-items: center;
 }
 
-div.witness_view_controls.open div button {
+div.synTexView_controls.open div button {
     background: #eee;
     color: #333;
     border: 1px solid #ccc;
@@ -117,8 +117,8 @@ div.witness_view_controls.open div button {
     position: relative;
 }
 
-div.witness_view_controls.open div button:hover,
-div.witness_view_controls.open div button:focus {
+div.synTexView_controls.open div button:hover,
+div.synTexView_controls.open div button:focus {
     background-color: #bbb;
     outline: none;
 }
@@ -165,19 +165,19 @@ div.witness_view_controls.open div button:focus {
     overflow-wrap: break-word;
 }
 
-.witness.individual-scroll-vertical {
+.witness.synTexView-scroll-individual {
     height: 100%;
 }
 
-.witness.global-scroll-vertical {
+.witness.synTexView-scroll-global {
     height: fit-content;
 }
 
-.controls-container {
+.synTexView-controls-container {
     height: 2.5rem;
 }
 
-.text-content.individual-scroll-vertical {
+.synTexView-text-content.synTexView-scroll-individual {
     overflow-y: auto;
     height: calc(100% - 2rem);
     padding-top: 10rem;
@@ -185,7 +185,7 @@ div.witness_view_controls.open div button:focus {
     box-sizing: border-box;
 }
 
-.text-content.global-scroll-vertical {
+.synTexView-text-content.synTexView-scroll-global {
     height: fit-content;
 }
 
@@ -240,14 +240,14 @@ div.witness_view_controls.open div button:focus {
     font-size: 120%;
 }
 
-span.witness-line {
+span.synTexView-line {
     display: block;
     width: 100%;
     white-space: normal !important;
 
 }
 
-span.witness-line:hover {
+span.synTexView-line:hover {
     background-color: lightblue;
 }
 
@@ -301,16 +301,16 @@ button.remove-column-button {
     display: none !important;
 }
 
-.text-content:focus {
+.synTexView-text-content:focus {
     outline: 2px solid grey !important;
 }
 
-.witness-line:focus {
+.synTexView-line:focus {
     outline: 2px solid grey !important;
 }
 
 @media (max-width: 800px) {
-    .text-content.individual-scroll-vertical {
+    .synTexView-text-content.synTexView-scroll-individual {
         padding-top: 2rem;
         padding-bottom: 2rem;
     }

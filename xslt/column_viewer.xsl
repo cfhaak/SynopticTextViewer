@@ -33,9 +33,9 @@
                         </h2>
                         <p>The (non random) data of this test implementation stem from the great digital edition »<a href="https://doi.org/10.11588/edition.ahd">Der arme Heinrich – digital</a>« by Dr. Gustavo Fernández Riva (Universität Heidelberg), Prof. Dr. Victor Millet (Universität Santiago de Compostela) and Dr. Jakub Šimek (Universität Heidelberg).</p>
                     </div>
-                    <div class="witness_view_controls_wrapper">
-                        <button class="witness_view_controls_toggle">Menu</button>
-                        <div class="witness_view_controls">
+                    <div class="synTexView_controls_wrapper">
+                        <button class="synTexView_controls_toggle">Menu</button>
+                        <div class="synTexView_controls">
                             <div id="column-adder"></div>
                             <!-- <div id="scroll-toggler"></div> -->
                             <div id="empty-line-toggler"></div>
