@@ -145,8 +145,8 @@
             <span class="synTexView-linenr-global">
                 <a href="./{$witness}.html#{$linenr-global}">
                     <xsl:value-of select="$linenr-global" />
-                    &#160;&#160;
                 </a>
+                &#160;&#160;
             </span>
             <span class="synTexView-linenr-local">
                 <xsl:value-of select="$linenr-own" />
