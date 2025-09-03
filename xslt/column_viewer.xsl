@@ -20,7 +20,7 @@
                 <xsl:call-template name="html_head">
                     <xsl:with-param name="html_title" select="$doc_title"></xsl:with-param>
                 </xsl:call-template>
-                <link rel="stylesheet" href="css/edition_style.css"/>
+                <link rel="stylesheet" href="css/synopticTextViewer.css"/>
                 <script type="module" src="js/synopticTextViewer/columnViewer.js"/>
             </head>
             <body>

@@ -1,3 +1,4 @@
+/* rather non specific styles */
 html,
 body,
 main {
@@ -10,6 +11,40 @@ main {
     flex-direction: column;
 }
 
+.lb {
+    color: red;
+}
+
+.rub {
+    color: red;
+}
+
+.am {
+    display: none;
+}
+
+.lb {
+    display: none;
+}
+
+span.editorial_note {
+    display: none;
+}
+
+.s_orig {
+    display: none;
+}
+
+.sup_orig {
+    display: none;
+}
+
+div {
+    box-sizing: border-box;
+}
+
+/* Synoptic Text Viewer specific styles */
+/* as you can see, you might have to adjust the styles/scopes for specific elements */
 div {
     box-sizing: border-box;
 }
@@ -240,30 +275,6 @@ span.highlight.neigh {
     display: inline-block;
 }
 
-.lb {
-    color: red;
-}
-
-.rub {
-    color: red;
-}
-
-.am {
-    display: none;
-}
-
-.lb {
-    display: none;
-}
-
-.s_orig {
-    display: none;
-}
-
-.sup_orig {
-    display: none;
-}
-
 .last .linenr-global {
     color: orange;
 }
@@ -284,10 +295,6 @@ button.remove-column-button {
     z-index: 10;
     line-height: 1rem;
     text-align: center;
-}
-
-span.editorial_note {
-    display: none;
 }
 
 .hidden {
