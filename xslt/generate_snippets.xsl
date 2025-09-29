@@ -143,7 +143,7 @@
         <xsl:param name="linenr-own" />
         <span class="synTexView-line {$class}" data-n="{$linenr-global}" id="{$linenr-global}" tabindex="-1">
             <span class="synTexView-linenr-global">
-                <a href="./{$witness}.html#{$linenr-global}">
+                <a href="./{$witness}.html#{$linenr-global}" tabindex="-1">
                     <xsl:value-of select="$linenr-global" />
                 </a>
                 &#160;&#160;

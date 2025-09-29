@@ -24,7 +24,7 @@ Currently, this repository contains a mix of scripts, test data, and documentati
 * `LICENSE`: You know what that is…
 * `nginx.conf`: Server configuration from DSE-Static-Cookiecutter.
 * `pyscripts`:
-    * `make_snippets.py`: This script creates the html snippets used to display the witnesses in the synoptic view. It reads the files from `data/editions` and outputs to the dedicated folder in the hmtl-directory.
+    * `make_snippets.py`: This script creates the html snippets used to display the witnesses in the synoptic view. It reads the files from `data/editions` and outputs to the dedicated folder in the hmtl-directory. In addition it creates metadate for the snippets which are then used by the interface.
     * `requirements.txt`: Lists the required Python modules. Run `python3 -m pip install -r requirements.txt` to install them.
 * `README.md`: The file you are reading right now.
 * `saxon`: XSLT processor installed by the ```shellscripts/script.sh``` script.
