@@ -90,10 +90,7 @@ class EditionManager {
   }
 
   eventTargetsWitnessContent(event) {
-    return (
-      event.target.matches(`.${this.config.textContentClass}`) ||
-      event.target.matches(`.${this.config.textContentClass} > *`)
-    );
+    return !!event.target.closest(`.${this.config.textContentClass}`);
   }
 
   getNthSibling(textContentParent, currentElement, n) {
@@ -158,12 +155,12 @@ class EditionManager {
   }
 
   horizontalActionTrigger(event) {
-    return (
-      (event.key === "ArrowRight" || event.key === "ArrowLeft") &&
-      event.target.matches(
-        `.${this.config.textContentClass}, .${this.config.textContentClass} > *`
-      )
+    const isHorizontalKey =
+      event.key === "ArrowRight" || event.key === "ArrowLeft";
+    const inTextContent = !!event.target.closest(
+      `.${this.config.textContentClass}`
     );
+    return isHorizontalKey && inTextContent;
   }
 
   getDefaultElement() {
