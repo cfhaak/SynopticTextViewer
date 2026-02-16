@@ -416,6 +416,20 @@ def cleanup_temp(tmpdir: str, archive_path: str) -> None:
             pass
 
 
+def get_project_root() -> str:
+    """Determine the project root based on this script's location.
+
+    - If the script is inside a folder named "installerdata", the project
+      root is treated as that folder's parent directory.
+    - Otherwise, the project root is the directory containing this script.
+    """
+
+    script_dir = os.path.abspath(os.path.dirname(__file__))
+    if os.path.basename(script_dir) == "installerdata":
+        return os.path.abspath(os.path.join(script_dir, os.pardir))
+    return script_dir
+
+
 def _prompt_for_target_dir(kind: str, default_dir: str, project_root: str) -> str:
     """Ask the user where to install a certain kind of files.
 
@@ -426,49 +440,80 @@ def _prompt_for_target_dir(kind: str, default_dir: str, project_root: str) -> st
     """
 
     default_dir_abs = os.path.abspath(default_dir)
+    exists_default = os.path.isdir(default_dir_abs)
+
     print()
-    print(f"Default target directory for {kind} files:")
+    if exists_default:
+        print(f"Default target directory for {kind} files (exists):")
+    else:
+        print(f"Default target directory for {kind} files (does NOT yet exist):")
     print(f"  {default_dir_abs}")
 
-    if ask_yes_no("Use this directory?", default=True):
-        target = default_dir_abs
-    else:
-        while True:
-            user_input = input(
-                f"Enter a directory for {kind} files (relative to project root or absolute): "
-            ).strip()
-            if not user_input:
-                print("Please provide a non-empty path or accept the default.")
-                continue
+    use_default = ask_yes_no("Use this directory?", default=True)
 
-            if os.path.isabs(user_input):
-                candidate = os.path.abspath(user_input)
-            else:
-                candidate = os.path.abspath(os.path.join(project_root, user_input))
-
-            if os.path.exists(candidate) and not os.path.isdir(candidate):
-                print(f"Path exists but is not a directory: {candidate}")
-                continue
-
-            if not os.path.exists(candidate):
-                if ask_yes_no(
-                    f"Directory {candidate} does not exist. Create it?", default=True
-                ):
-                    try:
-                        os.makedirs(candidate, exist_ok=True)
-                    except OSError as exc:  # noqa: PERF203
-                        print(f"Could not create directory: {exc}")
-                        continue
-                    target = candidate
-                    break
+    target: str
+    if use_default:
+        if not exists_default:
+            if ask_yes_no(
+                f"Directory {default_dir_abs} does not exist. Create it (including parents)?",
+                default=True,
+            ):
+                try:
+                    os.makedirs(default_dir_abs, exist_ok=True)
+                except OSError as exc:  # noqa: PERF203
+                    print(f"Could not create directory {default_dir_abs}: {exc}")
+                    print("Please choose a different directory.")
+                    # Fall through to custom path selection.
                 else:
-                    print("Please specify an existing directory or allow creation.")
-                    continue
+                    target = default_dir_abs
+                    return target
             else:
+                print("Default directory will not be created. Please choose another.")
+
+        # If we reach here and the default exists, use it; otherwise we
+        # will fall through to the custom path loop below.
+        if os.path.isdir(default_dir_abs):
+            target = default_dir_abs
+            return target
+
+    # Custom path loop.
+    while True:
+        user_input = input(
+            f"Enter a directory for {kind} files (relative to project root or absolute): "
+        ).strip()
+        if not user_input:
+            print("Please provide a non-empty path or accept the default.")
+            continue
+
+        if os.path.isabs(user_input):
+            candidate = os.path.abspath(user_input)
+        else:
+            candidate = os.path.abspath(os.path.join(project_root, user_input))
+
+        if os.path.exists(candidate) and not os.path.isdir(candidate):
+            print(f"Path exists but is not a directory: {candidate}")
+            continue
+
+        if not os.path.exists(candidate):
+            if ask_yes_no(
+                f"Directory {candidate} does not exist. Create it (including parents)?",
+                default=True,
+            ):
+                try:
+                    os.makedirs(candidate, exist_ok=True)
+                except OSError as exc:  # noqa: PERF203
+                    print(f"Could not create directory: {exc}")
+                    continue
                 target = candidate
                 break
+            else:
+                print("Please specify an existing directory or allow creation.")
+                continue
+        else:
+            target = candidate
+            break
 
-    # Ensure the directory exists when using the default as well.
+    # Ensure the directory exists when using the chosen path.
     if not os.path.exists(target):
         try:
             os.makedirs(target, exist_ok=True)
@@ -479,7 +524,7 @@ def _prompt_for_target_dir(kind: str, default_dir: str, project_root: str) -> st
     return target
 
 
-def main(argv: list[str] | None = None) -> int:
+def main() -> int:
     print(f"Downloading repository archive from {DEFAULT_REPO_URL} ...")
 
     tmpdir = tempfile.mkdtemp(prefix="synoptic_install_")
@@ -513,9 +558,7 @@ def main(argv: list[str] | None = None) -> int:
 
         print(f"Found 'installerdata' folder at: {installerdata_path}")
 
-        project_root = os.path.abspath(
-            os.path.join(os.path.dirname(__file__), os.pardir)
-        )
+        project_root = get_project_root()
         print()
         print("Configuring target directories for installed files...")
 
@@ -582,4 +625,8 @@ def main(argv: list[str] | None = None) -> int:
 
 
 if __name__ == "__main__":  # pragma: no cover
-    raise SystemExit(main())
+    try:
+        raise SystemExit(main())
+    except KeyboardInterrupt:
+        print("\nInstallation interrupted by user.", file=sys.stderr)
+        raise SystemExit(130)
