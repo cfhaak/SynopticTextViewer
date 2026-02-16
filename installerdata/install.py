@@ -1,19 +1,14 @@
 #!/usr/bin/env python3
 """Simple installer script for SynopticTextViewer.
-
-Steps:
-1. Download a repository archive from a URL.
-2. Unpack it into a temporary directory.
-3. Locate the first folder named "installerdata" inside the unpacked repository
-   and report its location.
-
-No non-standard Python dependencies are used.
-
-Usage:
-    python3 install.py --url https://github.com/cfhaak/SynopticTextViewer/archive/main.zip
-
-If --url is omitted, DEFAULT_REPO_URL (see below) is used. Replace the
-placeholder with the real URL of the raw repository archive.
+This script performs the following steps:
+1. Downloads a repository archive from a specified URL (defaulting to the main branch ZIP).
+2. Unpacks the archive to a temporary directory.
+3. Searches for the "installerdata" folder within the unpacked contents.
+4. Copies relevant files from "installerdata" into the current project directory, handling conflicts:
+   - If a target file does not exist, it is copied directly.
+   - If a target file exists and is identical to the source, it is skipped.
+    - If a target file exists and differs from the source, the user is prompted to choose whether to overwrite it.
+      If the user chooses not to overwrite, the new file is copied with a unique "_NNNN_updated" suffix to avoid overwriting.
 """
 
 import argparse
@@ -323,14 +318,21 @@ def _copy_file_with_conflict_handling(
         )
 
 
-def copy_installerdata_contents(installerdata_path: str, project_root: str) -> dict:
+def copy_installerdata_contents(
+    installerdata_path: str,
+    project_root: str,
+    target_dirs: dict[str, str],
+) -> dict:
     """Copy relevant files from *installerdata_path* into *project_root*.
 
+    The caller is responsible for determining the target directories for the
+    different file types. They are provided via *target_dirs*.
+
     The following mappings are applied:
-    - installerdata/css -> html/css
-    - installerdata/js/synopticTextViewer -> html/js/synopticTextViewer
-    - installerdata/pyscripts -> pyscripts
-    - installerdata/xslt -> xslt
+    - installerdata/css -> target_dirs["css"]
+    - installerdata/js/synopticTextViewer -> target_dirs["js"]
+    - installerdata/pyscripts -> target_dirs["pyscripts"]
+    - installerdata/xslt -> target_dirs["xslt"]
 
     Returns a report dictionary with keys: "new", "updated", "unchanged",
     "overwritten", and "path_warnings".
@@ -345,13 +347,13 @@ def copy_installerdata_contents(installerdata_path: str, project_root: str) -> d
     }
 
     mappings = [
-        (os.path.join(installerdata_path, "css"), os.path.join(project_root, "html", "css")),
+        (os.path.join(installerdata_path, "css"), target_dirs["css"]),
         (
             os.path.join(installerdata_path, "js", "synopticTextViewer"),
-            os.path.join(project_root, "html", "js", "synopticTextViewer"),
+            target_dirs["js"],
         ),
-        (os.path.join(installerdata_path, "pyscripts"), os.path.join(project_root, "pyscripts")),
-        (os.path.join(installerdata_path, "xslt"), os.path.join(project_root, "xslt")),
+        (os.path.join(installerdata_path, "pyscripts"), target_dirs["pyscripts"]),
+        (os.path.join(installerdata_path, "xslt"), target_dirs["xslt"]),
     ]
 
     for src_base, dest_base in mappings:
@@ -414,6 +416,69 @@ def cleanup_temp(tmpdir: str, archive_path: str) -> None:
             pass
 
 
+def _prompt_for_target_dir(kind: str, default_dir: str, project_root: str) -> str:
+    """Ask the user where to install a certain kind of files.
+
+    *kind* is a label like "CSS", "JS", "Python", or "XSLT".
+    The user can accept the default directory or specify a different
+    directory. Custom paths may be absolute or relative to *project_root*.
+    The chosen directory is ensured to exist (created if the user agrees).
+    """
+
+    default_dir_abs = os.path.abspath(default_dir)
+    print()
+    print(f"Default target directory for {kind} files:")
+    print(f"  {default_dir_abs}")
+
+    if ask_yes_no("Use this directory?", default=True):
+        target = default_dir_abs
+    else:
+        while True:
+            user_input = input(
+                f"Enter a directory for {kind} files (relative to project root or absolute): "
+            ).strip()
+            if not user_input:
+                print("Please provide a non-empty path or accept the default.")
+                continue
+
+            if os.path.isabs(user_input):
+                candidate = os.path.abspath(user_input)
+            else:
+                candidate = os.path.abspath(os.path.join(project_root, user_input))
+
+            if os.path.exists(candidate) and not os.path.isdir(candidate):
+                print(f"Path exists but is not a directory: {candidate}")
+                continue
+
+            if not os.path.exists(candidate):
+                if ask_yes_no(
+                    f"Directory {candidate} does not exist. Create it?", default=True
+                ):
+                    try:
+                        os.makedirs(candidate, exist_ok=True)
+                    except OSError as exc:  # noqa: PERF203
+                        print(f"Could not create directory: {exc}")
+                        continue
+                    target = candidate
+                    break
+                else:
+                    print("Please specify an existing directory or allow creation.")
+                    continue
+            else:
+                target = candidate
+                break
+
+    # Ensure the directory exists when using the default as well.
+    if not os.path.exists(target):
+        try:
+            os.makedirs(target, exist_ok=True)
+        except OSError as exc:  # noqa: PERF203
+            print(f"Could not create directory {target}: {exc}")
+            raise
+
+    return target
+
+
 def main(argv: list[str] | None = None) -> int:
     print(f"Downloading repository archive from {DEFAULT_REPO_URL} ...")
 
@@ -451,8 +516,24 @@ def main(argv: list[str] | None = None) -> int:
         project_root = os.path.abspath(
             os.path.join(os.path.dirname(__file__), os.pardir)
         )
-        print("Copying installerdata contents into the current project ...")
-        report = copy_installerdata_contents(installerdata_path, project_root)
+        print()
+        print("Configuring target directories for installed files...")
+
+        css_default = os.path.join(project_root, "html", "css")
+        js_default = os.path.join(project_root, "html", "js", "synopticTextViewer")
+        py_default = os.path.join(project_root, "pyscripts")
+        xslt_default = os.path.join(project_root, "xslt")
+
+        target_dirs = {
+            "css": _prompt_for_target_dir("CSS", css_default, project_root),
+            "js": _prompt_for_target_dir("JS", js_default, project_root),
+            "pyscripts": _prompt_for_target_dir("Python", py_default, project_root),
+            "xslt": _prompt_for_target_dir("XSLT", xslt_default, project_root),
+        }
+
+        print()
+        print("Copying installerdata contents into the configured target directories ...")
+        report = copy_installerdata_contents(installerdata_path, project_root, target_dirs)
 
         if (
             not report["new"]
