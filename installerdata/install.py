@@ -19,6 +19,7 @@ placeholder with the real URL of the raw repository archive.
 import argparse
 import os
 import random
+import re
 import shutil
 import sys
 import tarfile
@@ -98,6 +99,51 @@ def files_are_identical(path1: str, path2: str, chunk_size: int = 8192) -> bool:
                 return False
 
 
+def _is_relative_reference(ref: str) -> bool:
+    """Return True if *ref* looks like a relative path rather than a URL.
+
+    This is a heuristic; it ignores absolute URLs (http://, https://, etc.),
+    protocol-like prefixes, leading '/', '//' and pure anchors.
+    """
+
+    ref = ref.strip()
+    if not ref:
+        return False
+
+    lower = ref.lower()
+    if lower.startswith(
+        (
+            "http://",
+            "https://",
+            "file:",
+            "data:",
+            "mailto:",
+            "javascript:",
+        )
+    ):
+        return False
+
+    if ref.startswith("/") or ref.startswith("//") or ref.startswith("#"):
+        return False
+
+    return True
+
+
+def _reference_resolves(ref: str, base_dir: str) -> bool:
+    """Check whether *ref* resolves to an existing file under *base_dir*.
+
+    Query and fragment parts are stripped before resolution.
+    """
+
+    ref = ref.strip()
+    if not ref:
+        return False
+
+    path_part = ref.split("?", 1)[0].split("#", 1)[0]
+    candidate = os.path.normpath(os.path.join(base_dir, path_part))
+    return os.path.exists(candidate)
+
+
 def ask_yes_no(prompt: str, default: bool | None = None) -> bool:
     """Ask a yes/no question via input() and return True for yes, False for no.
 
@@ -138,6 +184,82 @@ def _make_updated_target_path(path: str) -> str:
             return candidate
 
 
+def _find_unresolved_relative_paths_for_file(src_path: str, dest_path: str) -> list[str]:
+    """Heuristically detect relative path references that don't resolve.
+
+    The detection is based on the *destination* location of the file, i.e.
+    paths are checked relative to the directory where the file will end up.
+    This mainly covers:
+    - CSS url(...)
+    - JS import/require/import() and fetch('...')
+    - XML/XSLT/HTML href/src/doc('...') attributes
+    """
+
+    ext = os.path.splitext(dest_path)[1].lower()
+    # Only scan common text formats we expect to contain relative paths.
+    if ext not in {".css", ".js", ".xsl", ".xslt", ".xml", ".html", ".htm"}:
+        return []
+
+    try:
+        with open(src_path, "r", encoding="utf-8", errors="ignore") as f:
+            text = f.read()
+    except OSError:
+        return []
+
+    base_dir = os.path.dirname(os.path.abspath(dest_path))
+    refs: set[str] = set()
+
+    # CSS: url(...)
+    for match in re.finditer(r"url\(([^)]+)\)", text, flags=re.IGNORECASE):
+        candidate = match.group(1).strip().strip("'\"")
+        refs.add(candidate)
+
+    # JS: import ... from '...'; dynamic import('...'); require('...'); fetch('...')
+    for match in re.finditer(
+        r"\bimport\s+[^;\n]*?from\s*['\"]([^'\"]+)['\"]",
+        text,
+        flags=re.IGNORECASE,
+    ):
+        refs.add(match.group(1))
+
+    for match in re.finditer(
+        r"\bimport\s*\(\s*['\"]([^'\"]+)['\"]\s*\)",
+        text,
+        flags=re.IGNORECASE,
+    ):
+        refs.add(match.group(1))
+
+    for match in re.finditer(
+        r"\brequire\s*\(\s*['\"]([^'\"]+)['\"]\s*\)",
+        text,
+        flags=re.IGNORECASE,
+    ):
+        refs.add(match.group(1))
+
+    for match in re.finditer(
+        r"\bfetch\s*\(\s*['\"]([^'\"]+)['\"]",
+        text,
+        flags=re.IGNORECASE,
+    ):
+        refs.add(match.group(1))
+
+    # XML/XSLT/HTML: href="..." or src="..." and doc('...')
+    for match in re.finditer(r"\b(?:href|src)\s*=\s*\"([^\"]+)\"", text):
+        refs.add(match.group(1))
+
+    for match in re.finditer(r"doc\(\s*['\"]([^'\"]+)['\"]\s*\)", text):
+        refs.add(match.group(1))
+
+    unresolved: list[str] = []
+    for ref in refs:
+        if not _is_relative_reference(ref):
+            continue
+        if not _reference_resolves(ref, base_dir):
+            unresolved.append(ref)
+
+    return sorted(unresolved)
+
+
 def _copy_file_with_conflict_handling(
     src: str,
     dest: str,
@@ -154,10 +276,26 @@ def _copy_file_with_conflict_handling(
             name with a random "_NNNN_updated" suffix so nothing is overwritten.
     """
 
-    os.makedirs(os.path.dirname(dest), exist_ok=True)
-
     dest_rel = os.path.relpath(dest, project_root)
     src_rel = os.path.relpath(src, src_root)
+
+    # Heuristically check for relative paths that would not resolve in the
+    # destination location and report them as warnings.
+    unresolved_refs = _find_unresolved_relative_paths_for_file(src, dest)
+    if unresolved_refs:
+        os.makedirs(os.path.dirname(dest), exist_ok=True)
+        for ref in unresolved_refs:
+            warning = {"file": dest_rel, "reference": ref}
+            report["path_warnings"].append(warning)
+            print(
+                "Warning: in {file}, relative reference '{ref}' does not "
+                "point to an existing file under the target directory.".format(
+                    file=dest_rel,
+                    ref=ref,
+                )
+            )
+
+    os.makedirs(os.path.dirname(dest), exist_ok=True)
 
     if not os.path.exists(dest):
         shutil.copy2(src, dest)
@@ -195,7 +333,7 @@ def copy_installerdata_contents(installerdata_path: str, project_root: str) -> d
     - installerdata/xslt -> xslt
 
     Returns a report dictionary with keys: "new", "updated", "unchanged",
-    and "overwritten".
+    "overwritten", and "path_warnings".
     """
 
     report: dict[str, list] = {
@@ -203,6 +341,7 @@ def copy_installerdata_contents(installerdata_path: str, project_root: str) -> d
         "updated": [],
         "unchanged": [],
         "overwritten": [],
+        "path_warnings": [],
     }
 
     mappings = [
@@ -315,7 +454,11 @@ def main(argv: list[str] | None = None) -> int:
         print("Copying installerdata contents into the current project ...")
         report = copy_installerdata_contents(installerdata_path, project_root)
 
-        if not report["new"] and not report["updated"] and not report["overwritten"]:
+        if (
+            not report["new"]
+            and not report["updated"]
+            and not report["overwritten"]
+        ):
             print("No files needed to be copied; everything is already up to date.")
         else:
             if report["new"]:
@@ -339,6 +482,16 @@ def main(argv: list[str] | None = None) -> int:
                             dest=entry["dest"],
                             src=entry["src"],
                             existing=entry["existing"],
+                        )
+                    )
+
+            if report["path_warnings"]:
+                print("Potentially unresolved relative paths (please check manually):")
+                for warn in report["path_warnings"]:
+                    print(
+                        "  - In {file}: '{ref}'".format(
+                            file=warn["file"],
+                            ref=warn["reference"],
                         )
                     )
 
