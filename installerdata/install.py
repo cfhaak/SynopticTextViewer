@@ -442,11 +442,10 @@ def _prompt_for_target_dir(kind: str, default_dir: str, project_root: str) -> st
     default_dir_abs = os.path.abspath(default_dir)
     exists_default = os.path.isdir(default_dir_abs)
 
-    print()
     if exists_default:
-        print(f"Default target directory for {kind} files (exists):")
+        print(f"\nDefault target directory for {kind} files (exists):")
     else:
-        print(f"Default target directory for {kind} files (does NOT yet exist):")
+        print(f"\nDefault target directory for {kind} files (does NOT yet exist):")
     print(f"  {default_dir_abs}")
 
     use_default = ask_yes_no("Use this directory?", default=True)
@@ -460,7 +459,7 @@ def _prompt_for_target_dir(kind: str, default_dir: str, project_root: str) -> st
             ):
                 try:
                     os.makedirs(default_dir_abs, exist_ok=True)
-                except OSError as exc:  # noqa: PERF203
+                except OSError as exc:
                     print(f"Could not create directory {default_dir_abs}: {exc}")
                     print("Please choose a different directory.")
                     # Fall through to custom path selection.
@@ -559,8 +558,7 @@ def main() -> int:
         print(f"Found 'installerdata' folder at: {installerdata_path}")
 
         project_root = get_project_root()
-        print()
-        print("Configuring target directories for installed files...")
+        print("\nConfiguring target directories for installed files...")
 
         css_default = os.path.join(project_root, "html", "css")
         js_default = os.path.join(project_root, "html", "js", "synopticTextViewer")
@@ -574,8 +572,7 @@ def main() -> int:
             "xslt": _prompt_for_target_dir("XSLT", xslt_default, project_root),
         }
 
-        print()
-        print("Copying installerdata contents into the configured target directories ...")
+        print("\nCopying installerdata contents into the configured target directories ...")
         report = copy_installerdata_contents(installerdata_path, project_root, target_dirs)
 
         if (
