@@ -1,54 +1,133 @@
 # Synoptic Text Viewer for DSE
 
-## This repository and its code are under development. Meaningful documentation will follow shortly.
 Version 0.1
-* Built with [DSE-Static-Cookiecutter](https://github.com/acdh-oeaw/dse-static-cookiecutter)
-* Have a look at [the test implemenentation here]( https://cfhaak.github.io/SynopticTextViewer/column_viewer.html?emptyLines=yes&globalLinenr=yes&localLinenr=no&witnessIds=A%2CBa%2CBb&currentLine=v_100)
 
-## Contents of this repository
-Currently, this repository contains a mix of scripts, test data, and documentation. This will likely change in the future. Many files originate from [DSE-Static-Cookiecutter](https://github.com/acdh-oeaw/dse-static-cookiecutter).
-* `build.xml`: Build file from DSE-Static-Cookiecutter defining the build routine.
-* `data`: Contains some TEI files to test the tool.
-* `html`: Directory containing the HTML files of the static test site.
-    * `js/synopticTextViewer`: Contains some of the main scripts for this tool.
-        * `column.js`: A class representing a single column containing a witness or other text.
-        * `column_viewer_config.js`: A configuration class mainly defining how the JavaScript and CSS interact and specifying some default behaviors of the page.
-        * `columnViewer.js`: The main script handling the loading of all components.
-        * `editionManager.js`: This class handles the overall behavior and rendering of the interface.
-        * `editionState.js`: This class keeps track of the current state of the interface.
-        * `textContainer.js`: A simple class representing the container of a displayed text loaded into a column.
-        * Other files originate from DSE-Static-Cookiecutter.
-    * `witness_snippets`: This directory contains the text contents rendered in the synoptic view. All files are created by `pyscripts/make_snippets.py`.
-        * An HTML snippet for each witness.
-        * `snippet_paths.json`: A file containing metadata about the witnesses and their files.
-* `LICENSE`: You know what that is…
-* `nginx.conf`: Server configuration from DSE-Static-Cookiecutter.
-* `pyscripts`:
-    * `make_snippets.py`: This script creates the html snippets used to display the witnesses in the synoptic view. It reads the files from `data/editions` and outputs to the dedicated folder in the hmtl-directory. In addition it creates metadate for the snippets which are then used by the interface.
-    * `requirements.txt`: Lists the required Python modules. Run `python3 -m pip install -r requirements.txt` to install them.
-* `README.md`: The file you are reading right now.
-* `saxon`: XSLT processor installed by the ```shellscripts/script.sh``` script.
-* `shellscripts`: A collection of shell scripts from DSE-Static-Cookiecutter.
-* `xslt`: XSL scripts.
-    * `column_viewer.xsl`: Creates the basic page in which the column viewer is rendered. Feel free to modify or replace this as needed; all you need is a `div` container.
-    * `extract-all-witnesses.xsl`: If your TEI files use classical text-critical tags to encode all witnesses in one file, use this script to create individual files for each witness. You will likely need to adapt the script to your data. Can be executed via ```shellscripts/split_witness.sh```
-    * `generate_snippets.xsl`: This script creates the witness HTML snippets when called by `pyscripts/make_snippets.py`.
+This repository contains the code for a synoptic text viewer for DSE-style static editions. It now offers a small **installer** so you can copy only the parts you need (mainly JS and CSS) into your own static page project, plus an **example** project that demonstrates a complete setup.
 
-## Test Setup
-* Run `./shellscripts/script.sh`.
-* Set up a python environment if necessary.
-* Install python dependencies:
-`python -m pip install -r pyscripts/requirements.txt`
-* Run `ant` to build HTML files, etc.
+Built with [DSE-Static-Cookiecutter](https://github.com/acdh-oeaw/dse-static-cookiecutter).
 
-### Start Development Server
+---
 
-* `cd html/`
-* `python -m http.server`
-* Go to [http://0.0.0.0:8000/](http://0.0.0.0:8000/) or [http://localhost:8000/](http://localhost:8000/)
-* Click on "Fassungsvergleich" in the navbar.
-* Some features (eg. copying the URL to RAM via the menu) may not work if the url isn't http://localhost:8000/column_viewer.html)
+## 1. Using the installer in your own project
 
-### Third-Party Libraries
+The recommended way to integrate the Synoptic Text Viewer into an existing static site is to use the installer script.
 
-The code for all third-party libraries used is included in the `html/vendor` folder. Their respective licenses can be found either in a `LICENSE.txt` file or directly in the header of the `.js` file.
+### Prerequisites
+
+- Python 3.6 or newer (3.8+ recommended).
+
+### Basic workflow
+
+1. **Copy the installer script**
+     - From this repository, take `installerdata/install.py`.
+     - Place it in the **root directory of your static edition project**, i.e. the directory that contains your `html/`, `data/`, `xslt/`, etc.
+
+2. **Run the installer**
+     - In your project root, run:
+         - `python3 install.py` (or `python install.py`, depending on your setup)
+     - The script will:
+         - Download the latest SynopticTextViewer repository archive.
+         - Unpack it to a temporary directory.
+         - Locate the `installerdata` folder inside the archive.
+         - Copy the relevant **CSS**, **JavaScript**, **Python scripts**, and **XSLT** files into your project.
+
+3. **Choose or confirm target directories**
+     - For each kind of file, the installer proposes a default directory (you can confirm or override):
+         - CSS: typically `html/css`
+         - JS: typically `html/js/synopticTextViewer`
+         - Python: typically `pyscripts`
+         - XSLT: typically `xslt`
+     - You may adapt these paths to your own layout; the defaults assume a DSE-Static-Cookiecutter-style project.
+
+4. **Resolve conflicts interactively**
+     - If a target file does **not** exist, it is created.
+     - If a target file exists and is **identical**, it is skipped.
+     - If a target file exists and **differs**, you are asked whether to overwrite it:
+         - If you overwrite, the existing file is replaced.
+         - If you do **not** overwrite, the new file is saved under a name like `*_NNNN_updated.*` so nothing is lost.
+
+5. **After installation**
+     - Include the copied JS and CSS in your HTML templates.
+     - Optionally use the provided Python and XSLT scripts to generate witness snippets; these are meant as **working defaults** which you can adapt to your own TEI and workflow.
+
+Only the **JS and CSS** are strictly required to use the viewer in the browser. The Python and XSLT parts are suggestions that you can keep, extend, or replace.
+
+---
+
+## 2. What is in `installerdata/`?
+
+The installer always operates on the `installerdata` directory contained in the downloaded repository. Its contents are mirrored in this repository under `installerdata/`.
+
+### `installerdata/css/`
+
+- CSS files required for the synoptic viewer layout and styling.
+- These are copied into the CSS target directory you choose (default: `html/css`).
+- You can further customize these styles in your project as needed.
+
+### `installerdata/js/synopticTextViewer/`
+
+Core JavaScript modules for the viewer (copied into your JS target directory, default: `html/js/synopticTextViewer`):
+
+- `column.js`: Represents a single column containing a witness or other text.
+- `column_viewer_config.js`: Configuration of how JS and CSS interact and some default behaviors of the page.
+- `columnViewer.js`: Main script orchestrating loading and interaction of all components.
+- `editionManager.js`: Manages the overall behavior and rendering of the interface.
+- `editionState.js`: Keeps track of the current state of the interface.
+- `stateFromUrl.js`: Reads/writes viewer state from/to the URL.
+- `textContainer.js`: Represents the container of a displayed text loaded into a column.
+
+You should treat these as the core building blocks of the viewer. You are free to extend or adapt them, but the installer ensures you always start from a consistent baseline.
+
+### `installerdata/pyscripts/`
+
+Python helper scripts (copied into your Python target directory, default: `pyscripts`):
+
+- `make_snippets.py`: Creates the HTML snippets used to display witnesses in the synoptic view.
+    - Reads TEI files from `data/editions` (or your chosen source).
+    - Writes snippets into a dedicated folder (e.g. `html/witness_snippets`).
+    - Produces a `snippet_paths.json` file with metadata used by the interface.
+- `saxon_xpath.py`: Small helper for working with Saxon/XPath from Python.
+- `requirements.txt`: Lists the required Python packages. Install them with:
+    - `python3 -m pip install -r pyscripts/requirements.txt`
+
+You can adapt these scripts for your own TEI structure; they serve as a ready-made starting point.
+
+### `installerdata/xslt/`
+
+XSLT stylesheets (copied into your XSLT target directory, default: `xslt`):
+
+- `column_viewer.xsl`: Builds the basic page in which the column viewer is rendered. You may replace or adapt it as long as you keep a suitable container `div` for the viewer.
+- `generate_snippets.xsl`: Creates witness HTML snippets when called by `pyscripts/make_snippets.py`.
+
+These are reference stylesheets; feel free to customize them for your own encoding practices.
+
+---
+
+## 3. Example project (`example/`)
+
+The `example/` directory contains a complete test implementation of a DSE-style static project that uses the Synoptic Text Viewer. It is **not** required for using the tool, but serves as a concrete reference.
+
+Inside `example/` you will find, among others:
+
+- `data/`: Sample TEI data.
+- `html/`: The generated static site HTML, including the synoptic viewer.
+- `pyscripts/`: The same helper scripts used by the installer.
+- `xslt/`: XSLT stylesheets used to build the example site.
+- `shellscripts/`: Shell scripts for running the example build.
+
+See `example/README.md` for details on the example’s structure and how to run it locally.
+
+---
+
+## 4. Development notes
+
+- This repository is still under active development; structure and details may change.
+- The top-level `html/`, `data/`, `xslt/`, etc. in this repo are mainly used for development and may mirror (or diverge from) the example project over time.
+- Third-party libraries used by the viewer are vendored under `html/vendor` (or `example/html/vendor` in the example project); each library’s license is either in the `LICENSE` file or in the header of the corresponding `.js` file.
+
+If you are just integrating the viewer into your own project, you usually only need:
+
+- `installerdata/install.py` (copied into your project root and executed there), and
+- The files it installs for you (CSS, JS, Python scripts, XSLT).
+
+Everything else in this repository is mainly for development, testing, and as an extended example.
