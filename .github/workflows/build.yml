@@ -7,6 +7,9 @@ on:
 
 jobs:
   build_pages:
+    defaults:
+      run:
+        working-directory: ./example
     name: Publish Edition as GitHub Pages Website
     runs-on: ubuntu-latest
     env:
@@ -23,18 +26,16 @@ jobs:
     - name: Install Saxon, Ant, Python
       run: |
         sudo apt-get update && sudo apt-get install -y --no-install-recommends openjdk-11-jre-headless ant
-        ./example/shellscripts/script.sh
+        ./shellscripts/script.sh
         python -m pip config set global.break-system-packages true
-        pip install -r ./example/pyscripts/requirements.txt
+        pip install -r ./pyscripts/requirements.txt
     - name: Build
       run: |
-        cd example
         ant
-        cd ..
     - name: Upload Pages Artifact
       uses: actions/upload-pages-artifact@v3
       with:
-        path: "./example/html"
+        path: "./html"
     - name: Deploy to GitHub Pages
       id: deployment
       uses: actions/deploy-pages@v4
