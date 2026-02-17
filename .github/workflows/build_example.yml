@@ -1,4 +1,4 @@
-name: Build and publish
+name: Build and publish static page example
 
 on: 
   push:
@@ -29,7 +29,7 @@ jobs:
       uses: actions/checkout@v4
     - name: Install Saxon, Ant, Python
       run: |
-        sudo apt-get update && sudo apt-get install -y --no-install-recommends openjdk-11-jre-headless ant
+        sudo apt-get update
         ./shellscripts/script.sh
         python -m pip config set global.break-system-packages true
         pip install -r ./pyscripts/requirements.txt

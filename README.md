@@ -117,8 +117,8 @@ See `example/README.md` for details on the example’s structure and how to run 
 
 - This repository is still under active development; structure and details may change.
 - The top-level `html/`, `data/`, `xslt/`, etc. in this repo are mainly used for development and may mirror (or diverge from) the example project over time.
-- Third-party libraries used by the viewer are vendored under `html/vendor` (or `example/html/vendor` in the example project); each library’s license is either in the `LICENSE` file or in the header of the corresponding `.js` file.
-
+- Third-party libraries used by the viewer are vendored under `example/html/vendor` in the example project; each library’s license is either in the `LICENSE` file or in the header of the corresponding `.js` file. Saxon is licensed under `example/saxon/notices/`
+saxon.txt`.
 If you are just integrating the viewer into your own project, you usually only need:
 
 - `installerdata/install.py` (copied into your project root and executed there), and
