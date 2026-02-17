@@ -30,7 +30,9 @@ c = 0
 
 def get_outputfile(input_path: str, output_dir: str) -> str:
     filename = os.path.basename(input_path).removesuffix(".xml")
-    return os.path.join(output_dir, filename) + ".snpt"
+    output_path = os.path.join(output_dir, filename) + ".html"
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    return output_path
 
 
 def get_title(doc: TeiReader):
@@ -91,6 +93,10 @@ def log_snippetpaths(file_paths: dict, json_file_path: str):
         json.dump(file_paths, json_file, indent=4)
         print(f"logged to {json_file_path}")
 
+def clear_snippet_dir():
+    for file in glob.glob(os.path.join(output_dir, "*")):
+        os.remove(file)
 
+clear_snippet_dir()
 snippet_paths = xslt(in_xml_dir_glob, xsl_filepath, output_dir)
 log_snippetpaths(snippet_paths, output_dir + "/snippet_paths.json")
