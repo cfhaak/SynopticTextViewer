@@ -23,7 +23,7 @@ jobs:
     - name: Install Saxon, Ant, Python
       run: |
         sudo apt-get update && sudo apt-get install -y --no-install-recommends openjdk-11-jre-headless ant
-        ./shellscripts/script.sh
+        ./examples/shellscripts/script.sh
         python -m pip config set global.break-system-packages true
         pip install -r ./examples/pyscripts/requirements.txt
     - name: Build
