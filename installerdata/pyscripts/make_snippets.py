@@ -30,7 +30,9 @@ c = 0
 
 def get_outputfile(input_path: str, output_dir: str) -> str:
     filename = os.path.basename(input_path).removesuffix(".xml")
-    return os.path.join(output_dir, filename) + ".snpt"
+    output_path = os.path.join(output_dir, filename) + ".html"
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    return output_path
 
 
 def get_title(doc: TeiReader):
