@@ -11,7 +11,6 @@ This script performs the following steps:
       If the user chooses not to overwrite, the new file is copied with a unique "_NNNN_updated" suffix to avoid overwriting.
 """
 
-import argparse
 import os
 import random
 import re
@@ -21,6 +20,7 @@ import tarfile
 import tempfile
 import urllib.request
 import zipfile
+from typing import Any, Dict, List, Optional, Set
 
 DEFAULT_REPO_URL = "https://github.com/cfhaak/SynopticTextViewer/archive/main.zip"
 
@@ -63,7 +63,7 @@ def unpack_archive(archive_path: str, extract_to: str) -> None:
     raise RuntimeError("Unsupported or invalid archive format: " + archive_path)
 
 
-def find_installerdata(root: str) -> str | None:
+def find_installerdata(root: str) -> Optional[str]:
     """Search *root* recursively for a directory named "installerdata".
 
     Returns the first matching path found, or None if not found.
@@ -139,7 +139,7 @@ def _reference_resolves(ref: str, base_dir: str) -> bool:
     return os.path.exists(candidate)
 
 
-def ask_yes_no(prompt: str, default: bool | None = None) -> bool:
+def ask_yes_no(prompt: str, default: Optional[bool] = None) -> bool:
     """Ask a yes/no question via input() and return True for yes, False for no.
 
     *default* controls what happens on empty input:
@@ -179,7 +179,7 @@ def _make_updated_target_path(path: str) -> str:
             return candidate
 
 
-def _find_unresolved_relative_paths_for_file(src_path: str, dest_path: str) -> list[str]:
+def _find_unresolved_relative_paths_for_file(src_path: str, dest_path: str) -> List[str]:
     """Heuristically detect relative path references that don't resolve.
 
     The detection is based on the *destination* location of the file, i.e.
@@ -202,7 +202,7 @@ def _find_unresolved_relative_paths_for_file(src_path: str, dest_path: str) -> l
         return []
 
     base_dir = os.path.dirname(os.path.abspath(dest_path))
-    refs: set[str] = set()
+    refs: Set[str] = set()
 
     # CSS: url(...)
     for match in re.finditer(r"url\(([^)]+)\)", text, flags=re.IGNORECASE):
@@ -245,7 +245,7 @@ def _find_unresolved_relative_paths_for_file(src_path: str, dest_path: str) -> l
     for match in re.finditer(r"doc\(\s*['\"]([^'\"]+)['\"]\s*\)", text):
         refs.add(match.group(1))
 
-    unresolved: list[str] = []
+    unresolved: List[str] = []
     for ref in refs:
         if not _is_relative_reference(ref):
             continue
@@ -278,7 +278,6 @@ def _copy_file_with_conflict_handling(
     # destination location and report them as warnings.
     unresolved_refs = _find_unresolved_relative_paths_for_file(src, dest)
     if unresolved_refs:
-        os.makedirs(os.path.dirname(dest), exist_ok=True)
         for ref in unresolved_refs:
             warning = {"file": dest_rel, "reference": ref}
             report["path_warnings"].append(warning)
@@ -289,7 +288,6 @@ def _copy_file_with_conflict_handling(
                     ref=ref,
                 )
             )
-
     os.makedirs(os.path.dirname(dest), exist_ok=True)
 
     if not os.path.exists(dest):
@@ -321,8 +319,8 @@ def _copy_file_with_conflict_handling(
 def copy_installerdata_contents(
     installerdata_path: str,
     project_root: str,
-    target_dirs: dict[str, str],
-) -> dict:
+    target_dirs: Dict[str, str],
+) -> Dict[str, List[Any]]:
     """Copy relevant files from *installerdata_path* into *project_root*.
 
     The caller is responsible for determining the target directories for the
@@ -338,7 +336,7 @@ def copy_installerdata_contents(
     "overwritten", and "path_warnings".
     """
 
-    report: dict[str, list] = {
+    report: Dict[str, List[Any]] = {
         "new": [],
         "updated": [],
         "unchanged": [],
@@ -374,24 +372,6 @@ def copy_installerdata_contents(
                 )
 
     return report
-
-
-def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
-    parser = argparse.ArgumentParser(
-        description=(
-            "Download a SynopticTextViewer repository archive, unpack it "
-            "to a temporary directory, and locate the 'installerdata' folder."
-        )
-    )
-    parser.add_argument(
-        "--url",
-        default=DEFAULT_REPO_URL,
-        help=(
-            "URL of the repository archive (ZIP or TAR). "
-            "If omitted, DEFAULT_REPO_URL inside the script is used."
-        ),
-    )
-    return parser.parse_args(argv)
 
 
 def cleanup_temp(tmpdir: str, archive_path: str) -> None:
