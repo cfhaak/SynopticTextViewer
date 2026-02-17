@@ -2,7 +2,7 @@
 
 Version 0.1
 
-This repository contains the code for a synoptic text viewer for DSE-style static editions. It now offers a small **installer** so you can copy only the parts you need (mainly JS and CSS) into your own static page project, plus an **example** project that demonstrates a complete setup.
+This repository contains the code (js/css/xslt) for a synoptic text view for digital scholarly editions created with static pages. It offers a small **installer** so you can copy only the parts you need (mainly JS, CSS and XSLT) into your own static page project, plus an **example** project that demonstrates a complete setup.
 
 Built with [DSE-Static-Cookiecutter](https://github.com/acdh-oeaw/dse-static-cookiecutter).
 
@@ -10,34 +10,29 @@ Built with [DSE-Static-Cookiecutter](https://github.com/acdh-oeaw/dse-static-coo
 
 ## 1. Using the installer in your own project
 
-The recommended way to integrate the Synoptic Text Viewer into an existing static site is to use the installer script.
+To integrate the Synoptic Text Viewer into an existing static site, you can either copy what you need manually or use the "installer" script (`installerdata/install.py`).
 
 ### Prerequisites
 
 - Python 3.6 or newer (3.8+ recommended).
 
-### Basic workflow
+### Basic workflow for "installing" or "updating" the viewer in your project
 
-1. **Copy the installer script**
+1. **Copy the "installer" script**
      - From this repository, take `installerdata/install.py`.
      - Place it in the **root directory of your static edition project**, i.e. the directory that contains your `html/`, `data/`, `xslt/`, etc.
 
 2. **Run the installer**
      - In your project root, run:
          - `python3 install.py` (or `python install.py`, depending on your setup)
-     - The script will:
+     - The (primitive) script will:
          - Download the latest SynopticTextViewer repository archive.
          - Unpack it to a temporary directory.
          - Locate the `installerdata` folder inside the archive.
          - Copy the relevant **CSS**, **JavaScript**, **Python scripts**, and **XSLT** files into your project.
 
 3. **Choose or confirm target directories**
-     - For each kind of file, the installer proposes a default directory (you can confirm or override):
-         - CSS: typically `html/css`
-         - JS: typically `html/js/synopticTextViewer`
-         - Python: typically `pyscripts`
-         - XSLT: typically `xslt`
-     - You may adapt these paths to your own layout; the defaults assume a DSE-Static-Cookiecutter-style project.
+     - For each kind of file, the installer proposes a default directory (you can confirm or override); the defaults assume a DSE-Static-Cookiecutter-style project.
 
 4. **Resolve conflicts interactively**
      - If a target file does **not** exist, it is created.
@@ -50,7 +45,7 @@ The recommended way to integrate the Synoptic Text Viewer into an existing stati
      - Include the copied JS and CSS in your HTML templates.
      - Optionally use the provided Python and XSLT scripts to generate witness snippets; these are meant as **working defaults** which you can adapt to your own TEI and workflow.
 
-Only the **JS and CSS** are strictly required to use the viewer in the browser. The Python and XSLT parts are suggestions that you can keep, extend, or replace.
+Only the **JS and CSS** are strictly required to use the viewer in the browser. The Python and XSLT parts are suggestions that you can keep, extend, or replace, if your data structure or workflow differs.
 
 ---
 
@@ -69,14 +64,12 @@ The installer always operates on the `installerdata` directory contained in the 
 Core JavaScript modules for the viewer (copied into your JS target directory, default: `html/js/synopticTextViewer`):
 
 - `column.js`: Represents a single column containing a witness or other text.
-- `column_viewer_config.js`: Configuration of how JS and CSS interact and some default behaviors of the page.
+- `column_viewer_config.js`: Configuration of how JS and CSS interact and some default behaviors of the page. You can adapt this to your needs, but it provides a ready-made starting point.
 - `columnViewer.js`: Main script orchestrating loading and interaction of all components.
 - `editionManager.js`: Manages the overall behavior and rendering of the interface.
 - `editionState.js`: Keeps track of the current state of the interface.
 - `stateFromUrl.js`: Reads/writes viewer state from/to the URL.
 - `textContainer.js`: Represents the container of a displayed text loaded into a column.
-
-You should treat these as the core building blocks of the viewer. You are free to extend or adapt them, but the installer ensures you always start from a consistent baseline.
 
 ### `installerdata/pyscripts/`
 
@@ -90,13 +83,13 @@ Python helper scripts (copied into your Python target directory, default: `pyscr
 - `requirements.txt`: Lists the required Python packages. Install them with:
     - `python3 -m pip install -r pyscripts/requirements.txt`
 
-You can adapt these scripts for your own TEI structure; they serve as a ready-made starting point.
+You should adapt these scripts for your own TEI structure; they serve as a ready-made starting point.
 
 ### `installerdata/xslt/`
 
 XSLT stylesheets (copied into your XSLT target directory, default: `xslt`):
 
-- `column_viewer.xsl`: Builds the basic page in which the column viewer is rendered. You may replace or adapt it as long as you keep a suitable container `div` for the viewer.
+- `column_viewer.xsl`: Builds the basic page in which the column viewer is rendered. You may replace or adapt it as long as you keep a suitable container `div` for the viewer (specified in `column_viewer_config.js`).
 - `generate_snippets.xsl`: Creates witness HTML snippets when called by `pyscripts/make_snippets.py`.
 
 These are reference stylesheets; feel free to customize them for your own encoding practices.
