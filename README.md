@@ -2,10 +2,11 @@
 
 Version 0.1
 
-This repository contains the code (js/css/xslt) for a synoptic text view for digital scholarly editions created with static pages. It offers a small **installer** so you can copy only the parts you need (mainly JS, CSS and XSLT) into your own static page project, plus an **example** project that demonstrates a complete setup.
+This repository contains the code (js/css/xslt) for a synoptic text view for digital scholarly editions created with static pages. It offers a small **installer** so you can copy only the parts you need (mainly JS, CSS and XSLT) into your own static page project, plus an [**example** project](https://cfhaak.github.io/SynopticTextViewer/column_viewer.html?emptyLines=yes&globalLinenr=yes&localLinenr=no&witnessIds=A%2CBa%2CBb&currentLine=v_100) that demonstrates a complete setup.
 
 Built with [DSE-Static-Cookiecutter](https://github.com/acdh-oeaw/dse-static-cookiecutter).
 
+Disclaimer: I'm not a frontend developer, so the code is not necessarily the most elegant or efficient. Use it for whatever you want, e.g. as a working starting point that you can adapt to your needs.
 ---
 
 ## 1. Using the installer in your own project

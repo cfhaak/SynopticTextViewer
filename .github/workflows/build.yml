@@ -2,6 +2,10 @@ name: Build and publish
 
 on: 
   push:
+    branches:
+      - main
+    folders:
+      - example/**
   workflow_dispatch:
   repository_dispatch:
 
