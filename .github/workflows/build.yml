@@ -25,14 +25,16 @@ jobs:
         sudo apt-get update && sudo apt-get install -y --no-install-recommends openjdk-11-jre-headless ant
         ./shellscripts/script.sh
         python -m pip config set global.break-system-packages true
-        pip install -r ./pyscripts/requirements.txt
+        pip install -r ./examples/pyscripts/requirements.txt
     - name: Build
       run: |
+        cd examples
         ant
+        cd ..
     - name: Upload Pages Artifact
       uses: actions/upload-pages-artifact@v3
       with:
-        path: "./html"
+        path: "./examples/html"
     - name: Deploy to GitHub Pages
       id: deployment
       uses: actions/deploy-pages@v4
