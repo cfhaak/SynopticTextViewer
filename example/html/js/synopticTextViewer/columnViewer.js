@@ -71,47 +71,118 @@ function addButton(containerId, text, onClick, ariaLabel, config) {
   const button = document.createElement("button");
   button.textContent = text;
   button.onclick = onClick;
+  button.type = "button";
+  button.setAttribute("role", "menuitem");
+  button.tabIndex = -1;
   if (ariaLabel) {
     button.setAttribute(config.ariaLabelAttr, ariaLabel);
   }
   container.appendChild(button);
 }
-
-function setupControlsMenuEvents(toggle, controls, config) {
+function setupControlsMenuEvents(toggle, controls, config, menuItems) {
+  toggle.setAttribute("aria-haspopup", "true");
   toggle.setAttribute(config.controlsContainerAriaExpandedAttr, "false");
   toggle.setAttribute(
     config.controlsContainerAriaControlsAttr,
     config.controlsContainerAriaControlsValue
   );
 
+  let currentIndex = 0;
+
+  const updateRovingTabindex = (index) => {
+    if (!menuItems || menuItems.length === 0) return;
+    const itemCount = menuItems.length;
+    const normalized = ((index % itemCount) + itemCount) % itemCount;
+    menuItems.forEach((item, i) => {
+      item.tabIndex = i === normalized ? 0 : -1;
+    });
+    currentIndex = normalized;
+    menuItems[normalized].focus();
+  };
+
+  const openMenu = () => {
+    if (!controls) return;
+    controls.classList.add(config.controlsContainerOpenClass);
+    toggle.setAttribute(config.controlsContainerAriaExpandedAttr, "true");
+    if (menuItems && menuItems.length > 0) {
+      updateRovingTabindex(currentIndex || 0);
+    }
+  };
+
+  const closeMenu = (returnFocus = true) => {
+    if (!controls) return;
+    if (!controls.classList.contains(config.controlsContainerOpenClass)) {
+      return;
+    }
+    controls.classList.remove(config.controlsContainerOpenClass);
+    toggle.setAttribute(config.controlsContainerAriaExpandedAttr, "false");
+    if (returnFocus) {
+      toggle.focus();
+    }
+  };
+
   toggle.addEventListener("click", (e) => {
-    const isOpen = controls.classList.toggle(config.controlsContainerOpenClass);
-    toggle.setAttribute(
-      config.controlsContainerAriaExpandedAttr,
-      isOpen.toString()
-    );
     e.stopPropagation();
+    if (controls.classList.contains(config.controlsContainerOpenClass)) {
+      closeMenu();
+    } else {
+      openMenu();
+    }
   });
 
   document.addEventListener("click", (e) => {
     if (!controls.contains(e.target) && !toggle.contains(e.target)) {
-      controls.classList.remove(config.controlsContainerOpenClass);
-      toggle.setAttribute(config.controlsContainerAriaExpandedAttr, "false");
+      closeMenu(false);
     }
   });
 
   document.addEventListener("keydown", (e) => {
-    if (
-      (e.key === "Escape" || e.key === "Esc") &&
-      controls.classList.contains(config.controlsContainerOpenClass)
-    ) {
-      e.preventDefault();
-      e.stopPropagation();
-      controls.classList.remove(config.controlsContainerOpenClass);
-      toggle.setAttribute(config.controlsContainerAriaExpandedAttr, "false");
-      toggle.focus();
+    if (e.key === "Escape" || e.key === "Esc") {
+      if (controls.classList.contains(config.controlsContainerOpenClass)) {
+        e.preventDefault();
+        e.stopPropagation();
+        closeMenu(true);
+      }
     }
   });
+
+  if (controls && menuItems && menuItems.length > 0) {
+    controls.addEventListener("keydown", (e) => {
+      if (!controls.classList.contains(config.controlsContainerOpenClass)) {
+        return;
+      }
+      let handled = false;
+      if (e.key === "ArrowDown" || e.key === "Down") {
+        updateRovingTabindex(currentIndex + 1);
+        handled = true;
+      } else if (e.key === "ArrowUp" || e.key === "Up") {
+        updateRovingTabindex(currentIndex - 1);
+        handled = true;
+      } else if (e.key === "Home") {
+        updateRovingTabindex(0);
+        handled = true;
+      } else if (e.key === "End") {
+        updateRovingTabindex(menuItems.length - 1);
+        handled = true;
+      } else if (e.key === "Tab") {
+        // Leaving the menu with Tab should also close it
+        closeMenu(false);
+      }
+      if (handled) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    });
+
+    menuItems.forEach((item, index) => {
+      item.addEventListener("focus", () => {
+        currentIndex = index;
+        menuItems.forEach((el, i) => {
+          el.tabIndex = i === index ? 0 : -1;
+        });
+      });
+    });
+  }
 }
 
 function createControls(config, manager) {
@@ -164,7 +235,8 @@ function createControls(config, manager) {
   const controls = document.querySelector(
     `.${config.controlsContainerClass}`
   );
-  setupControlsMenuEvents(toggle, controls, config);
+  const menuItems = controls ? controls.querySelectorAll("button") : [];
+  setupControlsMenuEvents(toggle, controls, config, menuItems);
 }
 
 // --- MAIN ---
