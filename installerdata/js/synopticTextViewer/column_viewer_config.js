@@ -19,7 +19,6 @@ class ColumnViewerConfig {
   // BUTTON & CONTROL IDS
   // ===========================================================================
   addColumnButtonId = "column-adder";
-  toggleScrollButtonId = "scroll-toggler";
   toggleEmptyLinesButtonId = "empty-line-toggler";
   toggleGlobalLineNumbersButtonId = "global-linenr-toggler";
   toggleLocalLineNumbersButtonId = "local-linenr-toggler";
@@ -29,7 +28,6 @@ class ColumnViewerConfig {
   // BUTTON & CONTROL LABELS
   // ===========================================================================
   addColumnLabel = "Add column";
-  toggleScrollLabel = "Toggle global scroll";
   toggleEmptyLinesLabel = "Toggle empty lines";
   toggleGlobalLineNumbersLabel = "Toggle global line numbers";
   toggleLocalLineNumbersLabel = "Toggle local line numbers";
@@ -40,8 +38,6 @@ class ColumnViewerConfig {
   // ===========================================================================
   // CSS CLASS NAMES
   // ===========================================================================
-  globalScrollClass = "synTexView-scroll-global";
-  individualScrollClass = "synTexView-scroll-individual";
   witnessLineClass = "synTexView-line";
   omittedLineClass = "synTexView-omitted";
   hiddenElementClass = "synTexView-hidden";
@@ -63,7 +59,6 @@ class ColumnViewerConfig {
   // ===========================================================================
   generateCitationUrlAriaLabel = "Generate a citation URL";
   addColumnAriaLabel = "Add a new column";
-  toggleScrollAriaLabel = "Toggle global scrolling behavior";
   toggleEmptyLinesAriaLabel = "Toggle visibility of empty lines";
   toggleGlobalLineNumbersAriaLabel = "Toggle visibility of global line numbers";
   toggleLocalLineNumbersAriaLabel = "Toggle visibility of local line numbers";

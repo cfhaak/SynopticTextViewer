@@ -35,9 +35,8 @@
                     </div>
                     <div class="synTexView_controls_wrapper">
                         <button class="synTexView_controls_toggle">Menu</button>
-                        <div class="synTexView_controls">
+                        <div class="synTexView_controls" id="synTexView-controls-container" role="menu" aria-label="Synoptic viewer options">
                             <div id="column-adder"></div>
-                            <!-- <div id="scroll-toggler"></div> -->
                             <div id="empty-line-toggler"></div>
                             <div id="global-linenr-toggler"></div>
                             <div id="local-linenr-toggler"></div>
