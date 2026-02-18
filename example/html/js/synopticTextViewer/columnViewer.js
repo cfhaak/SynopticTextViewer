@@ -102,9 +102,11 @@ function setupControlsMenuEvents(toggle, controls, config) {
 
   document.addEventListener("keydown", (e) => {
     if (
-      e.key === "Escape" &&
+      (e.key === "Escape" || e.key === "Esc") &&
       controls.classList.contains(config.controlsContainerOpenClass)
     ) {
+      e.preventDefault();
+      e.stopPropagation();
       controls.classList.remove(config.controlsContainerOpenClass);
       toggle.setAttribute(config.controlsContainerAriaExpandedAttr, "false");
       toggle.focus();
