@@ -1,12 +1,22 @@
 /* rather non specific styles */
 html,
-body,
-main {
+body {
     margin: 0;
     padding: 0;
     height: 100%;
     width: 100%;
-    overflow: hidden;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1 1 auto;
+    min-height: 0;
+    width: 100%;
+    overflow: hidden; /* prevent page scroll; viewer scrolls inside */
     display: flex;
     flex-direction: column;
 }
@@ -125,28 +135,25 @@ div.synTexView_controls.open div button:focus {
 
 #synTexView-witness-container {
     margin: .3rem;
-    display: inline-flex;
-    flex-direction: row;
-    /* Arrange children in a row */
-    flex-wrap: nowrap;
-    /* Prevent wrapping */
-    gap: 0.75rem;
-    /* Add spacing between children */
+    display: flex;
+    flex-direction: row; /* Arrange children in a row */
+    flex-wrap: nowrap;   /* Prevent wrapping */
+    gap: 0.75rem;        /* Add spacing between children */
     padding-bottom: 1rem;
     align-items: stretch;
-    white-space: nowrap;
-    /* Prevent children from wrapping */
-    width: auto;
-    /* Ensure the width adjusts to fit children */
-    height: 100%;
-    overflow-x: auto;
-    overflow-y: auto;
-    height: 100% !
+    white-space: nowrap; /* Prevent children from wrapping */
+    width: 100%;         /* Take full available width */
+    flex: 1 1 auto;      /* Use remaining height in main */
+    min-height: 0;       /* Allow shrinking with flex */
+    overflow-x: auto;    /* horizontal scroll for columns */
+    overflow-y: hidden;  /* no vertical scroll here; only in text */
 }
 
 .synTexView-witness {
     position: relative;
-    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    flex: 0 0 auto;       /* width determined by content/min-width; scroll horizontally */
     min-width: 30rem;
     max-width: fit-content;
     width: auto;
@@ -157,7 +164,6 @@ div.synTexView_controls.open div button:focus {
     background-color: #fff;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     padding: 0.5rem 1rem;
-    height: 100%;
 }
 
 .synTexView-witness h4 {
@@ -168,6 +174,7 @@ div.synTexView_controls.open div button:focus {
 
 .synTexView-controls-container {
     height: 2.5rem;
+    flex: 0 0 auto; /* header takes only needed height */
 }
 
 #columnControls {
@@ -267,9 +274,11 @@ button.synTexView-remove-column {
 
 .synTexView-text-content {
     overflow-y: auto;
-    height: calc(100% - 2rem);
-    padding-top: 10rem;
-    padding-bottom: 20rem;
+    flex: 1 1 auto;   /* fill remaining column height */
+    min-height: 0;    /* allow shrinking when zooming */
+    max-height: 100%; /* never exceed column height */
+    padding-top: 3rem;
+    padding-bottom: 3rem;
     box-sizing: border-box;
 }
 
