@@ -8,8 +8,6 @@
   // ID of the container for the "Add Column" button
   "columnAdderId": "column-adder",
 
-  // ID of the container for the "Toggle Scrolling" button
-  "scrollTogglerId": "scroll-toggler",
 
   // ID of the container for the "Toggle Empty Line Visibility" button
   "emptyLineTogglerId": "empty-line-toggler",

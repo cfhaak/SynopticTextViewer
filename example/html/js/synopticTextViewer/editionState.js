@@ -4,8 +4,6 @@ class EditionState {
     this.displayEmptyLines = true;
     this.displayLinenrGlobal = true;
     this.displayLinenrLocal = false;
-    // the following line is for the global scrolling behavior switch
-    this.globalScroll = false;
     this.witness_metadata = witness_metadata;
     this.sortedWitnessIds = sortedWitnessIds;
     this.snippetsByLabels = {};

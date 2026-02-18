@@ -169,10 +169,6 @@ div.synTexView_controls.open div button:focus {
     height: 100%;
 }
 
-.synTexView-witness.synTexView-scroll-global {
-    height: fit-content;
-}
-
 .synTexView-controls-container {
     height: 2.5rem;
 }
@@ -183,10 +179,6 @@ div.synTexView_controls.open div button:focus {
     padding-top: 10rem;
     padding-bottom: 20rem;
     box-sizing: border-box;
-}
-
-.synTexView-text-content.synTexView-scroll-global {
-    height: fit-content;
 }
 
 #columnControls {
@@ -217,22 +209,6 @@ div.synTexView_controls.open div button:focus {
     margin-left: auto;
     /* Push the button to the right */
 }
-
-/* .synTexView-col-switch {
-    padding: 5px 20px 5px 10px;
-    font-size: 14px;
-} */
-
-/* .synTexView-column-button {
-    padding: 5px 20px 5px 10px;
-    font-size: 14px;
-    cursor: pointer;
-    border: 1px solid #999;
-    border-radius: 3px;
-    margin: 0;
-    text-align: center;
-    width: 10px;
-} */
 
 .synTexView-init {
     color: red;

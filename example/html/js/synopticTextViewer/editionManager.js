@@ -429,9 +429,7 @@ class EditionManager {
   }
 
   createColumnHTML(columnId, witnessId) {
-    const cssClass = this.state.globalScroll
-      ? this.config.globalScrollClass
-      : this.config.individualScrollClass;
+    const cssClass = this.config.individualScrollClass;
     const columnDiv = document.createElement("div");
     columnDiv.id = columnId;
     columnDiv.className = `${this.config.witnessColumnClass} ${cssClass}`;
@@ -457,7 +455,6 @@ class EditionManager {
       .getAllColumns()
       .map((col) => this.renderColumn(col.id));
     await Promise.all(renderPromises);
-    this.applyScrollSettings();
     this.applyVisibilitySettings();
   }
 
@@ -466,7 +463,6 @@ class EditionManager {
     if (!col) return;
     const snippetBody = await this.getSnippet(col.witnessId);
     this.updateColumnContent(col.id, snippetBody);
-    this.applyScrollSettings(columnId);
     this.applyVisibilitySettings(columnId);
   }
 
@@ -514,17 +510,6 @@ class EditionManager {
       this.state.sortedWitnessIds[this.state.columnCount] ||
       this.state.sortedWitnessIds[0];
     await this.addColumn(witnessId);
-    this.updateUrlWithState();
-  }
-
-  toggleScrollingBehaviour() {
-    this.state.globalScroll = !this.state.globalScroll;
-    this.applyScrollSettings();
-    this.sendAriaMessage(
-      `Global, parallel scrolling of all witnesses is now ${
-        this.state.globalScroll ? "enabled" : "disabled"
-      }.`
-    );
     this.updateUrlWithState();
   }
 
@@ -614,32 +599,6 @@ class EditionManager {
       });
   }
 
-  applyScrollSettings(columnId = null) {
-    if (columnId) {
-      const columnElement = document.getElementById(columnId);
-      if (columnElement) {
-        const textContent = columnElement.querySelector(
-          `.${this.config.textContentClass}`
-        );
-        this.toggleScrollClass(textContent, this.state.globalScroll);
-        this.toggleScrollClass(columnElement, this.state.globalScroll);
-      }
-    } else {
-      const text_contents = this.witnessContainer.getElementsByClassName(
-        this.config.textContentClass
-      );
-      const witnesses = this.witnessContainer.getElementsByClassName(
-        this.config.witnessColumnClass
-      );
-      for (const text_content of text_contents) {
-        this.toggleScrollClass(text_content, this.state.globalScroll);
-      }
-      for (const witness of witnesses) {
-        this.toggleScrollClass(witness, this.state.globalScroll);
-      }
-    }
-  }
-
   applyVisibilitySettings(columnId = null) {
     if (columnId) {
       const columnElement = document.getElementById(columnId);
@@ -660,16 +619,6 @@ class EditionManager {
         this.setGlobalLinecounterVisibility(text_content);
         this.setLocalLinecounterVisibility(text_content);
       }
-    }
-  }
-
-  toggleScrollClass(element, globalScroll) {
-    if (element) {
-      element.classList.toggle(
-        this.config.individualScrollClass,
-        !globalScroll
-      );
-      element.classList.toggle(this.config.globalScrollClass, globalScroll);
     }
   }
 
