@@ -157,6 +157,7 @@ div.synTexView_controls.open div button:focus {
     background-color: #fff;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     padding: 0.5rem 1rem;
+    height: 100%;
 }
 
 .synTexView-witness h4 {
@@ -165,20 +166,8 @@ div.synTexView_controls.open div button:focus {
     overflow-wrap: break-word;
 }
 
-.synTexView-witness.synTexView-scroll-individual {
-    height: 100%;
-}
-
 .synTexView-controls-container {
     height: 2.5rem;
-}
-
-.synTexView-text-content.synTexView-scroll-individual {
-    overflow-y: auto;
-    height: calc(100% - 2rem);
-    padding-top: 10rem;
-    padding-bottom: 20rem;
-    box-sizing: border-box;
 }
 
 #columnControls {
@@ -276,6 +265,14 @@ button.synTexView-remove-column {
     display: none !important;
 }
 
+.synTexView-text-content {
+    overflow-y: auto;
+    height: calc(100% - 2rem);
+    padding-top: 10rem;
+    padding-bottom: 20rem;
+    box-sizing: border-box;
+}
+
 .synTexView-text-content:focus {
     outline: 2px solid grey !important;
 }
@@ -303,7 +300,7 @@ button.synTexView-remove-column {
 }
 
 @media (max-width: 800px) {
-    .synTexView-text-content.synTexView-scroll-individual {
+    .synTexView-text-content{
         padding-top: 2rem;
         padding-bottom: 2rem;
     }

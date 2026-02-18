@@ -38,7 +38,6 @@ class ColumnViewerConfig {
   // ===========================================================================
   // CSS CLASS NAMES
   // ===========================================================================
-  individualScrollClass = "synTexView-scroll-individual";
   witnessLineClass = "synTexView-line";
   omittedLineClass = "synTexView-omitted";
   hiddenElementClass = "synTexView-hidden";

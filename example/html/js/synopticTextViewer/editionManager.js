@@ -394,9 +394,9 @@ class EditionManager {
     return dropdown;
   }
 
-  createTextContentDiv(cssClass, witnessId) {
+  createTextContentDiv(witnessId) {
     const textContentDiv = document.createElement("div");
-    textContentDiv.className = `${this.config.textContentClass} ${cssClass}`;
+    textContentDiv.className = this.config.textContentClass;
     textContentDiv.setAttribute("role", "document");
     textContentDiv.setAttribute("tabindex", "0");
     textContentDiv.setAttribute(
@@ -429,17 +429,16 @@ class EditionManager {
   }
 
   createColumnHTML(columnId, witnessId) {
-    const cssClass = this.config.individualScrollClass;
     const columnDiv = document.createElement("div");
     columnDiv.id = columnId;
-    columnDiv.className = `${this.config.witnessColumnClass} ${cssClass}`;
+    columnDiv.className = this.config.witnessColumnClass;
     columnDiv.setAttribute("role", "region");
     columnDiv.setAttribute(
       this.config.ariaLabelAttr,
       this.config.ariaColumnLabel(this.state.witness_metadata[witnessId].title)
     );
     columnDiv.appendChild(this.createControlsContainer(columnId, witnessId));
-    columnDiv.appendChild(this.createTextContentDiv(cssClass, witnessId));
+    columnDiv.appendChild(this.createTextContentDiv(witnessId));
     return columnDiv;
   }
 
