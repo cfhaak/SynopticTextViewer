@@ -35,7 +35,7 @@ Many files originate from [DSE-Static-Cookiecutter](https://github.com/acdh-oeaw
   - Other XSLT files used to build the example site (index, search, lists, etc.).
 
 ## Running the example locally
-
+0. If you just want to host the side locally for testing, you should be abel to run it like described below. It's a static side, already built after all …
 1. Run the setup script:
    - `./shellscripts/script.sh`
 2. Set up a Python environment if needed.
