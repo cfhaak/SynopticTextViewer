@@ -346,16 +346,42 @@ class EditionManager {
     this.initKeyDownListeners();
   }
 
+  async fetchWithRetry(url, options = {}, retries = 3, timeoutMs = 15000) {
+    for (let attempt = 0; attempt <= retries; attempt++) {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+      try {
+        const response = await fetch(url, {
+          ...options,
+          signal: controller.signal,
+        });
+        clearTimeout(timeoutId);
+        if (!response.ok) {
+          // HTTP error – retry unless this was the last attempt
+          if (attempt === retries) return null;
+        } else {
+          return response;
+        }
+      } catch (error) {
+        clearTimeout(timeoutId);
+        // Network/timeout error – retry unless this was the last attempt
+        if (attempt === retries) return null;
+      }
+    }
+    return null;
+  }
+
   async getSnippet(witnessId) {
     if (this.state.snippetsByLabels[witnessId]) {
       return this.state.snippetsByLabels[witnessId].cloneNode(true);
     }
     try {
-      const response = await fetch(
-        this.state.witness_metadata[witnessId].filepath
-      );
-      if (!response.ok) {
-        return `Resource '${this.state.witness_metadata[witnessId].filepath}' couldn't be loaded.`;
+      const filepath = this.state.witness_metadata[witnessId].filepath;
+      const response = await this.fetchWithRetry(filepath);
+      if (!response) {
+        const errorDiv = document.createElement("div");
+        errorDiv.textContent = `Resource '${filepath}' couldn't be loaded after multiple attempts.`;
+        return errorDiv;
       }
       const htmlText = await response.text();
       const snippetBody = new DOMParser().parseFromString(
@@ -365,8 +391,8 @@ class EditionManager {
       this.state.snippetsByLabels[witnessId] = snippetBody;
       return snippetBody.cloneNode(true);
     } catch (error) {
-      dummyDiv = document.createElement("div");
-      errorSpan = document.createElement("span");
+      const dummyDiv = document.createElement("div");
+      const errorSpan = document.createElement("span");
       errorSpan.textContent = `Resource '${this.state.witness_metadata[witnessId].filepath}' couldn't be loaded. ${error.message}`;
       dummyDiv.appendChild(errorSpan);
       return dummyDiv;

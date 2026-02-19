@@ -200,13 +200,6 @@ function createControls(config, manager) {
     config.addColumnAriaLabel,
     config
   );
-  // addButton(
-  //   config.toggleScrollButtonId,
-  //   config.toggleScrollLabel,
-  //   () => manager.toggleScrollingBehaviour(),
-  //   config.toggleScrollAriaLabel,
-  //   config
-  // );
   addButton(
     config.toggleEmptyLinesButtonId,
     config.toggleEmptyLinesLabel,
