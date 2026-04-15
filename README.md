@@ -9,13 +9,79 @@ Built with [DSE-Static-Cookiecutter](https://github.com/acdh-oeaw/dse-static-coo
 Disclaimer: I'm not a frontend developer, so the code is not necessarily the most elegant or efficient. Use it for whatever you want, e.g. as a working starting point that you can adapt to your needs.
 ---
 
-## 1. Using the installer in your own project
+## 1. Plugin-style viewer and minimal requirements
+
+The synoptic viewer is designed as a small, pluggable module that mounts into an
+existing static page. Instead of prescribing a full site layout or build
+pipeline, it expects a few explicit, minimal inputs that you can generate in
+whatever way fits your project.
+
+At runtime the viewer needs four things:
+
+1. **A mount container with a clear sizing policy**  
+    Your host page must provide a container element into which the viewer will
+    render the witness columns. By default this is the `<div id="synTexView-witness-container"></div>`
+    shown in the example at `example/html/column_viewer.html`, sized via
+    `installerdata/css/synopticTextViewer.css` to take up the remaining space in
+    the `<main>` area. Projects are free to adapt both the container ID (via
+    `column_viewer_config.js`) and the surrounding layout/CSS, as long as there
+    is a dedicated container where the viewer can attach.
+
+2. **Per‑witness HTML snippets with a predictable structure**  
+    The viewer loads one HTML file per witness (for example the files in
+    `example/html/witness_snippets/`). Each snippet:
+    - contains a heading for the witness (optional but recommended), and
+    - encodes each line as an element with a stable line identifier
+      (e.g. `id="v_123"`, `data-n="v_123"`) and the CSS classes configured in
+      `column_viewer_config.js` (by default `synTexView-line`,
+      `synTexView-linenr-global`, `synTexView-linenr-local`, …).
+
+    The important contract is that corresponding lines across witnesses share the
+    same identifier; this is what allows the viewer to align them on demand.
+    How you create these snippets is up to you; this repository ships
+    `installerdata/xslt/generate_snippets.xsl` and
+    `installerdata/pyscripts/make_snippets.py` as working examples that you can
+    copy and adapt to your TEI.
+
+3. **A JSON manifest listing snippet paths and metadata**  
+    The viewer reads a small JSON file (by default
+    `witness_snippets/snippet_paths.json` relative to the viewer page, e.g.
+    `html/column_viewer.html` → `html/witness_snippets/snippet_paths.json`)
+    whose structure is illustrated by
+    `example/html/witness_snippets/snippet_paths.json`. It is a simple object
+    keyed by witness ID, where each entry at minimum provides:
+
+    - `filepath`: path to the HTML snippet relative to the host page,  
+    - `title`: human‑readable label used in menus, and  
+    - `sorting`: a string or number used to sort witnesses in the dropdown.
+
+    The path to this manifest is configured via
+    `snippetMetadataPath` in `installerdata/js/synopticTextViewer/column_viewer_config.js`.
+
+4. **A configuration module for CSS classes, alignment targets, labels, and ARIA strings**  
+    Most IDs, class names, default behaviors, button labels, and ARIA labels used
+    by the controls are centralised in
+    `installerdata/js/synopticTextViewer/column_viewer_config.js`
+    (class `ColumnViewerConfig`). Projects typically copy this file into their
+    own `html/js/synopticTextViewer/` folder and adjust it to:
+
+    - map viewer logic to project‑specific CSS class names and container IDs,
+    - declare the path to the snippet manifest and default number of columns,
+    - set internationalised button labels and messages, and
+    - customise ARIA labels and attributes used for keyboard navigation and
+      focus management.
+
+In normal use you only touch data generation (your TEI → snippets + JSON) and
+this configuration module; the viewer’s core JavaScript classes remain
+unchanged and can be updated via the installer.
+
+## 2. Using the installer in your own project
 
 To integrate the Synoptic Text Viewer into an existing static site, you can either copy what you need manually or use the "installer" script (`installerdata/install.py`).
 
 ### Prerequisites
 
-- Python 3.6 or newer (3.8+ recommended).
+- Python 3.6 or newer.
 
 ### Basic workflow for "installing" or "updating" the viewer in your project
 
@@ -50,7 +116,7 @@ Only the **JS and CSS** are strictly required to use the viewer in the browser. 
 
 ---
 
-## 2. What is in `installerdata/`?
+## 3. What is in `installerdata/`?
 
 The installer always operates on the `installerdata` directory contained in the downloaded repository. Its contents are mirrored in this repository under `installerdata/`.
 
@@ -97,31 +163,22 @@ These are reference stylesheets; feel free to customize them for your own encodi
 
 ---
 
-## 3. Example project (`example/`)
+## 4. Example project (`example/`)
 
 The `example/` directory contains a complete test implementation of a DSE-style static project that uses the Synoptic Text Viewer. It is **not** required for using the tool, but serves as a concrete reference.
-
-Inside `example/` you will find, among others:
-
-- `data/`: Sample TEI data.
-- `html/`: The generated static site HTML, including the synoptic viewer.
-- `pyscripts/`: The same helper scripts used by the installer.
-- `xslt/`: XSLT stylesheets used to build the example site.
-- `shellscripts/`: Shell scripts for running the example build.
 
 See `example/README.md` for details on the example’s structure and how to run it locally.
 
 ---
 
-## 4. Development notes
+## 5. Development notes
 
 - This repository is still under active development; structure and details may change.
 - The top-level `html/`, `data/`, `xslt/`, etc. in this repo are mainly used for development and may mirror (or diverge from) the example project over time.
-- Third-party libraries used by the viewer are vendored under `example/html/vendor` in the example project; each library’s license is either in the `LICENSE` file or in the header of the corresponding `.js` file. Saxon is licensed under `example/saxon/notices/`
-saxon.txt`.
+- Third-party libraries used by the viewer are vendored under `example/html/vendor` in the example project; each library’s license is either in the `LICENSE` file or in the header of the corresponding `.js` file. Saxon is licensed under `example/saxon/notices/saxon.txt`.
 If you are just integrating the viewer into your own project, you usually only need:
 
 - `installerdata/install.py` (copied into your project root and executed there), and
 - The files it installs for you (CSS, JS, Python scripts, XSLT).
 
-Everything else in this repository is mainly for development, testing, and as an extended example.
+Everything else in this repository is at the moment mainly used for development, testing, and as an extended example.
