@@ -23,7 +23,7 @@
         <meta property="og:site_name" content="{$project_short_title}" />
 	    <meta property="og:image" content="{$project_logo}" />
 
-        <link href="vendor/bootstrap-5.3.5-dist/css/bootstrap.min.css" rel="stylesheet"/>
+        <script src="https://cdn.tailwindcss.com"></script>
         <link rel="stylesheet" href="vendor/bootstrap-icons/font/bootstrap-icons.min.css" />
         <link rel="stylesheet" href="css/style.css" type="text/css"></link>
         <link rel="stylesheet" href="css/micro-editor.css" type="text/css"></link>

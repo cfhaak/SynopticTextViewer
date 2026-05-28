@@ -17,17 +17,17 @@
 
     <xsl:template match="/">
         <xsl:variable name="doc_title" select="'Inhaltsverzeichnis'"/>
-        <html class="h-100" lang="{$default_lang}">
+        <html class="h-full" lang="{$default_lang}">
             <head>
                 <xsl:call-template name="html_head">
                     <xsl:with-param name="html_title" select="$doc_title"></xsl:with-param>
                 </xsl:call-template>
             </head>
             
-            <body class="d-flex flex-column h-100">
+            <body class="flex flex-col h-full">
             <xsl:call-template name="nav_bar"/>
-                <main class="flex-shrink-0 flex-grow-1">
-                    <div class="container">
+                <main class="grow">
+                    <div class="container mx-auto px-4">
                         <h1>Inhaltsverzeichnis</h1>
                         <table id="myTable">
                             <thead>

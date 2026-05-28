@@ -1,57 +1,57 @@
 {
+    "tr_Ba": {
+        "filepath": "witness_snippets/tr_Ba.html",
+        "sorting": "tr_Ba",
+        "title": "Der arme Heinrich tr_Ba"
+    },
     "Test": {
         "filepath": "witness_snippets/random_doc.html",
         "sorting": "Test",
         "title": "TEST Test"
-    },
-    "E": {
-        "filepath": "witness_snippets/E.html",
-        "sorting": "E",
-        "title": "Der arme Heinrich E"
-    },
-    "A": {
-        "filepath": "witness_snippets/A.html",
-        "sorting": "A",
-        "title": "Der arme Heinrich A"
-    },
-    "tr_A": {
-        "filepath": "witness_snippets/tr_A.html",
-        "sorting": "tr_A",
-        "title": "Der arme Heinrich tr_A"
-    },
-    "Bb": {
-        "filepath": "witness_snippets/Bb.html",
-        "sorting": "Bb",
-        "title": "Der arme Heinrich Bb"
-    },
-    "D": {
-        "filepath": "witness_snippets/D.html",
-        "sorting": "D",
-        "title": "Der arme Heinrich D"
-    },
-    "C": {
-        "filepath": "witness_snippets/C.html",
-        "sorting": "C",
-        "title": "Der arme Heinrich C"
     },
     "Ba": {
         "filepath": "witness_snippets/Ba.html",
         "sorting": "Ba",
         "title": "Der arme Heinrich Ba"
     },
-    "tr_Ba": {
-        "filepath": "witness_snippets/tr_Ba.html",
-        "sorting": "tr_Ba",
-        "title": "Der arme Heinrich tr_Ba"
+    "F": {
+        "filepath": "witness_snippets/F.html",
+        "sorting": "F",
+        "title": "Der arme Heinrich F"
     },
     "tr_Bb": {
         "filepath": "witness_snippets/tr_Bb.html",
         "sorting": "tr_Bb",
         "title": "Der arme Heinrich tr_Bb"
     },
-    "F": {
-        "filepath": "witness_snippets/F.html",
-        "sorting": "F",
-        "title": "Der arme Heinrich F"
+    "E": {
+        "filepath": "witness_snippets/E.html",
+        "sorting": "E",
+        "title": "Der arme Heinrich E"
+    },
+    "C": {
+        "filepath": "witness_snippets/C.html",
+        "sorting": "C",
+        "title": "Der arme Heinrich C"
+    },
+    "D": {
+        "filepath": "witness_snippets/D.html",
+        "sorting": "D",
+        "title": "Der arme Heinrich D"
+    },
+    "Bb": {
+        "filepath": "witness_snippets/Bb.html",
+        "sorting": "Bb",
+        "title": "Der arme Heinrich Bb"
+    },
+    "tr_A": {
+        "filepath": "witness_snippets/tr_A.html",
+        "sorting": "tr_A",
+        "title": "Der arme Heinrich tr_A"
+    },
+    "A": {
+        "filepath": "witness_snippets/A.html",
+        "sorting": "A",
+        "title": "Der arme Heinrich A"
     }
 }

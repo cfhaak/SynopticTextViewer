@@ -31,59 +31,54 @@
 
 
     <xsl:template match="/">
-        <html class="h-100" lang="{$default_lang}">
+        <html class="h-full" lang="{$default_lang}">
             <head>
                 <xsl:call-template name="html_head">
                     <xsl:with-param name="html_title" select="$doc_title"></xsl:with-param>
                 </xsl:call-template>
-                <style>
-                    .navBarNavDropdown ul li:nth-child(2) {
-                        display: none !important;
-                    }
-                </style>
             </head>
-            <body class="d-flex flex-column h-100">
+            <body class="flex flex-col h-full">
                 <xsl:call-template name="nav_bar"/>
-                <main class="flex-shrink-0 flex-grow-1">
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-md-2 col-lg-2 col-sm-12 text-start">
+                <main class="grow">
+                    <div class="container mx-auto px-4">
+                        <div class="flex items-start my-4">
+                            <div class="w-16 text-left flex-none">
                                 <xsl:if test="ends-with($prev,'.html')">
                                     <a>
                                         <xsl:attribute name="href">
                                             <xsl:value-of select="$prev"/>
                                         </xsl:attribute>
-                                        <i class="fs-2 bi bi-chevron-left" title="Zurück zum vorigen Dokument" visually-hidden="true">
-                                            <span class="visually-hidden">Zurück zum vorigen Dokument</span>
+                                        <i class="text-2xl bi bi-chevron-left" title="Zurück zum vorigen Dokument">
+                                            <span class="sr-only">Zurück zum vorigen Dokument</span>
                                         </i>
                                     </a>
                                 </xsl:if>
                             </div>
-                            <div class="col-md-8 col-lg-8 col-sm-12 text-center">
+                            <div class="flex-1 text-center">
                                 <h1>
                                     <xsl:value-of select="$doc_title"/>
                                 </h1>
                                 <div>
                                     <a href="{$teiSource}">
-                                        <i class="bi bi-download fs-2" title="Zum TEI/XML Dokument" visually-hidden="true">
-                                            <span class="visually-hidden">Zum TEI/XML Dokument</span>
+                                        <i class="bi bi-download text-2xl" title="Zum TEI/XML Dokument">
+                                            <span class="sr-only">Zum TEI/XML Dokument</span>
                                         </i>
                                     </a>
                                 </div>
                             </div>
-                            <div class="col-md-2 col-lg-2 col-sm-12 text-start">
+                            <div class="w-16 text-right flex-none">
                                 <xsl:if test="ends-with($next, '.html')">
                                     <a>
                                         <xsl:attribute name="href">
                                             <xsl:value-of select="$next"/>
                                         </xsl:attribute>
-                                        <i class="fs-2 bi bi-chevron-right" title="Weiter zum nächsten Dokument" visually-hidden="true">
-                                            <span class="visually-hidden">Weiter zum nächsten Dokument</span>
+                                        <i class="text-2xl bi bi-chevron-right" title="Weiter zum nächsten Dokument">
+                                            <span class="sr-only">Weiter zum nächsten Dokument</span>
                                         </i>
                                     </a>
                                 </xsl:if>
                             </div>
-                            <div id="editor-widget">
+                            <div id="editor-widget" class="flex-none">
                                 <xsl:call-template name="annotation-options"></xsl:call-template>
                             </div>
                         </div>
