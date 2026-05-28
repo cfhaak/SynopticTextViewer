@@ -12,41 +12,54 @@
     </doc>
     
     <xsl:template name="annotation-options">
-        <div id="aot-navBarNavDropdown" class="navBarNavDropdown dropstart">
-            <!-- Your menu goes here -->
-            <a title="Annotationen" href="#" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false" role="button">
+        <div id="aot-navBarNavDropdown" class="relative inline-block">
+            <a title="Annotationen" href="#"
+               id="aot-dropdown-toggle"
+               class="text-gray-500 hover:text-gray-900 px-2 py-1"
+               aria-expanded="false" role="button"
+               onclick="var m=document.getElementById('aot-dropdown-menu');m.classList.toggle('hidden');this.setAttribute('aria-expanded',!m.classList.contains('hidden'));return false;">
                 <i class="bi bi-gear" title="Menü zur Anpassung der Anzeige"></i>
-            </a>                  
-            <ul class="dropdown-menu">
-                <li class="dropdown-item">
+            </a>
+            <ul id="aot-dropdown-menu" class="hidden absolute right-0 top-full bg-white shadow-lg rounded py-1 z-50 min-w-[10rem] border border-gray-200">
+                <li class="px-3 py-1">
                     <full-size opt="fls"></full-size>
                 </li>
-                <li class="dropdown-item">
+                <!-- image-switch hidden: not applicable in this view -->
+                <li class="px-3 py-1 hidden">
                     <image-switch opt="es"></image-switch>
                 </li>
-                <li class="dropdown-item">
+                <li class="px-3 py-1">
                     <font-size opt="fs"></font-size>
                 </li>
-                <li class="dropdown-item">
+                <li class="px-3 py-1">
                     <font-family opt="ff"></font-family>
                 </li>
-                <li class="dropdown-item" style="border-top: 5px dashed lightgrey !important;">
+                <li class="px-3 py-1 border-t-4 border-dashed border-gray-200">
                     <annotation-slider opt="ef"></annotation-slider>
                 </li>
-                <li class="dropdown-item">
+                <li class="px-3 py-1">
                     <annotation-slider opt="prs"></annotation-slider>
                 </li>
-                <li class="dropdown-item">
+                <li class="px-3 py-1">
                     <annotation-slider opt="plc"></annotation-slider>
                 </li>
-                <li class="dropdown-item">
+                <li class="px-3 py-1">
                     <annotation-slider opt="wrk"></annotation-slider>
                 </li>
-                <li class="dropdown-item">
+                <li class="px-3 py-1">
                     <annotation-slider opt="org"></annotation-slider>
                 </li>
-            </ul>                                                    
+            </ul>
+            <script>
+                document.addEventListener('click', function(e) {
+                    var m = document.getElementById('aot-dropdown-menu');
+                    if (!m) { return; }
+                    if (e.target.closest('#aot-navBarNavDropdown')) { return; }
+                    m.classList.add('hidden');
+                    var t = document.getElementById('aot-dropdown-toggle');
+                    if (t) { t.setAttribute('aria-expanded', 'false'); }
+                });
+            </script>
         </div>
-        
     </xsl:template>
 </xsl:stylesheet>

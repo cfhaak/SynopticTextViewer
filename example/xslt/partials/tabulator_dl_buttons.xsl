@@ -5,18 +5,18 @@
     version="2.0">
     <xsl:template match="/" name="tabulator_dl_buttons">
         <h4>Download Table</h4>
-        <div class="button-group">
-            <button type="button" class="btn btn-outline-secondary" id="download-csv" title="Download CSV">
+        <div class="flex gap-2">
+            <button type="button" class="px-3 py-1.5 border border-gray-400 rounded text-gray-600 hover:bg-gray-100 text-sm" id="download-csv" title="Download CSV">
                 <i class="bi bi-filetype-csv"></i>
-                <span class="visually-hidden">Download CSV</span>
+                <span class="sr-only">Download CSV</span>
             </button>
-            <button type="button" class="btn btn-outline-secondary" id="download-json" title="Download JSON">
+            <button type="button" class="px-3 py-1.5 border border-gray-400 rounded text-gray-600 hover:bg-gray-100 text-sm" id="download-json" title="Download JSON">
                 <i class="bi bi-filetype-json"></i>
-                <span class="visually-hidden">Download JSON</span>
+                <span class="sr-only">Download JSON</span>
             </button>
-            <button type="button" class="btn btn-outline-secondary" id="download-html" title="Download HTML">
+            <button type="button" class="px-3 py-1.5 border border-gray-400 rounded text-gray-600 hover:bg-gray-100 text-sm" id="download-html" title="Download HTML">
                 <i class="bi bi-filetype-html"></i>
-                <span class="visually-hidden">Download HTML</span>
+                <span class="sr-only">Download HTML</span>
             </button>
         </div>
     </xsl:template>

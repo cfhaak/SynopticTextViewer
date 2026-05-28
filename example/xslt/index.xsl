@@ -17,16 +17,16 @@
         <xsl:variable name="doc_title">
             <xsl:value-of select='"Synoptic Text Viewer (example)"'/>
         </xsl:variable>
-        <html class="h-100" lang="{$default_lang}">
+        <html class="h-full" lang="{$default_lang}">
             <head>
                 <xsl:call-template name="html_head">
                     <xsl:with-param name="html_title" select="$doc_title"></xsl:with-param>
                 </xsl:call-template>
             </head>            
-            <body class="d-flex flex-column h-100">
+            <body class="flex flex-col h-full">
                 <xsl:call-template name="nav_bar"/>
-                <main class="flex-shrink-0 flex-grow-1">
-                    <div class="container">
+                <main class="grow">
+                    <div class="container mx-auto px-4">
                         <xsl:call-template name="one_time_alert"/>
                         <h1><xsl:value-of select="$project_short_title"/></h1>
                         <h2><xsl:value-of select="$project_title"/></h2>
