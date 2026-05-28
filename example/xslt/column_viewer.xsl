@@ -157,7 +157,7 @@
                     .s_orig      { display: none; }
                     .sup_orig    { display: none; }
                     .editorial_note { display: none; }
-                    .italic      { @apply italic; }
+                    .italic      { font-style: italic; }
                     .bold        { @apply font-bold; }
                     .smallcaps   { font-variant: small-caps; }
                     .del         { @apply line-through; }
