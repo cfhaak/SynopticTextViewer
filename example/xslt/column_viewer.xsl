@@ -38,11 +38,13 @@
                         @apply px-5 py-2 bg-gray-100 border border-gray-300 cursor-pointer rounded inline-block select-none relative z-10;
                     }
                     div.synTexView_controls {
-                        @apply hidden absolute top-full left-0 bg-white shadow-lg z-[100] p-2;
+                        @apply hidden absolute top-full left-0 bg-white shadow-lg p-2;
+                        z-index: 100;
                         min-width: 12.5rem;
                     }
                     div.synTexView_controls.open {
-                        @apply block absolute top-full left-0 bg-white shadow-lg z-[100] p-2;
+                        @apply block absolute top-full left-0 bg-white shadow-lg p-2;
+                        z-index: 100;
                         min-width: 12.5rem;
                     }
                     div.synTexView_controls.open div {
@@ -138,7 +140,8 @@
 
                     /* URL-copy toast notification */
                     .synTexView-url-copy-notification {
-                        @apply fixed bg-gray-800 text-white rounded-lg text-lg z-[9999] pointer-events-none select-none;
+                        @apply fixed bg-gray-800 text-white rounded-lg text-lg pointer-events-none select-none;
+                        z-index: 9999;
                         top: 10%;
                         left: 50%;
                         transform: translateX(-50%);
