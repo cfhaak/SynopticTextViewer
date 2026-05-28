@@ -45,15 +45,15 @@
                         @apply block absolute top-full left-0 bg-white shadow-lg z-[100] p-2;
                         min-width: 12.5rem;
                     }
-                    div.synTexView_controls.open > div {
+                    div.synTexView_controls.open div {
                         @apply p-2 flex flex-row justify-start items-center;
                     }
-                    div.synTexView_controls.open > div > button {
+                    div.synTexView_controls.open div button {
                         @apply bg-gray-100 text-gray-700 border border-gray-300 rounded p-2 cursor-pointer text-base inline-block select-none;
                         transition: background 0.2s, border 0.2s;
                     }
-                    div.synTexView_controls.open > div > button:hover,
-                    div.synTexView_controls.open > div > button:focus {
+                    div.synTexView_controls.open div button:hover,
+                    div.synTexView_controls.open div button:focus {
                         @apply bg-gray-400 outline-none;
                     }
 
