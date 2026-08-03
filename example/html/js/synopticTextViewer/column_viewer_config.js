@@ -14,6 +14,8 @@ class ColumnViewerConfig {
   defaultNumberOfColumns = 3;
   /** Whether to fetch all witnesses (boolean) */
   fetchAllWitnesses = false;
+  /** Max viewport width (px) treated as mobile mode */
+  mobileMaxWidthPx = 800;
 
   // ===========================================================================
   // BUTTON & CONTROL IDS

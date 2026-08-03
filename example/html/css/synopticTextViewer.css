@@ -170,7 +170,25 @@ button.synTexView-remove-column {
     padding-bottom: 3rem;
 }
 @media (max-width: 800px) {
-    .synTexView-text-content { padding-top: 2rem; padding-bottom: 2rem; }
+    #synTexView-witness-container {
+        overflow-x: hidden;
+        white-space: normal;
+    }
+
+    .synTexView-witness {
+        flex: 0 0 calc(100vw - 1rem);
+        width: calc(100vw - 1rem);
+        min-width: calc(100vw - 1rem);
+        max-width: calc(100vw - 1rem);
+    }
+
+    .synTexView-text-content {
+        padding-top: 2rem;
+        padding-bottom: 2rem;
+        white-space: normal;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+    }
 }
 .synTexView-text-content:focus { outline: 2px solid grey !important; }
 
