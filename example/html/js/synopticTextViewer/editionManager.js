@@ -560,8 +560,39 @@ class EditionManager {
   }
 
   async updateColumnWitness(columnId, witnessId) {
+    const columnElementBeforeUpdate = document.getElementById(columnId);
+    const textContentBeforeUpdate = columnElementBeforeUpdate
+      ? columnElementBeforeUpdate.querySelector(`.${this.config.textContentClass}`)
+      : null;
+    const selectedElement = this.state.getCurrentSelectedElement();
+    const selectedElementId = selectedElement
+      ? selectedElement.getAttribute("id")
+      : null;
+    const selectedWitness = this.state.getCurrentSelectedWitness();
+    const shouldRestoreFocusInUpdatedColumn =
+      !!selectedElementId &&
+      !!textContentBeforeUpdate &&
+      selectedWitness === textContentBeforeUpdate;
+
     this.state.updateColumnWitness(columnId, witnessId);
     await this.renderColumn(columnId);
+
+    if (shouldRestoreFocusInUpdatedColumn) {
+      const columnElementAfterUpdate = document.getElementById(columnId);
+      const textContentAfterUpdate = columnElementAfterUpdate
+        ? columnElementAfterUpdate.querySelector(
+            `.${this.config.textContentClass}`
+          )
+        : null;
+      if (textContentAfterUpdate) {
+        const focusTarget = this.getVisibleLineByIdOrFirst(
+          textContentAfterUpdate,
+          selectedElementId
+        );
+        this.updateFocusState(focusTarget, textContentAfterUpdate, false);
+      }
+    }
+
     if (
       this.isMobileView() &&
       this.state.lastDoubleClickedElementId
