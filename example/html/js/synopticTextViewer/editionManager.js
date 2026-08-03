@@ -541,6 +541,12 @@ class EditionManager {
   async updateColumnWitness(columnId, witnessId) {
     this.state.updateColumnWitness(columnId, witnessId);
     await this.renderColumn(columnId);
+    if (
+      window.matchMedia("(max-width: 800px)").matches &&
+      this.state.lastDoubleClickedElementId
+    ) {
+      this.addNewHighlights(this.state.lastDoubleClickedElementId);
+    }
     this.sendAriaMessage(
       `Column ${this.getOneIndexByColumnId(columnId)} for ${
         this.state.witness_metadata[witnessId].title
