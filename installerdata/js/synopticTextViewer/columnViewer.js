@@ -242,14 +242,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     // failed to load the witness metadata
     const errorDiv = document.createElement("div");
     errorDiv.textContent = "Error: Could not load edition metadata. Please check your connection or try again later. If this issue persists, please contact the responsible team.";
-    errorDiv.style.color = "red";
-    errorDiv.style.fontWeight = "bold";
-    errorDiv.style.margin = "1rem";
+    errorDiv.className = "text-red-600 font-bold m-4";
     document.body.prepend(errorDiv);
     const retryBtn = document.createElement("button");
     retryBtn.textContent = "Retry";
     retryBtn.onclick = () => window.location.reload();
-    retryBtn.style.marginLeft = "1rem";
+    retryBtn.className = "ml-4 px-3 py-1 border border-gray-400 rounded text-sm hover:bg-gray-100";
     errorDiv.appendChild(retryBtn);
     return; // Stop further initialization
   }
@@ -264,4 +262,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   const manager = new EditionManager(state, config);
   await manager.initColumns(stateFromUrl.witnessIds);
   createControls(config, manager);
+  manager.updateMobileUiControls();
+  window.addEventListener("resize", () => manager.updateMobileUiControls());
 });

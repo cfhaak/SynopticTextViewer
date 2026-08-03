@@ -1,263 +1,154 @@
-/* rather non specific styles */
-html,
-body {
+/* Page layout for the synoptic viewer — full-height, no page scroll */
+html, body {
+    height: 100%;
     margin: 0;
     padding: 0;
-    height: 100%;
     width: 100%;
 }
-
-body {
+body { display: flex; flex-direction: column; }
+main {
     display: flex;
     flex-direction: column;
-}
-
-main {
+    overflow: hidden;
+    width: 100%;
     flex: 1 1 auto;
     min-height: 0;
-    width: 100%;
-    overflow: hidden; /* prevent page scroll; viewer scrolls inside */
-    display: flex;
-    flex-direction: column;
 }
 
-.lb {
-    color: red;
-}
-
-.rub {
-    color: red;
-}
-
-.am {
-    display: none;
-}
-
-.lb {
-    display: none;
-}
-
-span.editorial_note {
-    display: none;
-}
-
-.s_orig {
-    display: none;
-}
-
-.sup_orig {
-    display: none;
-}
-
-div {
-    box-sizing: border-box;
-}
-
-/* Synoptic Text Viewer specific styles */
-/* as you can see, you might have to adjust the styles/scopes for specific elements */
-div {
-    box-sizing: border-box;
-}
-
+/* Controls menu (top-level toggle + popup) */
 div.synTexView_controls_wrapper {
     position: relative;
     display: inline-block;
-    /* Ensure it fits the width of its content */
     margin-bottom: 1rem;
     margin-top: 2rem;
-    margin-left: 0.3rem;
+    margin-left: 0.25rem;
 }
-
 button.synTexView_controls_toggle {
-    padding: 10px 20px;
-    background: #eee;
-    border: 1px solid #ccc;
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    background-color: #f3f4f6;
+    border: 1px solid #d1d5db;
     cursor: pointer;
-    border-radius: 4px;
+    border-radius: 0.25rem;
     display: inline-block;
     user-select: none;
     position: relative;
-    z-index: 101;
+    z-index: 10;
 }
-
 div.synTexView_controls {
     display: none;
-    /* Hidden by default */
     position: absolute;
     top: 100%;
     left: 0;
-    background: white;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    background-color: #ffffff;
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    padding: 0.5rem;
     z-index: 100;
-    padding: 10px;
-    min-width: 12.5rem; /* 200px at 16px root */
+    min-width: 12.5rem;
 }
-
 div.synTexView_controls.open {
     display: block;
     position: absolute;
     top: 100%;
     left: 0;
-    background: white;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    background-color: #ffffff;
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    padding: 0.5rem;
     z-index: 100;
-    padding: 10px;
-    min-width: 12.5rem; /* 200px at 16px root */
+    min-width: 12.5rem;
 }
-
 div.synTexView_controls.open div {
     padding: 0.5rem;
     display: flex;
     flex-direction: row;
-    justify-content: flex-start; /* Align buttons to the left */
+    justify-content: flex-start;
     align-items: center;
 }
-
 div.synTexView_controls.open div button {
-    background: #eee;
-    color: #333;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    background-color: #f3f4f6;
+    color: #374151;
+    border: 1px solid #d1d5db;
+    border-radius: 0.25rem;
     padding: 0.5rem;
     cursor: pointer;
     font-size: 1rem;
-    transition: background 0.2s, border 0.2s;
+    line-height: 1.5rem;
     display: inline-block;
     user-select: none;
-    position: relative;
+    transition: background 0.2s, border 0.2s;
 }
-
 div.synTexView_controls.open div button:hover,
 div.synTexView_controls.open div button:focus {
-    background-color: #bbb;
-    outline: none;
+    background-color: #9ca3af;
+    outline: 2px solid transparent;
+    outline-offset: 2px;
 }
 
+/* Witness columns container — fills remaining height, horizontal scroll */
 #synTexView-witness-container {
-    margin: .3rem;
+    margin-left: 0.25rem;
+    margin-right: 0.25rem;
     display: flex;
-    flex-direction: row; /* Arrange children in a row */
-    flex-wrap: nowrap;   /* Prevent wrapping */
-    gap: 0.75rem;        /* Add spacing between children */
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 0.75rem;
     padding-bottom: 1rem;
     align-items: stretch;
-    white-space: nowrap; /* Prevent children from wrapping */
-    width: 100%;         /* Take full available width */
-    flex: 1 1 auto;      /* Use remaining height in main */
-    min-height: 0;       /* Allow shrinking with flex */
-    overflow-x: auto;    /* horizontal scroll for columns */
-    overflow-y: hidden;  /* no vertical scroll here; only in text */
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+    flex: 1 1 auto;
+    min-height: 0;
 }
 
+/* Individual witness column */
 .synTexView-witness {
     position: relative;
     display: flex;
     flex-direction: column;
-    flex: 0 0 auto;       /* width determined by content/min-width; scroll horizontally */
+    border: 1px solid #d1d5db;
+    background-color: #ffffff;
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    text-align: left;
+    flex: 0 0 auto;
     min-width: 30rem;
     max-width: fit-content;
-    width: auto;
-    font-size: 1em;
-    text-align: left;
     font-family: Garamond, serif;
-    border: 1px solid #ccc;
-    background-color: #fff;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    padding: 0.5rem 1rem;
 }
-
 .synTexView-witness h4 {
     white-space: normal;
-    word-break: break-word;
     overflow-wrap: break-word;
 }
 
+/* Per-column controls header (dropdown + remove button) */
 .synTexView-controls-container {
-    height: 2.5rem;
-    flex: 0 0 auto; /* header takes only needed height */
-}
-
-#columnControls {
-    margin: 20px 0;
-    display: flex;
-    gap: 0;
-}
-
-.controlls-container {
     display: flex;
     flex-wrap: wrap;
-    /* Allow wrapping to the next row */
     justify-content: space-between;
-    /* Space between dropdown and button */
     align-items: center;
-    /* Align items vertically */
-    margin-bottom: 10px;
+    margin-bottom: 0.5rem;
     position: sticky;
-    /* Make it sticky */
     top: 0;
-    /* Stick to the top */
     z-index: 20;
-    /* Ensure it stays above other elements */
-    padding-top: .5rem;
+    padding-top: 0.5rem;
+    flex: 0 0 auto;
 }
-
-.controlls-container .synTexView-remove-column {
+.synTexView-controls-container .synTexView-remove-column {
     margin-left: auto;
-    /* Push the button to the right */
 }
 
-.synTexView-init {
-    color: red;
-    font-size: 120%;
-}
-
-span.synTexView-line {
-    display: block;
-    width: 100%;
-    white-space: normal !important;
-
-}
-
-span.synTexView-line:hover {
-    background-color: lightblue;
-}
-
-.synTexView-linenr-global {
-    font-size: 0.8em;
-    color: gray;
-}
-
-.synTexView-linenr-local {
-    font-size: 0.8em;
-    color: gray;
-}
-
-span.synTexView-highlight {
-    background-color: rgb(206, 206, 206);
-    transition: background-color 0.3s ease;
-}
-
-span.synTexView-highlight.synTexView-neighbor {
-    background-color: inherit;
-    border-bottom: rgb(206, 206, 206) solid 4px;
-    margin-bottom: 1rem;
-    transition: border-bottom 0.3s ease;
-    width: 100%;
-    display: inline-block;
-}
-
-.synTexView-last .synTexView-linenr-global {
-    color: orange;
-}
-
-/* .line-synTexView-highlight {
-    background-color: rgba(255, 204, 153, 0.4);
-} */
-
+/* Remove-column button */
 button.synTexView-remove-column {
     position: sticky;
-    background-color: white;
-    color: grey;
+    background-color: #ffffff;
+    color: #9ca3af;
     border: none;
     width: 1rem;
     height: 2rem;
@@ -268,49 +159,113 @@ button.synTexView-remove-column {
     text-align: center;
 }
 
-.synTexView-hidden {
-    display: none !important;
-}
-
+/* Text content area (scrollable) */
 .synTexView-text-content {
     overflow-y: auto;
-    flex: 1 1 auto;   /* fill remaining column height */
-    min-height: 0;    /* allow shrinking when zooming */
-    max-height: 100%; /* never exceed column height */
+    box-sizing: border-box;
+    flex: 1 1 auto;
+    min-height: 0;
+    max-height: 100%;
     padding-top: 3rem;
     padding-bottom: 3rem;
-    box-sizing: border-box;
+}
+@media (max-width: 800px) {
+    #synTexView-witness-container {
+        overflow-x: hidden;
+        white-space: normal;
+    }
+
+    .synTexView-witness {
+        flex: 0 0 calc(100vw - 1rem);
+        width: calc(100vw - 1rem);
+        min-width: calc(100vw - 1rem);
+        max-width: calc(100vw - 1rem);
+    }
+
+    .synTexView-text-content {
+        padding-top: 2rem;
+        padding-bottom: 2rem;
+        white-space: normal;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+    }
+}
+.synTexView-text-content:focus { outline: 2px solid grey !important; }
+
+/* Individual line */
+span.synTexView-line {
+    display: block;
+    width: 100%;
+    white-space: normal !important;
+}
+span.synTexView-line:hover { background-color: #dbeafe; }
+.synTexView-line:focus { outline: 2px solid grey !important; }
+
+/* Line numbers */
+.synTexView-linenr-global {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    color: #9ca3af;
+}
+.synTexView-linenr-local {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    color: #9ca3af;
+}
+.synTexView-last .synTexView-linenr-global { color: #fb923c; }
+
+/* Highlight (synchronized scrolling) */
+span.synTexView-highlight {
+    background-color: #d1d5db;
+    transition: background-color 0.3s ease;
+}
+span.synTexView-highlight.synTexView-neighbor {
+    background-color: inherit;
+    border-bottom: 4px solid #d1d5db;
+    display: inline-block;
+    width: 100%;
+    margin-bottom: 1rem;
+    transition: border-bottom 0.3s ease;
 }
 
-.synTexView-text-content:focus {
-    outline: 2px solid grey !important;
+/* Initialcap (rubricated initial) */
+.synTexView-init {
+    color: #ef4444;
+    font-size: 1.125rem;
+    line-height: 1.75rem;
 }
 
-.synTexView-line:focus {
-    outline: 2px solid grey !important;
-}
+/* Hidden class used by JS visibility toggles */
+.synTexView-hidden { display: none !important; }
 
+/* URL-copy toast notification */
 .synTexView-url-copy-notification {
     position: fixed;
+    background-color: #1f2937;
+    color: #ffffff;
+    border-radius: 0.5rem;
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+    pointer-events: none;
+    user-select: none;
+    z-index: 9999;
     top: 10%;
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(60,60,60,0.95);
-    color: #fff;
     padding: 0.75em 2em;
-    /* border-radius: 0 0 8px 8px; */
-    border-radius: 8px;
-    font-size: 1.1em;
-    z-index: 9999;
-    pointer-events: none; /* Prevent interaction */
-    user-select: none;    /* Prevent selection */
     opacity: 1;
     transition: opacity 2s;
 }
 
-@media (max-width: 800px) {
-    .synTexView-text-content{
-        padding-top: 2rem;
-        padding-bottom: 2rem;
-    }
-}
+/* Snippet text styles (applied to dynamically loaded content) */
+.lb          { color: #ef4444; }
+.rub         { color: #ef4444; }
+.am          { display: none; }
+.s_orig      { display: none; }
+.sup_orig    { display: none; }
+.editorial_note { display: none; }
+.italic      { font-style: italic; }
+.bold        { font-weight: 700; }
+.smallcaps   { font-variant: small-caps; }
+.del         { text-decoration-line: line-through; }
+.unclear     { opacity: 0.6; }

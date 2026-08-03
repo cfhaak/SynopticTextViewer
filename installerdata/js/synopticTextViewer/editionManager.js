@@ -13,6 +13,21 @@ class EditionManager {
     this.initListeners();
   }
 
+  isMobileView() {
+    const mobileMaxWidthPx = this.config.mobileMaxWidthPx || 800;
+    return window.matchMedia(`(max-width: ${mobileMaxWidthPx}px)`).matches;
+  }
+
+  updateMobileUiControls() {
+    const addButtonContainer = document.getElementById(this.config.addColumnButtonId);
+    if (!addButtonContainer) return;
+    const addButton = addButtonContainer.querySelector("button");
+    if (!addButton) return;
+    const isMobile = this.isMobileView();
+    addButton.disabled = isMobile;
+    addButton.style.display = isMobile ? "none" : "";
+  }
+
   getReloadAttemptStorageKey() {
     return `synTexViewReloadAttempts:${window.location.pathname}${window.location.search}`;
   }
@@ -340,8 +355,14 @@ class EditionManager {
         ).id;
         this.removeColumn(columnId);
         this.updateUrlWithState();
-      } else if (event.target.matches(`.${this.config.witnessLineClass}`)) {
+      } else {
         const line = event.target.closest(`.${this.config.witnessLineClass}`);
+        if (!line) return;
+        if (this.isMobileView()) {
+          // On mobile, a single tap should act like desktop double-click.
+          this.syncVerticalScrolling(line);
+          return;
+        }
         const textContentParent = this.getTextContentParent(line);
         this.updateFocusState(line, textContentParent);
       }
@@ -541,6 +562,12 @@ class EditionManager {
   async updateColumnWitness(columnId, witnessId) {
     this.state.updateColumnWitness(columnId, witnessId);
     await this.renderColumn(columnId);
+    if (
+      this.isMobileView() &&
+      this.state.lastDoubleClickedElementId
+    ) {
+      this.addNewHighlights(this.state.lastDoubleClickedElementId);
+    }
     this.sendAriaMessage(
       `Column ${this.getOneIndexByColumnId(columnId)} for ${
         this.state.witness_metadata[witnessId].title
@@ -549,6 +576,10 @@ class EditionManager {
   }
 
   async addNewColumn() {
+    if (this.isMobileView()) {
+      this.sendAriaMessage("Adding columns is disabled on mobile view.");
+      return;
+    }
     const witnessId =
       this.state.sortedWitnessIds[this.state.columnCount] ||
       this.state.sortedWitnessIds[0];
@@ -905,6 +936,7 @@ class EditionManager {
   }
 
   async initColumns(witnessIdsFromUrl) {
+    const singleColumnMode = this.isMobileView();
     let columnIds = [];
     if (witnessIdsFromUrl) {
       // the witness ids and the column ids are already defined by the url
@@ -913,6 +945,9 @@ class EditionManager {
         if (this.state.witness_metadata[witnessId]) {
           const columnId = this.addColumnContainer(witnessId);
           columnIds.push(columnId);
+          if (singleColumnMode) {
+            break;
+          }
         } else {
           console.warn(
             `Witness ID from URL not found in metadata: ${witnessId}`
@@ -923,6 +958,9 @@ class EditionManager {
       for (const witnessId of this.state.sortedWitnessIds) {
         const columnId = this.addColumnContainer(witnessId);
         columnIds.push(columnId);
+        if (singleColumnMode) {
+          break;
+        }
       }
     } else {
       for (let i = 1; i <= this.config.defaultNumberOfColumns; i++) {
@@ -930,6 +968,9 @@ class EditionManager {
         if (witnessId) {
           const columnId = this.addColumnContainer(witnessId);
           columnIds.push(columnId);
+          if (singleColumnMode) {
+            break;
+          }
         }
       }
     }
