@@ -132,6 +132,36 @@
                     /* Hidden class used by JS visibility toggles */
                     .synTexView-hidden { display: none !important; }
 
+                    /* Mobile tab bar (hidden on desktop) */
+                    .synTexView-mobile-tabs {
+                        display: none;
+                        flex-direction: row;
+                        overflow-x: auto;
+                        flex-wrap: nowrap;
+                        border-bottom: 1px solid #d1d5db;
+                        margin: 0 0.25rem;
+                    }
+                    .synTexView-mobile-tab {
+                        @apply px-4 py-2 bg-gray-100 border border-gray-300 cursor-pointer whitespace-nowrap text-sm;
+                        border-bottom: none;
+                        flex-shrink: 0;
+                    }
+                    .synTexView-mobile-tab:hover,
+                    .synTexView-mobile-tab:focus {
+                        @apply bg-gray-200 outline-none;
+                    }
+                    .synTexView-mobile-tab.synTexView-mobile-tab-active {
+                        @apply bg-white font-semibold;
+                        position: relative;
+                        top: 1px;
+                    }
+                    @media (max-width: 800px) {
+                        .synTexView-mobile-tabs { display: flex; }
+                        #synTexView-witness-container { overflow-x: hidden; }
+                        .synTexView-witness { display: none; min-width: 100%; width: 100%; }
+                        .synTexView-witness.synTexView-mobile-active { display: flex; }
+                    }
+
                     /* URL-copy toast notification */
                     .synTexView-url-copy-notification {
                         @apply fixed bg-gray-800 text-white rounded-lg text-lg pointer-events-none select-none;

@@ -53,6 +53,10 @@ class ColumnViewerConfig {
   controlsContainerTogglerClass = "synTexView_controls_toggle";
   controlsContainerClass = "synTexView_controls";
   copyUrlNotificationClass = "synTexView-url-copy-notification";
+  mobileTabBarClass = "synTexView-mobile-tabs";
+  mobileTabClass = "synTexView-mobile-tab";
+  mobileTabActiveClass = "synTexView-mobile-tab-active";
+  mobileActiveColumnClass = "synTexView-mobile-active";
 
   // ===========================================================================
   // ARIA LABELS

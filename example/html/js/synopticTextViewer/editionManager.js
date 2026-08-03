@@ -10,6 +10,8 @@ class EditionManager {
     );
     this.columnElements = [];
     this._boundRemoveHighlights = null;
+    this.mobileTabBar = null;
+    this.mobileActiveColumnId = null;
     this.initListeners();
   }
 
@@ -520,6 +522,7 @@ class EditionManager {
   async addColumn(witnessId) {
     const columnId = this.addColumnContainer(witnessId);
     await this.renderColumn(columnId);
+    this.createOrUpdateMobileTabBar();
     this.sendAriaMessage(
       `Column ${this.getOneIndexByColumnId(columnId)} for ${
         this.state.witness_metadata[witnessId].title
@@ -533,6 +536,7 @@ class EditionManager {
     const colElem = document.getElementById(columnId);
     this.columnElements.pop(colElem);
     if (colElem) colElem.remove();
+    this.createOrUpdateMobileTabBar();
     this.sendAriaMessage(
       `Column ${oldColumnId} removed. ${this.state.columnCount} columns remaining.`
     );
@@ -541,6 +545,7 @@ class EditionManager {
   async updateColumnWitness(columnId, witnessId) {
     this.state.updateColumnWitness(columnId, witnessId);
     await this.renderColumn(columnId);
+    this.createOrUpdateMobileTabBar();
     this.sendAriaMessage(
       `Column ${this.getOneIndexByColumnId(columnId)} for ${
         this.state.witness_metadata[witnessId].title
@@ -934,6 +939,7 @@ class EditionManager {
       }
     }
     await Promise.all(columnIds.map((id) => this.renderColumn(id)));
+    this.createOrUpdateMobileTabBar();
     this.sendAriaMessage(
       `Initialized ${this.state.columnCount} columns with witnesses.`
     );
@@ -990,6 +996,93 @@ class EditionManager {
       }, 1500);
     } catch (err) {
       alert("Failed to copy URL: " + err);
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Mobile tab bar
+  // ---------------------------------------------------------------------------
+
+  createOrUpdateMobileTabBar() {
+    if (!this.mobileTabBar) {
+      this.mobileTabBar = document.createElement("div");
+      this.mobileTabBar.className = this.config.mobileTabBarClass;
+      this.mobileTabBar.setAttribute("role", "tablist");
+      this.witnessContainer.parentNode.insertBefore(
+        this.mobileTabBar,
+        this.witnessContainer
+      );
+      // Single delegated listener — attached once
+      this.mobileTabBar.addEventListener("click", (e) => {
+        const tab = e.target.closest("[data-column-id]");
+        if (tab) {
+          this.activateMobileTab(tab.getAttribute("data-column-id"));
+        }
+      });
+    }
+    // Rebuild tabs to reflect current columns
+    this.mobileTabBar.innerHTML = "";
+    for (const col of this.state.getAllColumns()) {
+      const tab = document.createElement("button");
+      tab.type = "button";
+      tab.className = this.config.mobileTabClass;
+      tab.setAttribute("role", "tab");
+      tab.setAttribute("data-column-id", col.id);
+      tab.textContent = this.state.witness_metadata[col.witnessId].title;
+      this.mobileTabBar.appendChild(tab);
+    }
+    // Ensure the active column is still valid after the rebuild
+    const columns = this.state.getAllColumns();
+    if (columns.length === 0) {
+      this.mobileActiveColumnId = null;
+      return;
+    }
+    const activeStillExists = columns.some(
+      (col) => col.id === this.mobileActiveColumnId
+    );
+    this.activateMobileTab(
+      activeStillExists ? this.mobileActiveColumnId : columns[0].id
+    );
+  }
+
+  activateMobileTab(columnId) {
+    this.mobileActiveColumnId = columnId;
+    // Show/hide columns
+    for (const col of this.state.getAllColumns()) {
+      const colElem = document.getElementById(col.id);
+      if (colElem) {
+        colElem.classList.toggle(
+          this.config.mobileActiveColumnClass,
+          col.id === columnId
+        );
+      }
+    }
+    // Update tab active state
+    if (this.mobileTabBar) {
+      this.mobileTabBar.querySelectorAll("[data-column-id]").forEach((tab) => {
+        const isActive = tab.getAttribute("data-column-id") === columnId;
+        tab.classList.toggle(this.config.mobileTabActiveClass, isActive);
+        tab.setAttribute("aria-selected", String(isActive));
+        tab.setAttribute("tabindex", isActive ? "0" : "-1");
+      });
+    }
+    // Re-centre on the last synced line if one exists
+    const activeColElem = document.getElementById(columnId);
+    if (activeColElem && this.state.lastDoubleClickedElementId) {
+      const textContent = activeColElem.querySelector(
+        `.${this.config.textContentClass}`
+      );
+      if (textContent) {
+        const span = textContent.querySelector(
+          `#${CSS.escape(this.state.lastDoubleClickedElementId)}`
+        );
+        if (span) {
+          const spanTop = span.offsetTop;
+          const spanHeight = span.offsetHeight;
+          textContent.scrollTop =
+            spanTop - textContent.clientHeight / 2 + spanHeight / 2;
+        }
+      }
     }
   }
 }
