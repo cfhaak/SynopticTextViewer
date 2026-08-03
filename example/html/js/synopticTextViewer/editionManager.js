@@ -1,6 +1,7 @@
 // this class manages the rendering and the interaction with user/dom
 class EditionManager {
   constructor(state, config) {
+    this.maxReloadAttempts = 3;
     this.state = state;
     this.config = config;
     this.ariaElement = this.makeAriaElement();
@@ -10,6 +11,22 @@ class EditionManager {
     this.columnElements = [];
     this._boundRemoveHighlights = null;
     this.initListeners();
+  }
+
+  getReloadAttemptStorageKey() {
+    return `synTexViewReloadAttempts:${window.location.pathname}${window.location.search}`;
+  }
+
+  requestControlledReload() {
+    const storageKey = this.getReloadAttemptStorageKey();
+    const currentAttempts = Number(sessionStorage.getItem(storageKey) || "0");
+    if (currentAttempts >= this.maxReloadAttempts) {
+      console.warn("Default witness content is still missing after reload attempts.");
+      return false;
+    }
+    sessionStorage.setItem(storageKey, String(currentAttempts + 1));
+    window.location.reload();
+    return true;
   }
 
   updateUrlWithState() {
@@ -190,12 +207,13 @@ class EditionManager {
         `.${this.config.textContentClass}`
       );
       if (witness) {
+        sessionStorage.removeItem(this.getReloadAttemptStorageKey());
         this.state.setCurrentSelectedWitness(witness);
         return witness;
       }
     }
-    console.log("cant find content, reloading page");
-    window.location.reload();
+    console.warn("Can't find default witness content. Reloading page.");
+    this.requestControlledReload();
     return null;
   }
 
@@ -659,11 +677,12 @@ class EditionManager {
   }
 
   getFirstVisibleChildInContainer(container) {
-    if (!container || !container.children) return null;
+    if (!container) return null;
+    const lines = container.querySelectorAll(`.${this.config.witnessLineClass}`);
     const containerRect = container.getBoundingClientRect();
-    for (const child of container.children) {
-      if (!this.elementIsVisible(child)) continue;
-      const childRect = child.getBoundingClientRect();
+    for (const line of lines) {
+      if (!this.elementIsVisible(line)) continue;
+      const childRect = line.getBoundingClientRect();
       // Check if child is at least partially within the container's viewport
       const verticallyVisible =
         childRect.bottom > containerRect.top &&
@@ -672,9 +691,10 @@ class EditionManager {
         childRect.right > containerRect.left &&
         childRect.left < containerRect.right;
       if (verticallyVisible && horizontallyVisible) {
-        return child;
+        return line;
       }
     }
+    console.warn(`No visible child found in container ${container.id}.`);
     return null;
   }
 
