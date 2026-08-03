@@ -1046,20 +1046,46 @@ class EditionManager {
     }
   }
 
+  async copyTextToClipboard(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(text);
+      return;
+    }
+
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    textArea.setAttribute("readonly", "");
+    textArea.style.position = "fixed";
+    textArea.style.top = "-9999px";
+    textArea.style.left = "-9999px";
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+
+    const copied = document.execCommand("copy");
+    textArea.remove();
+    if (!copied) {
+      throw new Error("Clipboard copy failed");
+    }
+  }
+
+  showCopyUrlNotification() {
+    const notification = document.createElement("div");
+    notification.textContent = this.config.copyUrlNotificationLabel;
+    notification.className = this.config.copyUrlNotificationClass;
+    document.body.appendChild(notification);
+    this.sendAriaMessage(this.config.copyUrlNotificationLabel);
+    setTimeout(() => {
+      notification.style.opacity = "4";
+      setTimeout(() => notification.remove(), 200);
+    }, 1500);
+  }
+
   async copyUrlToClipboardAndNotify() {
     this.updateUrlWithState();
     try {
-      await navigator.clipboard.writeText(window.location.href);
-      // Create notification div
-      const notification = document.createElement("div");
-      notification.textContent = this.config.copyUrlNotificationLabel;
-      notification.className = this.config.copyUrlNotificationClass;
-      document.body.appendChild(notification);
-      this.sendAriaMessage(this.config.copyUrlNotificationLabel);
-      setTimeout(() => {
-        notification.style.opacity = "4";
-        setTimeout(() => notification.remove(), 200);
-      }, 1500);
+      await this.copyTextToClipboard(window.location.href);
+      this.showCopyUrlNotification();
     } catch (err) {
       alert("Failed to copy URL: " + err);
     }
