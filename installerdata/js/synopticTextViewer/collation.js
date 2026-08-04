@@ -3,13 +3,15 @@
 // This module aligns two or more witness strings word-by-word (allowing
 // insertions/deletions). It returns ready-to-use HTML strings (one per
 // input witness, in the same order) with a single semantic <span> class
-// wrapping every word that differs between witnesses - simple and
-// consistent, no character-level highlighting or per-op-type styling.
+// wrapping every word that differs from the base - simple and consistent,
+// no character-level highlighting or per-op-type styling.
 //
 // The first witness in the input list is treated as the "base" for the
-// alignment (per-issue: "leftmost witness is base" / "base is the witness
-// that triggered the comparison"). It is up to the caller to decide which
-// text is passed first.
+// alignment (the witness that triggered the comparison, e.g. by being
+// clicked). Every other witness is compared against the base only, never
+// against each other, and gets its differing words flagged. The base is
+// always identical with itself, so it never carries any markings. It is
+// up to the caller to decide which text is passed first.
 //
 // No DOM APIs are used here so this module can be unit tested (e.g. under
 // Node.js) independently of a browser.
@@ -178,7 +180,7 @@ function renderWitnessHtml(ops, classes) {
       html += escapeHtml(op.value);
     } else if (op.type === "delete") {
       // Word exists in the base but not in this witness: nothing to render
-      // here, the base row will flag it as a difference.
+      // here (the base is never marked), this witness simply omits it.
       continue;
     } else if (op.type === "insert") {
       if (isWhitespaceToken(op.value)) {
@@ -198,43 +200,22 @@ function renderWitnessHtml(ops, classes) {
   return html;
 }
 
-/** Renders the HTML for the base witness, flagging words that differ. */
-function renderBaseHtml(baseTokens, variantContributors, classes) {
-  let html = "";
-  baseTokens.forEach((token, index) => {
-    const contributors = variantContributors[index];
-    if (contributors && contributors.length > 0 && !isWhitespaceToken(token)) {
-      const attr = classes.differsInAttr
-        ? ` ${classes.differsInAttr}="${escapeHtml(contributors.join(","))}"`
-        : "";
-      html += `<span class="${classes.diffClass}"${attr}>${escapeHtml(token)}</span>`;
-    } else {
-      html += escapeHtml(token);
-    }
-  });
-  return html;
-}
-
 /**
  * Aligns `texts[0]` (the base) against every other entry in `texts` and
  * returns an array of HTML strings of the same length, ready to be written
  * into the DOM (one per witness, same order as the input).
  *
+ * The base is always identical with itself, so it is never marked: only
+ * the other witnesses are compared against it (never against each other)
+ * and get their differing words flagged.
+ *
  * options:
- *  - ids: optional array (parallel to texts) of witness identifiers used to
- *    populate the `data-collation-differs-in` attribute on the base row.
- *  - diffClass: single CSS class applied to every word that differs
- *    between witnesses (base or non-base).
- *  - differsInAttr: attribute name used on the base row (default
- *    "data-collation-differs-in"). Pass `null`/`false` to omit it.
+ *  - diffClass: single CSS class applied to every word that differs from
+ *    the base, in any non-base witness.
  */
 function collateWitnesses(texts, options = {}) {
   const classes = {
     diffClass: options.diffClass || "synTexView-collation-diff",
-    differsInAttr:
-      options.differsInAttr === undefined
-        ? "data-collation-differs-in"
-        : options.differsInAttr,
   };
 
   if (!Array.isArray(texts) || texts.length < 2) {
@@ -242,23 +223,14 @@ function collateWitnesses(texts, options = {}) {
   }
 
   const baseTokens = tokenize(texts[0]);
-  const variantContributors = baseTokens.map(() => []);
   const results = new Array(texts.length);
-  const ids = options.ids;
 
   for (let w = 1; w < texts.length; w++) {
     const witnessTokens = tokenize(texts[w]);
     const ops = buildReplacePairs(diffSequences(baseTokens, witnessTokens));
-    ops.forEach((op) => {
-      if (op.type === "delete" && !isWhitespaceToken(op.value)) {
-        variantContributors[op.aIndex].push(ids ? ids[w] : w);
-      } else if (op.type === "replace" && !isWhitespaceToken(op.oldValue)) {
-        variantContributors[op.oldIndex].push(ids ? ids[w] : w);
-      }
-    });
     results[w] = renderWitnessHtml(ops, classes);
   }
-  results[0] = renderBaseHtml(baseTokens, variantContributors, classes);
+  results[0] = baseTokens.map(escapeHtml).join("");
   return results;
 }
 

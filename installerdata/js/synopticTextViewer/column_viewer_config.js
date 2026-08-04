@@ -53,9 +53,6 @@ class ColumnViewerConfig {
   /** Selector for elements re-appended verbatim (e.g. hidden footnotes)
    * after the collated content of a line. */
   collationAnnotationSelector = ".editorial_note";
-  /** Attribute added to a base-witness word listing which other witnesses
-   * it differs from. Set to null/false to omit it. */
-  collationDiffersInAttr = "data-collation-differs-in";
 
   // ===========================================================================
   // CSS CLASS NAMES
