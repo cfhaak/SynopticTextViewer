@@ -275,25 +275,12 @@ span.synTexView-highlight.synTexView-neighbor {
     transition: border-bottom 0.3s ease;
 }
 
-/* Collation (word/character-level diffing across witnesses).
-   Colors follow the Okabe-Ito colorblind-safe palette; each state also gets
-   a distinct border style so the meaning doesn't rely on color alone. */
-.synTexView-collation-variant {
-    background-color: rgba(230, 159, 0, 0.2);
-    border-bottom: 2px dotted #e69f00;
-}
-.synTexView-collation-insert {
-    background-color: rgba(0, 114, 178, 0.15);
-    border-bottom: 2px solid #0072b2;
-}
-.synTexView-collation-replace {
-    background-color: rgba(213, 94, 0, 0.1);
-    border-bottom: 2px dashed #d55e00;
-}
-.synTexView-collation-char-insert {
-    background-color: rgba(0, 158, 115, 0.35);
-    text-decoration: underline;
-    text-decoration-color: #009e73;
+/* Collation (word-level diffing across witnesses).
+   Any word that differs between witnesses is simply highlighted in red -
+   no borders, underlines, or per-op-type styling. */
+.synTexView-collation-diff {
+    color: #c00000;
+    background-color: rgba(204, 0, 0, 0.12);
 }
 
 /* Initialcap (rubricated initial) */

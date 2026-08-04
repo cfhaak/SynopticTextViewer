@@ -1025,10 +1025,7 @@ class EditionManager {
 
     const texts = orderedLines.map((line) => this.extractCollationText(line));
     const htmls = collateWitnesses(texts, {
-      insertClass: this.config.collationInsertClass,
-      variantClass: this.config.collationVariantClass,
-      replaceClass: this.config.collationReplaceClass,
-      charInsertClass: this.config.collationCharInsertClass,
+      diffClass: this.config.collationDiffClass,
       differsInAttr: this.config.collationDiffersInAttr,
     });
     orderedLines.forEach((line, index) => this.setLineCollationHtml(line, htmls[index]));

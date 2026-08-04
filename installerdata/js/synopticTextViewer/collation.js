@@ -1,10 +1,10 @@
 // Modular, DOM-free collation (diffing) engine.
 //
 // This module aligns two or more witness strings word-by-word (allowing
-// insertions/deletions), and for words that don't match exactly it aligns
-// the individual characters too. It returns ready-to-use HTML strings (one
-// per input witness, in the same order) with semantic <span> markup that
-// callers can write straight into the DOM.
+// insertions/deletions). It returns ready-to-use HTML strings (one per
+// input witness, in the same order) with a single semantic <span> class
+// wrapping every word that differs between witnesses - simple and
+// consistent, no character-level highlighting or per-op-type styling.
 //
 // The first witness in the input list is treated as the "base" for the
 // alignment (per-issue: "leftmost witness is base" / "base is the witness
@@ -165,7 +165,12 @@ function buildReplacePairs(ops) {
   return result;
 }
 
-/** Renders the HTML for a single non-base witness from its word-level ops. */
+/**
+ * Renders the HTML for a single non-base witness from its word-level ops.
+ * Every word that differs from the base (inserted or replacing a base
+ * word) is wrapped in a single "diff" class - no character-level
+ * highlighting, no distinction between insert/replace.
+ */
 function renderWitnessHtml(ops, classes) {
   let html = "";
   for (const op of ops) {
@@ -173,13 +178,13 @@ function renderWitnessHtml(ops, classes) {
       html += escapeHtml(op.value);
     } else if (op.type === "delete") {
       // Word exists in the base but not in this witness: nothing to render
-      // here, the base row will flag it as a "variant".
+      // here, the base row will flag it as a difference.
       continue;
     } else if (op.type === "insert") {
       if (isWhitespaceToken(op.value)) {
         html += escapeHtml(op.value);
       } else {
-        html += `<span class="${classes.insertClass}">${escapeHtml(op.value)}</span>`;
+        html += `<span class="${classes.diffClass}">${escapeHtml(op.value)}</span>`;
       }
     } else if (op.type === "replace") {
       if (isWhitespaceToken(op.oldValue) || isWhitespaceToken(op.newValue)) {
@@ -187,20 +192,7 @@ function renderWitnessHtml(ops, classes) {
         html += escapeHtml(op.newValue);
         continue;
       }
-      const charOps = diffSequences(op.oldValue.split(""), op.newValue.split(""));
-      let inner = "";
-      for (const charOp of charOps) {
-        if (charOp.type === "equal") {
-          inner += escapeHtml(charOp.value);
-        } else if (charOp.type === "insert") {
-          inner += `<span class="${classes.charInsertClass}">${escapeHtml(charOp.value)}</span>`;
-        }
-        // deleted characters belonged to the base word only; they aren't
-        // part of this witness's text and are therefore omitted.
-      }
-      html += `<span class="${classes.replaceClass}" data-collation-base-word="${escapeHtml(
-        op.oldValue
-      )}">${inner}</span>`;
+      html += `<span class="${classes.diffClass}">${escapeHtml(op.newValue)}</span>`;
     }
   }
   return html;
@@ -215,7 +207,7 @@ function renderBaseHtml(baseTokens, variantContributors, classes) {
       const attr = classes.differsInAttr
         ? ` ${classes.differsInAttr}="${escapeHtml(contributors.join(","))}"`
         : "";
-      html += `<span class="${classes.variantClass}"${attr}>${escapeHtml(token)}</span>`;
+      html += `<span class="${classes.diffClass}"${attr}>${escapeHtml(token)}</span>`;
     } else {
       html += escapeHtml(token);
     }
@@ -231,16 +223,14 @@ function renderBaseHtml(baseTokens, variantContributors, classes) {
  * options:
  *  - ids: optional array (parallel to texts) of witness identifiers used to
  *    populate the `data-collation-differs-in` attribute on the base row.
- *  - insertClass, variantClass, replaceClass, charInsertClass: CSS classes.
+ *  - diffClass: single CSS class applied to every word that differs
+ *    between witnesses (base or non-base).
  *  - differsInAttr: attribute name used on the base row (default
  *    "data-collation-differs-in"). Pass `null`/`false` to omit it.
  */
 function collateWitnesses(texts, options = {}) {
   const classes = {
-    insertClass: options.insertClass || "synTexView-collation-insert",
-    variantClass: options.variantClass || "synTexView-collation-variant",
-    replaceClass: options.replaceClass || "synTexView-collation-replace",
-    charInsertClass: options.charInsertClass || "synTexView-collation-char-insert",
+    diffClass: options.diffClass || "synTexView-collation-diff",
     differsInAttr:
       options.differsInAttr === undefined
         ? "data-collation-differs-in"

@@ -75,14 +75,10 @@ class ColumnViewerConfig {
   controlsContainerTogglerClass = "synTexView_controls_toggle";
   controlsContainerClass = "synTexView_controls";
   copyUrlNotificationClass = "synTexView-url-copy-notification";
-  /** Word present only in a non-base witness (insertion relative to base). */
-  collationInsertClass = "synTexView-collation-insert";
-  /** Base-witness word that differs in at least one other witness. */
-  collationVariantClass = "synTexView-collation-variant";
-  /** Wrapper around a non-base witness's word that replaces a base word. */
-  collationReplaceClass = "synTexView-collation-replace";
-  /** Characters, within a replaced word, added relative to the base word. */
-  collationCharInsertClass = "synTexView-collation-char-insert";
+  /** Applied to any word that differs between witnesses (in the base row
+   * or any other witness). Single class, highlighted in red - no
+   * character-level or insert/replace distinction. */
+  collationDiffClass = "synTexView-collation-diff";
 
   // ===========================================================================
   // ARIA LABELS
