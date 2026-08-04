@@ -275,6 +275,14 @@ span.synTexView-highlight.synTexView-neighbor {
     transition: border-bottom 0.3s ease;
 }
 
+/* Collation (word-level diffing across witnesses).
+   Any word that differs between witnesses is simply highlighted in red -
+   no borders, underlines, or per-op-type styling. */
+.synTexView-collation-diff {
+    color: #c00000;
+    background-color: rgba(204, 0, 0, 0.12);
+}
+
 /* Initialcap (rubricated initial) */
 .synTexView-init {
     color: #ef4444;

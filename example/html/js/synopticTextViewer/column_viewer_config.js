@@ -38,6 +38,23 @@ class ColumnViewerConfig {
   copyUrlNotificationLabel = "URL copied to clipboard!";
 
   // ===========================================================================
+  // COLLATION (word/character-level diffing across witnesses)
+  // ===========================================================================
+  /** Master switch: turns the collation feature on/off. */
+  collationEnabled = true;
+  /** CSS selectors for content that must be excluded from the diffed text
+   * (line numbers, hidden editorial/apparatus annotations) but is
+   * preserved in the DOM. */
+  collationExcludedSelectors = [
+    ".synTexView-linenr-global",
+    ".synTexView-linenr-local",
+    ".editorial_note",
+  ];
+  /** Selector for elements re-appended verbatim (e.g. hidden footnotes)
+   * after the collated content of a line. */
+  collationAnnotationSelector = ".editorial_note";
+
+  // ===========================================================================
   // CSS CLASS NAMES
   // ===========================================================================
   witnessLineClass = "synTexView-line";
@@ -55,6 +72,10 @@ class ColumnViewerConfig {
   controlsContainerTogglerClass = "synTexView_controls_toggle";
   controlsContainerClass = "synTexView_controls";
   copyUrlNotificationClass = "synTexView-url-copy-notification";
+  /** Applied to any word that differs between witnesses (in the base row
+   * or any other witness). Single class, highlighted in red - no
+   * character-level or insert/replace distinction. */
+  collationDiffClass = "synTexView-collation-diff";
 
   // ===========================================================================
   // ARIA LABELS

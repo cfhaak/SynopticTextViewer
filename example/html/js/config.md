@@ -19,5 +19,14 @@
   "localLinenrTogglerId": "local-linenr-toggler",
 
   // Default number of columns to display
-  "defaultColumnNumber": 3
+  "defaultColumnNumber": 3,
+
+  // Master switch for the word-level collation (diff) feature that is
+  // triggered when a line is double-clicked or Enter is pressed. Differing
+  // words are simply highlighted in red.
+  "collationEnabled": true,
+
+  // CSS selectors for content excluded from the diffed text (line numbers,
+  // hidden editorial/apparatus annotations), preserved in the DOM
+  "collationExcludedSelectors": [".synTexView-linenr-global", ".synTexView-linenr-local", ".editorial_note"]
 }

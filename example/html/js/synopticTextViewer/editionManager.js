@@ -1,3 +1,5 @@
+import { collateWitnesses } from "./collation.js";
+
 // this class manages the rendering and the interaction with user/dom
 class EditionManager {
   constructor(state, config) {
@@ -867,6 +869,7 @@ class EditionManager {
   }
 
   removeAllHighlights() {
+    this.revertCollation();
     this.witnessContainer
       .querySelectorAll(
         `.${this.config.textContentClass} span.${this.config.highlightClass}, .${this.config.textContentClass} span.${this.config.neighborHighlightClass}`
@@ -921,7 +924,110 @@ class EditionManager {
     this.removeAllHighlights();
     this.addNewHighlights(spanId);
     this.setupRemoveHighlightsHandler(spanId);
+    this.applyCollation(element, spanId);
     this.updateUrlWithState();
+  }
+
+  // ===========================================================================
+  // COLLATION (word/character level diffing across visible witnesses)
+  // ===========================================================================
+
+  /**
+   * Extracts the plain text of a witness line that is relevant for
+   * collation, skipping elements matched by
+   * `config.collationExcludedSelectors` (e.g. line numbers, hidden
+   * editorial/apparatus annotations).
+   */
+  extractCollationText(lineElement) {
+    const excludedSelectors = this.config.collationExcludedSelectors || [];
+    let text = "";
+    const walker = document.createTreeWalker(
+      lineElement,
+      NodeFilter.SHOW_TEXT,
+      {
+        acceptNode: (node) => {
+          let parent = node.parentNode;
+          while (parent && parent !== lineElement) {
+            if (
+              parent.nodeType === Node.ELEMENT_NODE &&
+              excludedSelectors.some((selector) => parent.matches(selector))
+            ) {
+              return NodeFilter.FILTER_REJECT;
+            }
+            parent = parent.parentNode;
+          }
+          return NodeFilter.FILTER_ACCEPT;
+        },
+      }
+    );
+    let node;
+    while ((node = walker.nextNode())) {
+      text += node.textContent;
+    }
+    return text;
+  }
+
+  /**
+   * Writes collated HTML back into a line, preserving its line-number
+   * prefix spans and re-appending any excluded (hidden) annotation
+   * elements. The line's original markup is cached so it can be restored
+   * verbatim once the collation view is dismissed.
+   */
+  setLineCollationHtml(line, bodyHtml) {
+    if (!this.state.collationOriginalLineHtml.has(line)) {
+      this.state.collationOriginalLineHtml.set(line, line.innerHTML);
+    }
+    const prefixSelector = `:scope > .${this.config.globalLineNumberClass}, :scope > .${this.config.localLineNumberClass}`;
+    const prefixHtml = Array.from(line.querySelectorAll(prefixSelector))
+      .map((el) => el.outerHTML)
+      .join("");
+    const annotationSelector = this.config.collationAnnotationSelector;
+    const annotationHtml = annotationSelector
+      ? Array.from(line.querySelectorAll(annotationSelector))
+          .map((el) => el.outerHTML)
+          .join("")
+      : "";
+    line.innerHTML = prefixHtml + bodyHtml + annotationHtml;
+  }
+
+  /** Restores the original (pre-collation) markup of every modified line. */
+  revertCollation() {
+    if (!this.state.collationOriginalLineHtml.size) return;
+    this.state.collationOriginalLineHtml.forEach((html, line) => {
+      line.innerHTML = html;
+    });
+    this.state.collationOriginalLineHtml.clear();
+  }
+
+  /**
+   * Collates the currently visible witness lines that share `spanId`
+   * against the witness that triggered the event (`clickedElement`), and
+   * writes the resulting color-coded HTML directly into each line.
+   */
+  applyCollation(clickedElement, spanId) {
+    if (!this.config.collationEnabled) return;
+    const columns = this.witnessContainer.querySelectorAll(
+      `.${this.config.witnessColumnClass}`
+    );
+    const lines = [];
+    columns.forEach((column) => {
+      const textContent = column.querySelector(`.${this.config.textContentClass}`);
+      const line = this.getVisibleLineByIdOrFirst(textContent, spanId);
+      if (line) lines.push(line);
+    });
+    if (lines.length < 2) return; // nothing to compare against
+
+    const baseColumn = clickedElement.closest(`.${this.config.witnessColumnClass}`);
+    const baseLine =
+      lines.find((line) => line.closest(`.${this.config.witnessColumnClass}`) === baseColumn) ||
+      lines[0];
+    const orderedLines = [baseLine, ...lines.filter((line) => line !== baseLine)];
+
+    const texts = orderedLines.map((line) => this.extractCollationText(line));
+    const htmls = collateWitnesses(texts, {
+      diffClass: this.config.collationDiffClass,
+    });
+    orderedLines.forEach((line, index) => this.setLineCollationHtml(line, htmls[index]));
   }
 
   addNewHighlights(spanId) {
@@ -951,6 +1057,7 @@ class EditionManager {
         `.${this.config.textContentClass} span[id="${spanId}"]`
       )
     ) {
+      this.revertCollation();
       this.state.highlightedSpans.forEach((span) => {
         span.classList.remove(this.config.highlightClass);
         span.classList.remove(this.config.neighborHighlightClass);
