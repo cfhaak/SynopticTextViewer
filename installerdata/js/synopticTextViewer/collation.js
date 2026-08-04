@@ -14,9 +14,16 @@
 // No DOM APIs are used here so this module can be unit tested (e.g. under
 // Node.js) independently of a browser.
 
-const WORD_TOKEN_REGEX = /\S+|\s+/g;
+// Word tokens are runs of letters, combining marks (diacritics) and digits.
+// Punctuation/symbol characters (e.g. "·", ":", "›") are tokenized
+// separately from adjacent words, even when there is no whitespace between
+// them (e.g. "ſchowe·"). Without this split, a witness that omits a trailing
+// punctuation mark would cause the *whole* word to be flagged as different,
+// even though every visible letter is identical (see issue: identical words
+// marked as changed).
+const WORD_TOKEN_REGEX = /[\p{L}\p{M}\p{N}]+|\s+|[^\s\p{L}\p{M}\p{N}]+/gu;
 
-/** Splits text into alternating "word" and "whitespace" tokens. */
+/** Splits text into "word", "whitespace" and "punctuation/symbol" tokens. */
 function tokenize(text) {
   if (!text) return [];
   return text.match(WORD_TOKEN_REGEX) || [];
@@ -24,6 +31,18 @@ function tokenize(text) {
 
 function isWhitespaceToken(token) {
   return /^\s+$/.test(token);
+}
+
+/**
+ * Classifies a token as "whitespace", "word" (letters/marks/digits) or
+ * "punct" (everything else, e.g. punctuation/symbols). Used to avoid
+ * pairing unrelated token kinds (e.g. a word delete with a punctuation
+ * insert) into a misleading "replace" op.
+ */
+function tokenKind(token) {
+  if (isWhitespaceToken(token)) return "whitespace";
+  if (/^[\p{L}\p{M}\p{N}]+$/u.test(token)) return "word";
+  return "punct";
 }
 
 function escapeHtml(value) {
@@ -116,7 +135,7 @@ function buildReplacePairs(ops) {
     while (di < deletes.length && ii < inserts.length) {
       const del = deletes[di];
       const ins = inserts[ii];
-      if (isWhitespaceToken(del.value) === isWhitespaceToken(ins.value)) {
+      if (tokenKind(del.value) === tokenKind(ins.value)) {
         result.push({
           type: "replace",
           oldValue: del.value,
@@ -127,7 +146,8 @@ function buildReplacePairs(ops) {
         di++;
         ii++;
       } else {
-        // Different kinds (word vs. whitespace) can't be sensibly paired.
+        // Different kinds (word vs. whitespace vs. punctuation) can't be
+        // sensibly paired.
         result.push(del);
         di++;
       }
@@ -255,6 +275,7 @@ function collateWitnesses(texts, options = {}) {
 export {
   tokenize,
   isWhitespaceToken,
+  tokenKind,
   escapeHtml,
   diffSequences,
   buildReplacePairs,
