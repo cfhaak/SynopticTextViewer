@@ -15,6 +15,7 @@ class EditionState {
     this.currentSelectedColumn = null;
     this.currentSelectedWitness = null;
     this.highlightedSpans = [];
+    this.collationOriginalLineHtml = new Map();
     this.updateFromUrlState(stateFromUrl);
   }
 

@@ -38,6 +38,26 @@ class ColumnViewerConfig {
   copyUrlNotificationLabel = "URL copied to clipboard!";
 
   // ===========================================================================
+  // COLLATION (word/character-level diffing across witnesses)
+  // ===========================================================================
+  /** Master switch: turns the collation feature on/off. */
+  collationEnabled = true;
+  /** CSS selectors for content that must be excluded from the diffed text
+   * (line numbers, hidden editorial/apparatus annotations) but is
+   * preserved in the DOM. */
+  collationExcludedSelectors = [
+    ".synTexView-linenr-global",
+    ".synTexView-linenr-local",
+    ".editorial_note",
+  ];
+  /** Selector for elements re-appended verbatim (e.g. hidden footnotes)
+   * after the collated content of a line. */
+  collationAnnotationSelector = ".editorial_note";
+  /** Attribute added to a base-witness word listing which other witnesses
+   * it differs from. Set to null/false to omit it. */
+  collationDiffersInAttr = "data-collation-differs-in";
+
+  // ===========================================================================
   // CSS CLASS NAMES
   // ===========================================================================
   witnessLineClass = "synTexView-line";
@@ -55,6 +75,14 @@ class ColumnViewerConfig {
   controlsContainerTogglerClass = "synTexView_controls_toggle";
   controlsContainerClass = "synTexView_controls";
   copyUrlNotificationClass = "synTexView-url-copy-notification";
+  /** Word present only in a non-base witness (insertion relative to base). */
+  collationInsertClass = "synTexView-collation-insert";
+  /** Base-witness word that differs in at least one other witness. */
+  collationVariantClass = "synTexView-collation-variant";
+  /** Wrapper around a non-base witness's word that replaces a base word. */
+  collationReplaceClass = "synTexView-collation-replace";
+  /** Characters, within a replaced word, added relative to the base word. */
+  collationCharInsertClass = "synTexView-collation-char-insert";
 
   // ===========================================================================
   // ARIA LABELS
