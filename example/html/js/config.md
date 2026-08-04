@@ -28,9 +28,5 @@
 
   // CSS selectors for content excluded from the diffed text (line numbers,
   // hidden editorial/apparatus annotations), preserved in the DOM
-  "collationExcludedSelectors": [".synTexView-linenr-global", ".synTexView-linenr-local", ".editorial_note"],
-
-  // Attribute added to a base-witness word listing which other witnesses
-  // it differs from (set to null/false to omit it)
-  "collationDiffersInAttr": "data-collation-differs-in"
+  "collationExcludedSelectors": [".synTexView-linenr-global", ".synTexView-linenr-local", ".editorial_note"]
 }
